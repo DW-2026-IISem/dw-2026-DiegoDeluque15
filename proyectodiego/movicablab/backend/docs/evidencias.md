@@ -21,3 +21,27 @@
 **Captura:**
 
 ![estructura de carpetas](capturas/backend_estructuracarpetas.png)
+
+## Instalación de dependencias de configuración y BD
+
+**Captura:**
+
+![instalar dependencias config](capturas/backend_instalardependencias.png)
+
+## Variables de entorno (.env.example)
+
+**Captura:**
+
+![env example](capturas/backend_envexample.png)
+
+## Conexión exitosa a MySQL vía Sequelize
+
+**Captura:**
+
+![conexion sequelize](capturas/backend_conexionsequalizeexitosa.png)
+
+## Prueba con curl (prefijo /api)
+
+**Captura:**
+
+![curl api prefix](capturas/backend_curlapipreefix.png)
