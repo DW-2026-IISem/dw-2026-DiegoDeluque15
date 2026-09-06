@@ -15,3 +15,9 @@
 **Captura:**
 
 ![curl hello world](capturas/backend_hellowordl.png)
+
+## Estructura de carpetas por capas (arquitectura)
+
+**Captura:**
+
+![estructura de carpetas](capturas/backend_estructuracarpetas.png)
