@@ -52,3 +52,9 @@
 **Captura:**
 
 ![health check](capturas/backend_healthcheck.png)
+
+## Swagger accesible en /api/docs
+
+**Captura:**
+
+![swagger ui](capturas/backend_swagger-ui.png)
