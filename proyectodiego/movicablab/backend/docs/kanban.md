@@ -9,4 +9,4 @@ Política: WIP = 1. "Bloqueado" es un indicador sobre la tarjeta, no una columna
 | #03 | Definir arquitectura por capas | REQ-S04-03 | #02 | Diagrama de arquitectura | Aceptada/Evidenciada |
 | #04 | Definir contratos (DTO/API) | REQ-S04-04 | #02 | Contratos documentados | Aceptada/Evidenciada |
 | #05 | Crear base del backend NestJS | REQ-S04-05 | Node LTS (S03) | Backend arranca + /api/health | Aceptada/Evidenciada |
-| #06 | Actualizar docs/sdd.md y docs/kanban.md | REQ-S04-06 | #01-#05 | SDD + Kanban trazables | En desarrollo |
+| #06 | Actualizar docs/sdd.md y docs/kanban.md | REQ-S04-06 | #01-#05 | SDD + Kanban trazables | Aceptada/Evidenciada |

@@ -345,3 +345,16 @@ Response `403` (rol sin permiso):
 \`\`\`json
 { "statusCode": 403, "message": "No tiene permisos para este recurso", "error": "Forbidden" }
 \`\`\`
+
+## 8. Matriz de trazabilidad — Semana 04
+
+| OBJ | REQ | AC | Issue | Evidencia |
+|---|---|---|---|---|
+| OBJ-S04 | REQ-S04-01 | AC-S04-01 | #01 | docs/sdd.md (secciones 1-2) |
+| OBJ-S04 | REQ-S04-02 | AC-S04-02 | #02 | docs/sdd.md sección 2.5 (diagrama de dominio) |
+| OBJ-S04 | REQ-S04-03 | AC-S04-03 | #03 | docs/sdd.md sección 7 + docs/capturas/11-diagrama-arquitectura.png |
+| OBJ-S04 | REQ-S04-04 | AC-S04-04 | #04 | docs/sdd.md sección 8 (contratos con ejemplo) |
+| OBJ-S04 | REQ-S04-05 | AC-S04-05 | #05 | docs/capturas/07 a 10 (Sequelize, health, Swagger) |
+| OBJ-S04 | REQ-S04-06 | AC-S04-06 | #06 | Este documento y docs/kanban.md |
+
+**Estado de la semana: 6/6 Issues en Aceptada/Evidenciada — GATE-S04 en condiciones de APROBADO.**
