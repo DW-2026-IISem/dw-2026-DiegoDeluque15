@@ -257,3 +257,91 @@ Módulos de auth (`src/features/auth/`): `users`, `roles`, `role-users`, `resour
 - Todas las eliminaciones son *soft delete* excepto Pago y Liquidación, inmutables por trazabilidad financiera.
 - Ninguna operación de escritura acepta campos calculados por el cliente (`total`, `valor`) — siempre se recalculan en servidor.
 - Toda respuesta de error sigue una forma consistente: `{ statusCode, message, error }`.
+
+## 6. Diagrama de arquitectura por capas
+
+![Diagrama de arquitectura por capas](capturas/sdd_digramacapas.png)
+
+**Responsabilidades por capa:**
+
+| Capa | Responsabilidad | Ejemplo en MoviCab |
+|---|---|---|
+| Presentation | Recibe HTTP, valida forma del DTO, serializa respuesta | `CarrerasController`, `CreateCarreraDto` |
+| Application | Orquesta el caso de uso, define el puerto (interfaz) que infraestructura debe implementar | `CrearCarreraUseCase`, `ICarreraRepository` |
+| Domain | Reglas de negocio puras, invariantes, sin dependencias externas | Entidad `Carrera` valida su propia máquina de estados |
+| Infrastructure | Implementa los puertos: modelos Sequelize, repositorios, hashing, JWT | `CarreraSequelizeRepository`, `BcryptHashingService` |
+
+Flecha punteada = infraestructura implementa (no depende de) los puertos definidos en `application`/`domain` — es la Inversión de Dependencias del principio SOLID aplicado a esta arquitectura.
+
+## 7. Contratos detallados (DTO/API con ejemplo)
+
+### `GET /api/health`
+Response `200`:
+\`\`\`json
+{ "status": "ok", "timestamp": "2026-09-06T21:36:50.806Z", "database": "up" }
+\`\`\`
+
+### `POST /api/auth/login`
+Request:
+\`\`\`json
+{ "email": "despacho@movicab.com", "password": "abril152006" }
+\`\`\`
+Response `200`:
+\`\`\`json
+{ "accessToken": "eyJhbGciOi...", "refreshToken": "eyJhbGciOi..." }
+\`\`\`
+Response `401` (credenciales inválidas):
+\`\`\`json
+{ "statusCode": 401, "message": "Credenciales inválidas", "error": "Unauthorized" }
+\`\`\`
+
+### `POST /api/carreras`
+Request:
+\`\`\`json
+{ "pasajeroId": 3, "turnoId": 7 }
+\`\`\`
+Response `201`:
+\`\`\`json
+{
+  "id": 42,
+  "pasajeroId": 3,
+  "turnoId": 7,
+  "tarifaId": 1,
+  "estado": "solicitada",
+  "total": null,
+  "fechaInicio": "2026-09-06T21:40:00.000Z",
+  "fechaFin": null
+}
+\`\`\`
+Response `404` (turno inexistente o inactivo):
+\`\`\`json
+{ "statusCode": 404, "message": "Turno no encontrado o inactivo", "error": "Not Found" }
+\`\`\`
+
+### `PATCH /api/carreras/:id/estado`
+Request:
+\`\`\`json
+{ "estado": "cerrada" }
+\`\`\`
+Response `200`:
+\`\`\`json
+{ "id": 42, "estado": "cerrada", "total": 18500, "fechaFin": "2026-09-06T22:05:00.000Z" }
+\`\`\`
+Response `409` (transición inválida, ej. de "solicitada" directo a "cerrada"):
+\`\`\`json
+{ "statusCode": 409, "message": "Transición de estado inválida: solicitada -> cerrada", "error": "Conflict" }
+\`\`\`
+
+### `POST /api/liquidaciones`
+Request:
+\`\`\`json
+{ "conductorId": 5, "fechaDesde": "2026-09-01", "fechaHasta": "2026-09-06" }
+\`\`\`
+Response `201`:
+\`\`\`json
+{ "id": 8, "valor": 145000, "estado": "pendiente", "carrerasAgrupadas": [40, 41, 42] }
+\`\`\`
+Response `403` (rol sin permiso):
+\`\`\`json
+{ "statusCode": 403, "message": "No tiene permisos para este recurso", "error": "Forbidden" }
+\`\`\`
