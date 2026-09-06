@@ -45,3 +45,10 @@
 **Captura:**
 
 ![curl api prefix](capturas/backend_curlapipreefix.png)
+
+
+## Health check funcionando
+
+**Captura:**
+
+![health check](capturas/backend_healthcheck.png)
