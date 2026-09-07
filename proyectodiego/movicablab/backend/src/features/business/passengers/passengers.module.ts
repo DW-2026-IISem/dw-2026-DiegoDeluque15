@@ -14,8 +14,6 @@ import { ObtenerPasajeroUseCase } from './application/use-cases/obtener-pasajero
   imports: [SequelizeModule.forFeature([PasajeroModel])],
   controllers: [PasajeroController],
   providers: [
-    // Inversión de Dependencias: el token PASAJERO_REPOSITORY (la interfaz)
-    // se resuelve con la clase concreta PasajeroRepository (Sequelize).
     { provide: PASAJERO_REPOSITORY, useClass: PasajeroRepository },
     CrearPasajeroUseCase,
     ListarPasajerosUseCase,
@@ -24,4 +22,4 @@ import { ObtenerPasajeroUseCase } from './application/use-cases/obtener-pasajero
     EliminarPasajeroUseCase,
   ],
 })
-export class FleetsModule {}
+export class PassengersModule {}

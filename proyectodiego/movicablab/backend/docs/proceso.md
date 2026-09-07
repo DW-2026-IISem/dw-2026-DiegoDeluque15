@@ -24,3 +24,9 @@
 **Causa real:** Cada motor quedo con una contraseña ligeramente distinta por las politicas de complejidad de cada uno; no se actualizo el campo correcto al cambiar de motor en el .env.
 **Solucion:** Corregir DB_PASSWORD=abril152006 en el .env al probar Oracle.
 **Leccion aprendida:** Documentar en un solo lugar la contraseña real de cada motor para no confundirlas al alternar el .env.
+
+## Entrada 5 — Correccion de ubicacion de modulo Pasajero
+**Fecha:** 06-sep-2026
+**Contexto:** Pasajero se habia creado dentro de features/business/fleets, pero segun el SDD (seccion 3) fleets corresponde a Empresa/Vehiculo, no a Pasajero.
+**Decision:** Se movio Pasajero a su propio modulo features/business/passengers, dejando fleets vacio y listo para Empresa/Vehiculo. Se uso git mv para conservar el historial de cada archivo.
+**Leccion aprendida:** Verificar la asignacion de modulo contra el SDD antes de generar el codigo, no despues.

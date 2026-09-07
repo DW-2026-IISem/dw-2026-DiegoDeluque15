@@ -4,7 +4,7 @@ import { AppController } from './app.controller.js';
 import { AppService } from './app.service.js';
 import { DatabaseModule } from './infrastructure/database/sequelize/sequelize.module.js';
 import { HealthModule } from './features/health/health.module.js';
-import { FleetsModule } from './features/business/fleets/fleets.module.js';
+import { PassengersModule } from './features/business/passengers/passengers.module.js';
 
 @Module({
   imports: [
@@ -14,7 +14,7 @@ import { FleetsModule } from './features/business/fleets/fleets.module.js';
     }),
     DatabaseModule,
     HealthModule,
-    FleetsModule,
+    PassengersModule,
   ],
   controllers: [AppController],
   providers: [AppService],
