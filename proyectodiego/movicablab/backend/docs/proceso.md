@@ -15,3 +15,12 @@
 **Causa real:** La base de datos movicab_db nunca se había creado en SQL Server (a diferencia de MySQL/PostgreSQL, que la crean automáticamente vía variable de entorno del contenedor).
 **Solución:** CREATE DATABASE movicab_db; y CREATE USER diego15 FOR LOGIN diego15; dentro de esa base. Además se agregó dialectOptions.options.encrypt/trustServerCertificate en database.config.ts, requerido por el driver tedious para SQL Server.
 **Herramienta IA usada:** Claude, para el diagnóstico paso a paso descartando capas (red, driver, versión, config).
+
+## Entrada 4 — Conexion a Oracle vía Sequelize
+**Fecha:** 06-sep-2026
+**Contexto:** Verificar conexion a Oracle, ultimo de los 4 motores.
+**Problema:** ORA-01017 invalid username/password.
+**Diagnostico:** Se confirmo el login real con sqlplus usando Easy Connect (//localhost:1521/movicab); el .env del backend tenia la contraseña de SQL Server (Abril152006!) en vez de la de Oracle (abril152006), arrastrada de una edicion anterior.
+**Causa real:** Cada motor quedo con una contraseña ligeramente distinta por las politicas de complejidad de cada uno; no se actualizo el campo correcto al cambiar de motor en el .env.
+**Solucion:** Corregir DB_PASSWORD=abril152006 en el .env al probar Oracle.
+**Leccion aprendida:** Documentar en un solo lugar la contraseña real de cada motor para no confundirlas al alternar el .env.

@@ -72,3 +72,10 @@
 
 ![conexion sqlserver](capturas/backend_arranquesqlserver.png)
 ![conexion sqlserver](capturas/backend_curlsqlserver.png)
+
+## Conexión exitosa a Oracle vía Sequelize
+
+**Captura:**
+
+![conexion oracle](capturas/backend_conexionoracle.png)
+![conexion oracle](capturas/backend_curloracle.png)
