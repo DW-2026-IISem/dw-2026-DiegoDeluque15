@@ -1,0 +1,8 @@
+// Config de sequelize-cli: le decimos dónde están las migraciones
+// y de dónde saca los datos de conexión (mismo .env que usa el backend).
+const path = require('path');
+
+module.exports = {
+  'config': path.resolve('src/infrastructure/database', 'cli-config.cjs'),
+  'migrations-path': path.resolve('src/infrastructure/database', 'migrations'),
+};

@@ -79,3 +79,22 @@
 
 ![conexion oracle](capturas/backend_conexionoracle.png)
 ![conexion oracle](capturas/backend_curloracle.png)
+
+
+## Entidad de dominio Pasajero
+
+**Captura:**
+
+![entidad pasajero](capturas/codigo/backend_entidadpasajero.png)
+
+## Arranque del módulo Pasajero (rutas mapeadas)
+
+**Captura:**
+
+![arranque modulo pasajero](capturas/codigo/backend_modulopasajeroarranque.png)
+
+## Migración de la tabla pasajeros
+
+**Captura:**
+
+![migracion pasajeros](capturas/codigo/backend_migracionpasajerosmysql.png)
