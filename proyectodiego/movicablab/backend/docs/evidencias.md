@@ -58,3 +58,17 @@
 **Captura:**
 
 ![swagger ui](capturas/backend_swagger-ui.png)
+
+## Conexión exitosa a PostgreSQL vía Sequelize
+
+**Captura:**
+
+![conexion postgres](capturas/postgresarranque.png)
+![conexion postgres](capturas/curlpostgres.png)
+
+## Conexión exitosa a SQL Server vía Sequelize
+
+**Captura:**
+
+![conexion sqlserver](capturas/backend_arranquesqlserver.png)
+![conexion sqlserver](capturas/backend_curlsqlserver.png)
