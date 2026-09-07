@@ -358,3 +358,11 @@ Response `403` (rol sin permiso):
 | OBJ-S04 | REQ-S04-06 | AC-S04-06 | #06 | Este documento y docs/kanban.md |
 
 **Estado de la semana: 6/6 Issues en Aceptada/Evidenciada — GATE-S04 en condiciones de APROBADO.**
+
+## 10. Decisión de motor de base de datos para desarrollo
+
+Se verificó conexión exitosa desde el backend (vía Sequelize) a los 4 motores disponibles: MySQL, PostgreSQL, SQL Server y Oracle (ver docs/evidencias.md y docs/proceso.md para el detalle de cada verificación).
+
+**Motor elegido para el desarrollo del proyecto: MySQL.**
+
+Motivo: fue el primer motor completamente configurado y probado, es el más estándar para el stack NestJS + Sequelize, y minimiza fricción en dialectos SQL específicos (Oracle usa DUAL, SQL Server requiere dialectOptions de cifrado, etc.) mientras se construye la lógica de negocio. El diseño por capas (sección 3) mantiene el acceso a datos aislado en `infrastructure`, por lo que cambiar de motor más adelante no requiere modificar `domain` ni `application`.
