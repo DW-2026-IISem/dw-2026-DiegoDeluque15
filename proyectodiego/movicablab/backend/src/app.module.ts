@@ -1,11 +1,11 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { HealthController } from './health.controller';
+import { DatabaseModule } from './infrastructure/database';
 
 /**
- * AppModule raíz — ISS-01.
- * Solo contiene ConfigModule global y HealthController.
- * Los módulos de features e infrastructure se añaden en issues subsiguientes.
+ * AppModule raíz — ISS-01 + ISS-02.
+ * ConfigModule global, DatabaseModule (Sequelize) y HealthController.
  */
 @Module({
   imports: [
@@ -13,6 +13,7 @@ import { HealthController } from './health.controller';
       isGlobal: true,
       envFilePath: '.env',
     }),
+    DatabaseModule,
   ],
   controllers: [HealthController],
 })

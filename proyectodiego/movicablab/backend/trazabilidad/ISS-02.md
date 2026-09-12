@@ -51,15 +51,72 @@
 
 ## 3. IA usada — En curso
 
-**Herramienta / modelo:** pendiente  
-**Fecha:** pendiente  
-**Prompt enviado:**
+### Herramienta de IA usada
+
+**Herramienta / modelo:** Antigravity (modo agente)  
+**Fecha:** 2026-09-12
+
+### Prompt enviado
 
 ```text
-(pendiente — copiar de docs/Guion_IA_Desarrollo_Software.md ISS-02)
+Lee completo el archivo docs/Prompt.md (contrato fijo de arquitectura) y el archivo
+docs/trazabilidad/ISS-02.md (objetivo, alcance, requisitos y criterios de aceptación de
+este issue).
+
+Implementa exactamente lo que pide ISS-02 sobre el esqueleto ya existente:
+
+- Validación de entorno (src/config/environment) que falle al arrancar, ANTES de intentar
+  conectar a la base de datos, si falta una variable del bloque DB_<MOTOR>_* activo según
+  DB_DIALECT (mysql|postgres|mssql|oracle) — indicando en el mensaje cuál variable falta.
+- Una factory de Sequelize (src/infrastructure/database/sequelize) que instancie el
+  dialecto correcto leyendo solo el bloque de env correspondiente, con
+  sync({ alter: false }) y un arreglo ALL_MODELS vacío por ahora.
+- La jerarquía de excepciones común (ApplicationException, EntityNotFoundException 404,
+  DomainException 400, BusinessRuleException 409) en src/common/exceptions.
+- Un filtro global de excepciones que devuelva errores como { statusCode, message, error }.
+- Un interceptor global de respuesta exitosa que envuelva en { statusCode, message, data,
+  timestamp }, y que soporte listados paginados como data.items[] + data.meta.
+- Actualiza .env.example con el contrato de la sección 6 de docs/Prompt.md (los 4 bloques
+  de motor, con los puertos ya remapeados de este proyecto: MySQL 3307, PostgreSQL 5435,
+  SQL Server 1434, Oracle 1522).
+
+Reglas importantes:
+- NO modifiques nada dentro de docs/ ni de trazabilidad/.
+- NO agregues todavía ninguna entidad de negocio (eso es ISS-03 en adelante).
+- sync() debe ser SIEMPRE sync({ alter: false }) — nunca force:true ni alter:true en
+  ningún archivo.
+
+---
+
+Prompt de corrección (misma sesión):
+
+Muéstrame el validador de src/config/environment/environment.validation.ts para
+DB_MYSQL_PASSWORD (y su equivalente en los otros 3 bloques de motor). Confirma si permite
+explícitamente un string vacío, o si requiere @IsNotEmpty(). Si requiere no-vacío,
+corrígelo para que solo valide que la variable EXISTA (aunque su valor sea ""), ya que
+mi entorno de MySQL local corre sin contraseña, tal como ya lo define .env.example.
 ```
 
-**Ajustes o correcciones:** pendiente
+---
+
+### Resumen de lo que propuso la IA
+
+Validación fail-fast en `src/config/environment/` según `DB_DIALECT`, ejecutada en
+`main.ts` antes del bootstrap de Nest. Factory Sequelize multi-motor con
+`sequelize-typescript`, `ALL_MODELS=[]` y `DatabaseModule` que llama
+`sync({ alter: false })`. Capa `common` con excepciones tipadas, `GlobalExceptionFilter`,
+interceptores de logging, timeout (30 s) y response (envelope de éxito con soporte
+paginado). Instalación de drivers (`mysql2`, `pg`, `pg-hstore`, `tedious`, `oracledb`).
+`.env.example` actualizado con cuatro bloques de motor y puertos remapeados. Tras revisión,
+se corrigió el validador: las variables `*_PASSWORD` aceptan valor vacío si la clave
+existe; el resto del bloque activo sigue exigiendo no-vacío.
+
+**Ajustes o correcciones:**
+1. `environment.validation.ts` y `environment.config.ts`: las variables `*_PASSWORD` de
+   los cuatro motores solo exigen presencia de clave (`undefined` falla; `""` es válido).
+   Antes, `value.trim() === ''` rechazaba MySQL sin contraseña.
+2. Se añadió `readExistingEnv()` para leer contraseñas sin exigir contenido; las demás
+   variables siguen usando `readRequiredEnv()`.
 
 ---
 

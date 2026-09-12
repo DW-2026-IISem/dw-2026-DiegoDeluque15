@@ -136,6 +136,51 @@ subdirectorios de negocio vacíos, e `IdentityModule` stub.
 - AC-3 (health check): ![AC-3](capturas/codigo/iss-01-03-health.png)
 - AC-4 (features/auth no existe): ![AC-1](capturas/codigo/iss-01-01-estructura.png)
 
+---
+
+### 2026-09-12 — ISS-02 — Entorno Sequelize y common
+
+**Herramienta de IA:** Antigravity (modo agente)
+
+**Prompt usado:** Guion `docs/Guion_IA_Desarrollo_Software.md` ISS-02 + prompt inicial
+(Implementa AC de `trazabilidad/ISS-02.md` y `docs/Prompt.md` §7-8: validación fail-fast
+por `DB_DIALECT`, factory Sequelize multi-motor con `ALL_MODELS=[]`, excepciones comunes,
+filtro global, interceptores, `.env.example`) + prompt de corrección sobre
+`DB_MYSQL_PASSWORD`: confirmar si el validador permite string vacío o exige no-vacío; si
+exige no-vacío, corregir para que las variables `*_PASSWORD` solo requieran que la clave
+exista (valor `""` válido), porque MySQL local corre sin contraseña.
+
+**Lo que propuso la IA:** Validación fail-fast en `src/config/environment/` según
+`DB_DIALECT`; factory Sequelize multi-motor (`mysql|postgres|mssql|oracle`) con
+`ALL_MODELS=[]` y `sync({ alter: false })`; jerarquía de excepciones comunes
+(`ApplicationException`, `EntityNotFoundException`, `DomainException`,
+`BusinessRuleException`); `GlobalExceptionFilter` con envelope `{ statusCode, message,
+error }`; interceptores globales de logging, timeout y response (envelope
+`{ statusCode, message, data, timestamp }` con soporte paginado `data.items[] +
+data.meta`); `.env.example` actualizado con los cuatro bloques de motor y puertos
+remapeados.
+
+**Lo que corregí y por qué:** El validador rechazaba `DB_MYSQL_PASSWORD` vacío con un
+`@IsNotEmpty()` implícito (`value.trim() === ''`), lo cual rompía el arranque en MySQL
+local sin contraseña. Se corrigió para que las variables `*_PASSWORD` solo exijan que la
+clave exista en `process.env` (aceptando valor vacío), mientras el resto de variables
+del bloque activo sigue exigiendo no-vacío. Mismo criterio aplicado en
+`environment.config.ts` mediante `readExistingEnv()` para contraseñas.
+
+**Problemas encontrados y cómo se resolvieron:** El `.env` local tenía nombres legacy
+(`DB_HOST`, `DB_PORT`, etc.) distintos al contrato `DB_MYSQL_*`; se alineó manualmente
+con `.env.example`. Tras la corrección de contraseñas vacías, `npm run start:dev` arrancó
+y conectó correctamente a MySQL en puerto 3307.
+
+**Resultado / commit:** `pendiente`
+
+**Evidencia (capturas):**
+- AC-1 (conexión exitosa): ![AC-1](capturas/codigo/iss-02-01-conexion.png)
+- AC-2a (fail-fast, variable faltante): ![AC-2a](capturas/codigo/iss-02-02a-fail-fast.png)
+- AC-2b (restaurado, vuelve a arrancar): ![AC-2b](capturas/codigo/iss-02-02b-restaurado.png)
+- AC-3 (única sync alter:false): ![AC-3](capturas/codigo/iss-02-03-sync.png)
+- AC-4 (.env no se commitea): ![AC-4](capturas/codigo/iss-02-04-envstatus.png)
+
 ## Reflexión M6 (completar al cierre del gate semanal)
 
 | Pregunta | Respuesta |
