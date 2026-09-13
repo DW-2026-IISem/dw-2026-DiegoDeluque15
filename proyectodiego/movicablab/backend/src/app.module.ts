@@ -1,11 +1,12 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { HealthController } from './health.controller';
+import { BusinessModule } from './features/business/business.module';
 import { DatabaseModule } from './infrastructure/database';
 
 /**
- * AppModule raíz — ISS-01 + ISS-02.
- * ConfigModule global, DatabaseModule (Sequelize) y HealthController.
+ * AppModule raíz — ISS-01 + ISS-02 + ISS-03.
+ * ConfigModule global, DatabaseModule, BusinessModule y HealthController.
  */
 @Module({
   imports: [
@@ -14,6 +15,7 @@ import { DatabaseModule } from './infrastructure/database';
       envFilePath: '.env',
     }),
     DatabaseModule,
+    BusinessModule,
   ],
   controllers: [HealthController],
 })

@@ -1,12 +1,12 @@
 import { Module } from '@nestjs/common';
+import { PassengersModule } from './passengers/passengers.module';
 
 /**
- * BusinessModule — stub ISS-01.
- * Los submódulos (passengers, fleets, drivers, pricing, trips, settlements)
- * se importarán aquí en sus respectivos issues.
+ * BusinessModule — ISS-01 + ISS-03.
+ * Agrega submódulos de negocio (passengers, fleets, drivers, pricing, trips, settlements).
  */
 @Module({
-  imports: [],
-  exports: [],
+  imports: [PassengersModule],
+  exports: [PassengersModule],
 })
 export class BusinessModule {}

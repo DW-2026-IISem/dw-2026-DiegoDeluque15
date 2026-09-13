@@ -181,6 +181,54 @@ y conectó correctamente a MySQL en puerto 3307.
 - AC-3 (única sync alter:false): ![AC-3](capturas/codigo/iss-02-03-sync.png)
 - AC-4 (.env no se commitea): ![AC-4](capturas/codigo/iss-02-04-envstatus.png)
 
+---
+
+### 2026-09-12 — ISS-03 — Feature passengers: Pasajero
+
+**Herramienta de IA:** Antigravity (modo agente)
+
+**Prompt usado:** Guion `docs/Guion_IA_Desarrollo_Software.md` ISS-03 + prompt inicial
+(feature `passengers` en cuatro capas CA: entidad pura, `IPasajeroRepository`, CRUD con
+paginación, `PasajeroModel` en `ALL_MODELS`, puerto `ICarreraActivaPort` para DELETE 409,
+Swagger, registro en `BusinessModule`) + prompts de corrección en la misma sesión: (1)
+mantener Swagger aunque estaba planeado para ISS-13; (2) quitar seeder de
+`PassengersModule` y eliminar `pasajero.seeder.ts` — la siembra quedará en orquestador
+central ISS-13; (3) documentar en código que `StubCarreraActivaAdapter` siempre retorna
+false y que el bloqueo DELETE por Carreras no es verificable hasta ISS-09; (4) alinear
+todas las referencias de issue de Carrera a **ISS-09** (no ISS-08, que es Tarifa).
+
+**Lo que propuso la IA:** Feature completa en `src/features/business/passengers/` con
+entidad pura `Pasajero`, `IPasajeroRepository`, cinco casos de uso (create, list paginado
+con filtro `isActive`, getById, update, soft delete), `PasajeroModel` (tabla `pasajeros`)
+registrado en `ALL_MODELS`, repositorio Sequelize, `PasajerosController` en
+`/api/pasajeros`, puerto `ICarreraActivaPort` con stub, Swagger en `/api/docs`, seeder
+idempotente en `onModuleInit`, e integración vía `PassengersModule` → `BusinessModule` →
+`AppModule`.
+
+**Lo que corregí y por qué:**
+- **Eliminé el seeder del módulo** (`onModuleInit` + `pasajero.seeder.ts`): evitar dos
+  mecanismos de siembra compitiendo; ISS-13 definirá orquestador central
+  (empresas → conductores → vehiculos → turnos → pasajeros → tarifas).
+- **Swagger se mantiene** en `main.ts` y controlador: decisión explícita del autor pese
+  a estar planeado originalmente para ISS-13.
+- **Comentarios del puerto Carrera unificados en ISS-09:** la IA había referenciado ISS-08
+  para la feature Carrera; en el guion ISS-08 es Tarifa y Carrera es ISS-09. Se corrigió
+  en `carrera-activa.port.interface.ts`, `stub-carrera-activa.adapter.ts` y
+  `delete-pasajero.use-case.ts`, dejando explícito que el stub siempre retorna `false` y
+  el 409 por carreras activas no es verificable hasta ISS-09.
+
+**Problemas encontrados y cómo se resolvieron:** `@nestjs/swagger` latest exigía Nest 12;
+  se instaló `@nestjs/swagger@^7.4.0` compatible con Nest 10. No hubo otros bloqueos tras
+  las correcciones de seeder y numeración de issues.
+
+**Resultado / commit:** `pendiente`
+
+**Evidencia (capturas):**
+- AC-1 (POST válido → 201): ![AC-1](capturas/codigo/iss-03-01-crear.png)
+- AC-2 (POST sin nombre → 400): ![AC-2](capturas/codigo/iss-03-02-validacion.png)
+- AC-3 (GET id inexistente → 404): ![AC-3](capturas/codigo/iss-03-03-notfound.png)
+- AC-4 (soft delete, isActive=false): ![AC-4](capturas/codigo/iss-03-04-softdelete.png)
+
 ## Reflexión M6 (completar al cierre del gate semanal)
 
 | Pregunta | Respuesta |
