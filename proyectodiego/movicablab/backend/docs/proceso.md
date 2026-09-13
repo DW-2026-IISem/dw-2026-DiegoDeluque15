@@ -324,3 +324,25 @@ Instrucciones detalladas para leer el contrato arquitectónico y ACs de ISS-06. 
 - AC-2 (solape de conductor/vehículo → 409): ![AC-2](capturas/codigo/iss-06-02-solape.png)
 - AC-3 (conductor inexistente → 404): ![AC-3](capturas/codigo/iss-06-03-notfound.png)
 - AC-4 (filtro por conductorId): ![AC-4](capturas/codigo/iss-06-04-filtro.png)
+
+### 2026-09-13 — ISS-07 — Feature Tarifa CA
+**Herramienta de IA:** Antigravity (modo agente)
+**Prompt usado:**
+Instrucciones para implementar la feature Tarifa en `src/features/business/pricing/` siguiendo la Clean Architecture de 4 capas.
+- Entidad `Tarifa` sin timestamps.
+- DTOs con validaciones lógicas (`valorBase > 0`, fechas coherentes).
+- Casos de uso: `CreateTarifa` (valida solape), `GetTarifaVigente`, `UpdateTarifa` (solo antes de iniciar vigencia).
+- Modelo Sequelize (`timestamps: false`) y controlador con `GET /api/tarifas/vigente` priorizado.
+- Restricciones: sin seeders, stub de Carrera (ISS-08) para validación de delete.
+
+**Lo que propuso la IA:** Feature `Tarifa` completa con todas las validaciones de negocio exigidas. Se generó el endpoint vigente registrado correctamente antes que las rutas paramétricas, y el stub de eliminación apuntando a ISS-08.
+**Lo que corregí y por qué:**
+- Se corrigió el código HTTP devuelto al enviar fechas de vigencia invertidas (`vigenciaDesde >= vigenciaHasta`). Originalmente se lanzaba una excepción de negocio (`BusinessRuleException` -> 409), pero siendo un error de validación lógica de entrada, se modificó para lanzar una `DomainException` (400 Bad Request).
+**Problemas encontrados y cómo se resolvieron:** Paths de importación hacia la carpeta `common` desde subdirectorios anidados con un nivel extra; solucionado masivamente mediante un script de Node antes de compilar.
+**Resultado / commit:** `pendiente`
+
+**Evidencia (capturas):**
+- AC-1 (crear tarifa válida → 201): ![AC-1](capturas/codigo/iss-07-01-crear.png)
+- AC-2 (valorBase <= 0 → 400): ![AC-2](capturas/codigo/iss-07-02-validacion.png)
+- AC-3 (solape de vigencia → 409): ![AC-3](capturas/codigo/iss-07-03-solape.png)
+- AC-4 (GET /vigente → 200): ![AC-4](capturas/codigo/iss-07-04-vigente.png)
