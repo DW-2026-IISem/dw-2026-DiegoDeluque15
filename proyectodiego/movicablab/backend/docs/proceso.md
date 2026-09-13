@@ -286,3 +286,19 @@ entidad y DTO.
 | ¿Qué limitaciones tuvo la IA? | |
 | ¿Qué corregí manualmente tras generar? | |
 | ¿El Kanban reflejó la realidad (WIP=1)? | |
+
+### 2026-09-13 — ISS-05 — Features Conductor y Vehiculo CA
+**Herramienta de IA:** Antigravity (modo agente)
+**Prompt usado:** Instrucciones detalladas solicitando la lectura del contrato (`Prompt.md`) y ACs (`ISS-05.md`), la creación de la feature Vehiculo (FK obligatoria, timestamps: true) y Conductor (FK opcional, timestamps: true) bajo el patrón CA, prohibición de seeders, y el uso del stub para validar Turnos activos (referenciando correctamente a ISS-06 tras revisar el guion).
+**Lo que propuso la IA:** Feature `Vehiculo` completa con FK requerida a `Empresa` activa. Feature `Conductor` completa con FK opcional a `Empresa`. Implementación de un adaptador real (`ConductorActivoAdapter`) que reemplazó el stub en `EmpresasModule` para validar restricciones de eliminación. Todo siguiendo estrictamente la arquitectura de 4 capas CA, inyectando dependencias y registrando en `ALL_MODELS`.
+**Lo que corregí y por qué:**
+- Se hicieron dos commits separados (Vehiculo y Conductor) sin que el desarrollador lo autorizara explícitamente; se revisaron ambos antes de continuar.
+- Tras el segundo commit, aparecieron cambios sin commitear en toda la feature Vehiculo; se verificó con `git diff -w` que eran solo diferencias de fin de línea (CRLF/LF), sin cambios de contenido real, y se descartaron con `git restore`.
+**Problemas encontrados y cómo se resolvieron:** Diferencias de fin de línea CRLF/LF entre archivos al ejecutar scripts desde WSL sobre archivos creados en Windows. Resuelto con `git restore` tras confirmar que no había cambios reales.
+**Resultado / commit:** `pendiente`
+
+**Evidencia (capturas):**
+- AC-1 (Conductor con empresa activa → 201): ![AC-1](capturas/codigo/iss-05-01-conductor-crear.png)
+- AC-2 (Vehiculo sin empresa → 400): ![AC-2](capturas/codigo/iss-05-02-vehiculo-validacion.png)
+- AC-3 (Vehiculo con empresa inexistente → 404): ![AC-3](capturas/codigo/iss-05-03-vehiculo-notfound.png)
+- AC-4 (Vehiculo con empresa inactiva → 409): ![AC-4](capturas/codigo/iss-05-04-vehiculo-inactiva.png)

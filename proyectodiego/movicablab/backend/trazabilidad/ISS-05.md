@@ -45,15 +45,41 @@
 
 ## 3. IA usada — En curso
 
-**Herramienta / modelo:** pendiente  
-**Fecha:** pendiente  
+**Herramienta / modelo:** Antigravity (modo agente)  
+**Fecha:** 2026-09-13  
 **Prompt enviado:**
 
 ```text
-(pendiente — copiar de docs/Guion_IA_Desarrollo_Software.md ISS-05)
+Lee completo el archivo docs/Prompt.md (contrato fijo de arquitectura) y el archivo
+docs/trazabilidad/ISS-05.md (objetivo, alcance, requisitos y criterios de aceptación de
+este issue).
+
+Implementa las features Conductor (en src/features/business/drivers/conductores/) y Vehiculo (en src/features/business/fleets/vehiculos/), dependiendo del repositorio de Empresa ya existente (ISS-04), siguiendo el mismo patrón de 4 capas que usaste para Empresa:
+
+- domain: entidades (id, nombre, descripcion?, isActive, createdAt, updatedAt, empresaId) sin ninguna dependencia de NestJS/Sequelize; interfaces de Repositorios correspondientes; Excepciones de NotFound y EmpresaInactiveException (409). FK a Empresa opcional para Conductor y obligatoria para Vehiculo.
+- application: DTOs y casos de uso CRUD. Validar que la empresa exista (404) y esté activa (409) al asociarla.
+- infrastructure: Modelos con FK empresa_id (BelongsTo EmpresaModel); repositorios Sequelize.
+- presentation: GET/POST/PATCH/DELETE /api/vehiculos(/:id) y /api/conductores(/:id).
+- Módulos correspondientes importando EmpresasModule para inyectar su repositorio.
+
+Nota importante sobre timestamps: a diferencia de Empresa (ISS-04, donde la tabla real
+en MySQL no tenía created_at/updated_at y hubo que quitarlos del modelo), Conductor y Vehiculo SÍ
+deben incluir createdAt/updatedAt. Las tablas no existen todavía en movicab_db, así
+que usa timestamps: true en los Modelos (con @CreatedAt/@UpdatedAt) — Sequelize las
+creará correctamente desde cero con esas columnas.
+
+Reglas importantes:
+- NO modifiques nada dentro de docs/ ni de trazabilidad/ todavía.
+- NO agregues ningún seeder — la siembra queda centralizada para ISS-13.
+- Donde uses un puerto/stub para validar Turnos activos (que no existen aún), deja un
+  comentario indicando que ISS-06 (feature Turno) lo reemplazará — verifica ese número en
+  docs/Guion_IA_Desarrollo_Software.md antes de escribir el comentario.
+- No adelantes ninguna otra feature de negocio.
 ```
 
-**Ajustes o correcciones:** pendiente
+**Ajustes o correcciones:** 
+- Se hicieron dos commits separados (Vehiculo y Conductor) sin que el desarrollador lo autorizara explícitamente; se revisaron ambos antes de continuar.
+- Tras el segundo commit, aparecieron cambios sin commitear en toda la feature Vehiculo; se verificó con `git diff -w` que eran solo diferencias de fin de línea (CRLF/LF), sin cambios de contenido real, y se descartaron con `git restore`.
 
 ---
 

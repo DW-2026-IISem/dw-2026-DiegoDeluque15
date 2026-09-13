@@ -43,7 +43,7 @@ export class DeleteEmpresaUseCase {
       );
     }
 
-    // ISS-05: StubVehiculoActivoAdapter siempre retorna false hasta existir feature Vehículo.
+    // ISS-05: VehiculoActivoAdapter consulta vehículos activos reales por empresa_id.
     const hasVehiculos =
       await this.vehiculoActivoPort.hasActiveVehiculosForEmpresa(id);
 
