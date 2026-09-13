@@ -302,3 +302,25 @@ entidad y DTO.
 - AC-2 (Vehiculo sin empresa → 400): ![AC-2](capturas/codigo/iss-05-02-vehiculo-validacion.png)
 - AC-3 (Vehiculo con empresa inexistente → 404): ![AC-3](capturas/codigo/iss-05-03-vehiculo-notfound.png)
 - AC-4 (Vehiculo con empresa inactiva → 409): ![AC-4](capturas/codigo/iss-05-04-vehiculo-inactiva.png)
+
+### 2026-09-13 — ISS-06 — Feature Turno CA
+**Herramienta de IA:** Gemini 3.1 Pro (High) (modo agente)
+**Prompt usado:**
+Instrucciones detalladas para leer el contrato arquitectónico y ACs de ISS-06. Implementar feature Turno en `src/features/business/drivers/turnos/` dependiendo de Conductor y Vehiculo (ISS-05).
+- Entidad pura `Turno` con dependencias/interfaces asociadas.
+- Aplicación: DTOs, casos de uso CRUD, validación de estado activo (404) y solape de turnos simultáneos (409) para conductores y vehículos.
+- Infraestructura: `TurnoModel` con `timestamps: true` y FKs, integración en Sequelize.
+- Restricciones: prohibición de seeders, y utilizar un stub para `Carrera` verificando el número real de issue en el Guion. Sin commit automático.
+
+**Lo que propuso la IA:** Feature completa de `Turno` con las validaciones exactas de solape, la integración de repositorios correspondientes, y los controladores CRUD. Se construyeron adaptadores reales de turnos activos para inyectarlos cruzadamente en los módulos de Vehiculo y Conductor.
+**Lo que corregí y por qué:**
+- Se verificó con `grep` que la numeración de ISS-08 (Carrera) era correcta desde el inicio para poder documentar el stub de eliminación de turnos con seguridad.
+- Se confirmó con `git diff --stat` que el reemplazo de stubs en `ConductoresModule` y `VehiculosModule` fue mínimo y acotado (solo las inserciones/eliminaciones estrictamente necesarias en los providers y los imports para inyectar los nuevos adaptadores de TurnosModule).
+**Problemas encontrados y cómo se resolvieron:** Rutas relativas erróneas en los imports a través de múltiples subdirectorios inter-módulos (`business` > `drivers` > `fleets`); resuelto en masa mediante un script de Node para reemplazar las referencias defectuosas y luego validando con `tsc`.
+**Resultado / commit:** `pendiente`
+
+**Evidencia (capturas):**
+- AC-1 (crear turno válido → 201): ![AC-1](capturas/codigo/iss-06-01-crear.png)
+- AC-2 (solape de conductor/vehículo → 409): ![AC-2](capturas/codigo/iss-06-02-solape.png)
+- AC-3 (conductor inexistente → 404): ![AC-3](capturas/codigo/iss-06-03-notfound.png)
+- AC-4 (filtro por conductorId): ![AC-4](capturas/codigo/iss-06-04-filtro.png)
