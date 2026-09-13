@@ -229,6 +229,55 @@ idempotente en `onModuleInit`, e integración vía `PassengersModule` → `Busin
 - AC-3 (GET id inexistente → 404): ![AC-3](capturas/codigo/iss-03-03-notfound.png)
 - AC-4 (soft delete, isActive=false): ![AC-4](capturas/codigo/iss-03-04-softdelete.png)
 
+---
+
+### 2026-09-12 — ISS-04 — Feature Empresa CA
+
+**Herramienta de IA:** Antigravity (modo agente)
+
+**Prompt usado:** Guion `docs/Guion_IA_Desarrollo_Software.md` ISS-04 + prompt inicial
+(implementar feature Empresa en fleets/empresas/, 4 capas CA, NIT UQ inmutable,
+GetEmpresaById, ListEmpresas con stubs ISS-05/ISS-06 para bloqueo DELETE por
+conductores/vehículos activos) + prompt de corrección: quitar validación MinLength(3) en
+el NIT ya que el contrato solo exige que sea obligatorio y único, no una longitud mínima.
+
+**Lo que propuso la IA:** Feature Empresa completa bajo `src/features/business/fleets/empresas/`
+con entidad `Empresa`, repositorios, stubs para Conductores y Vehículos (con referencias
+corregidas a ISS-06 e ISS-05 respectivamente), casos de uso de creación y soft-delete con
+validación de integridad referencial delegada a los stubs, modelo Sequelize
+(`EmpresaModel`), y `EmpresasController`. Todo encapsulado en `FleetsModule` y registrado en
+`BusinessModule` y `ALL_MODELS`. El NIT originalmente validaba mínimo 3 caracteres en
+entidad y DTO.
+
+**Lo que corregí y por qué:**
+- **Removí la restricción de longitud mínima en el NIT:** Se eliminó `@MinLength(3)` del DTO
+  y la validación `< 3` en la entidad, dejándolo solo con validación de no-vacío
+  (`@IsNotEmpty()`), ya que el contrato de arquitectura (`Prompt.md` e `ISS-04.md`) no
+  estipulaba longitud mínima, solo exigía obligatoriedad y unicidad.
+- **Se quitaron los timestamps (createdAt/updatedAt) del modelo EmpresaModel**: la
+  tabla `empresas` en movicab_db fue creada sin esas columnas, y docs/sdd.md §2.1
+  tampoco las define para Empresa (a diferencia de Pasajero). El modelo tenía
+  timestamps: true por defecto, causando un error 500 en cualquier consulta porque
+  Sequelize intentaba seleccionar columnas inexistentes. Se corrigió a
+  timestamps: false y se eliminaron los campos createdAt/updatedAt de las 4 capas
+  (modelo, entidad de dominio, mapper de aplicación y mapper de persistencia).
+
+**Problemas encontrados y cómo se resolvieron:**
+- Las peticiones POST /api/empresas devolvían 500 Internal Server Error. El log del
+  servidor mostró el error dentro de EmpresaRepository.findByNit(), sin mensaje SQL
+  detallado. Se diagnosticó comparando el modelo Sequelize contra la estructura real
+  de la tabla en MySQL (DESCRIBE empresas): el modelo declaraba timestamps: true pero
+  la tabla no tenía las columnas created_at/updated_at. Se resolvió alineando el
+  modelo con la tabla real y con el contrato de docs/sdd.md.
+
+**Resultado / commit:** `pendiente`
+
+**Evidencia (capturas):**
+- AC-1 (POST válido → 201): ![AC-1](capturas/codigo/iss-04-01-crear.png)
+- AC-2 (NIT duplicado → 409): ![AC-2](capturas/codigo/iss-04-02-nit-duplicado.png)
+- AC-3 (GET list con conteos): ![AC-3](capturas/codigo/iss-04-03-listado.png)
+- AC-4 (DELETE con activos → 409, pendiente hasta ISS-05/ISS-06): ![AC-4](capturas/codigo/iss-04-04-delete-pendiente.png)
+
 ## Reflexión M6 (completar al cierre del gate semanal)
 
 | Pregunta | Respuesta |

@@ -46,16 +46,50 @@
 
 ## 3. IA usada — En curso
 
-**Herramienta / modelo:** pendiente  
-**Fecha:** pendiente  
+**Herramienta / modelo:** Antigravity IDE — Claude Opus 4.6 (modo agente)  
+**Fecha:** 2026-09-12  
 **Prompt enviado:**
 
 ```text
-(pendiente — copiar de docs/Guion_IA_Desarrollo_Software.md ISS-04)
+Lee completo el archivo docs/Prompt.md (contrato fijo de arquitectura) y el archivo
+docs/trazabilidad/ISS-04.md (objetivo, alcance, requisitos y criterios de aceptación de
+este issue).
+
+Implementa la feature Empresa en src/features/business/fleets/empresas/, siguiendo
+exactamente el mismo patrón de 4 capas que usaste para Pasajero en ISS-03:
+
+- domain: entidad Empresa (id, nit, razonSocial, contactoPrincipal, isActive) sin ninguna
+  dependencia de NestJS/Sequelize; interfaz IEmpresaRepository; EmpresaNotFoundException;
+  EmpresaNitAlreadyExistsException.
+- application: CreateEmpresaDto (nit requerido, razonSocial requerida, contactoPrincipal
+  validado como email O como teléfono); casos de uso CreateEmpresa (valida nit único —
+  409 si duplicado), ListEmpresas (incluye conteo de Conductores/Vehículos asociados —
+  usa el mismo patrón de puerto/stub que usaste para Carrera en ISS-03, ya que esas
+  features no existen todavía), GetEmpresaById, UpdateEmpresa (nit inmutable tras
+  creación: ignora el campo si viene en el body), DeleteEmpresa (soft delete; 409 si
+  tiene Conductores o Vehículos activos asociados — también vía puerto/stub).
+- infrastructure: EmpresaModel con índice único en nit; repositorio Sequelize.
+- presentation: GET/POST/PATCH/DELETE /api/empresas(/:id); Swagger (ya está configurado
+  globalmente desde ISS-03, solo documenta este controller).
+- Regístralo en un EmpresasModule dentro de un módulo fleets, importado desde
+  BusinessModule.
 ```
 
-**Ajustes o correcciones:** pendiente
+**Ajustes o correcciones:**
+1. Se corrigió un error inicial en los comentarios de los stubs que apuntaban a "ISS-05
+   (feature Conductor + Vehículo)". Se corrigieron para referenciar ISS-05 (Vehículo) e
+   ISS-06 (Conductor) según el guion oficial.
+2. Se eliminó la validación `@MinLength(3)` del campo NIT en DTO y Entidad, ya que el
+   contrato solo pedía obligatoriedad y unicidad, no longitud mínima.
+3. Se quitaron los timestamps (createdAt/updatedAt) del modelo EmpresaModel: la
+   tabla `empresas` en movicab_db fue creada sin esas columnas, y docs/sdd.md §2.1
+   tampoco las define para Empresa (a diferencia de Pasajero). El modelo tenía
+   timestamps: true por defecto, causando un error 500 en cualquier consulta porque
+   Sequelize intentaba seleccionar columnas inexistentes. Se corrigió a
+   timestamps: false y se eliminaron los campos createdAt/updatedAt de las 4 capas
+   (modelo, entidad de dominio, mapper de aplicación y mapper de persistencia).
 
+---
 ---
 
 ## 4. EVI — Verificación
@@ -67,7 +101,14 @@
 **Commit (hash):** pendiente  
 **Autoevaluación AC:** pendiente
 
+**Evidencia (capturas):**
+- AC-1 (POST válido → 201): `![AC-1](capturas/iss-04-01-crear.png)`
+- AC-2 (NIT duplicado → 409): `![AC-2](capturas/iss-04-02-nit-duplicado.png)`
+- AC-3 (GET list con conteos): `![AC-3](capturas/iss-04-03-listado.png)`
+- AC-4 (DELETE con activos → 409, pendiente hasta ISS-05/ISS-06): `![AC-4](capturas/iss-04-04-delete-pendiente.png)`
+
 ---
+
 
 ## 5. Revisión humana
 
