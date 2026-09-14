@@ -1,9 +1,8 @@
 /**
  * Puerto de consulta: ¿tiene la Tarifa carreras asociadas?
  *
- * Implementación actual: StubCarreraActivaTarifaAdapter (siempre retorna false).
- * El bloqueo real de DELETE (409) por carreras en curso/asociadas no puede verificarse
- * hasta ISS-08 (feature Carrera), cuando se reemplace el stub por una consulta real.
+ * Implementación real: CarreraActivaTarifaAdapter (ISS-08).
+ * Consulta la tabla `carreras` filtrando por tarifa_id y estado != 'cancelada'.
  */
 export const CARRERA_ACTIVA_TARIFA_PORT = Symbol('CARRERA_ACTIVA_TARIFA_PORT');
 

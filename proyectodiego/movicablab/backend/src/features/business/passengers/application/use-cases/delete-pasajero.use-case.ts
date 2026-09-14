@@ -27,7 +27,7 @@ export class DeletePasajeroUseCase {
       throw new PasajeroNotFoundException(id);
     }
 
-    // ISS-09: StubCarreraActivaAdapter siempre retorna false hasta existir feature Carrera.
+    // ISS-08: Adapter real CarreraActivaPasajeroAdapter — consulta carreras activas del pasajero.
     const hasBlockingCarreras =
       await this.carreraActivaPort.hasBlockingCarrerasForPasajero(id);
 

@@ -1,4 +1,5 @@
 import { Module, forwardRef } from '@nestjs/common';
+import { TripsModule } from '../../trips/trips.module';
 import { ConductoresModule } from '../conductores/conductores.module';
 import { VehiculosModule } from '../../fleets/vehiculos/vehiculos.module';
 import { TURNO_ACTIVO_PORT_CONDUCTOR } from '../conductores/domain/interfaces/turno-activo.port.interface';
@@ -10,29 +11,22 @@ import { DeleteTurnoUseCase } from './application/use-cases/delete-turno.use-cas
 import { GetTurnoByIdUseCase } from './application/use-cases/get-turno-by-id.use-case';
 import { ListTurnosUseCase } from './application/use-cases/list-turnos.use-case';
 import { UpdateTurnoUseCase } from './application/use-cases/update-turno.use-case';
-import { StubCarreraActivaAdapter } from './infrastructure/adapters/stub-carrera-activa.adapter';
 import { TurnoActivoConductorAdapter } from './infrastructure/adapters/turno-activo-conductor.adapter';
 import { TurnoActivoVehiculoAdapter } from './infrastructure/adapters/turno-activo-vehiculo.adapter';
+import { CarreraActivaTurnoAdapter } from '../../trips/infrastructure/adapters/carrera-activa-turno.adapter';
 import { TurnoRepository } from './infrastructure/persistence/repositories/turno.repository';
 import { TurnosController } from './presentation/http/controllers/turnos.controller';
 
-/**
- * TurnosModule — ISS-06.
- * Importa ConductoresModule y VehiculosModule para inyectar sus repositorios.
- * Provee adapters reales que reemplazan los stubs de ISS-05 para validar
- * turnos activos al eliminar conductor/vehículo.
- *
- * Siembra de Turno: no se ejecuta aquí — centralizada en ISS-12.
- */
 @Module({
   imports: [
+    forwardRef(() => TripsModule), 
     forwardRef(() => ConductoresModule),
     forwardRef(() => VehiculosModule),
   ],
   controllers: [TurnosController],
   providers: [
     { provide: TURNO_REPOSITORY, useClass: TurnoRepository },
-    { provide: CARRERA_ACTIVA_PORT, useClass: StubCarreraActivaAdapter },
+    { provide: CARRERA_ACTIVA_PORT, useClass: CarreraActivaTurnoAdapter },
     { provide: TURNO_ACTIVO_PORT_CONDUCTOR, useClass: TurnoActivoConductorAdapter },
     { provide: TURNO_ACTIVO_PORT, useClass: TurnoActivoVehiculoAdapter },
     CreateTurnoUseCase,

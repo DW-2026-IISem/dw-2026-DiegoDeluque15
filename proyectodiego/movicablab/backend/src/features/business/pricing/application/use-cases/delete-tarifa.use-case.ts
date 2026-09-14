@@ -21,7 +21,7 @@ export class DeleteTarifaUseCase {
       throw new TarifaNotFoundException(id);
     }
 
-    // ISS-08: StubCarreraActivaTarifaAdapter siempre retorna false hasta existir feature Carrera.
+    // ISS-08: Adapter real CarreraActivaTarifaAdapter — consulta carreras asociadas a la tarifa.
     const hasCarreras = await this.carreraActivaPort.hasCarrerasForTarifa(id);
     if (hasCarreras) {
       throw new BusinessRuleException('No se puede eliminar la tarifa porque tiene carreras asociadas');

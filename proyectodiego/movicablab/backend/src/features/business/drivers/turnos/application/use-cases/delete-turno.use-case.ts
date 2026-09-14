@@ -27,7 +27,7 @@ export class DeleteTurnoUseCase {
       throw new TurnoNotFoundException(id);
     }
 
-    // ISS-08: StubCarreraActivaAdapter siempre retorna false hasta existir feature Carrera.
+    // ISS-08: Adapter real CarreraActivaTurnoAdapter — consulta carreras activas del turno.
     const hasActiveCarreras = await this.carreraActivaPort.hasActiveCarrerasForTurno(id);
 
     if (hasActiveCarreras) {

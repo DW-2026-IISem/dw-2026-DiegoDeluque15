@@ -346,3 +346,71 @@ Instrucciones para implementar la feature Tarifa en `src/features/business/prici
 - AC-2 (valorBase <= 0 → 400): ![AC-2](capturas/codigo/iss-07-02-validacion.png)
 - AC-3 (solape de vigencia → 409): ![AC-3](capturas/codigo/iss-07-03-solape.png)
 - AC-4 (GET /vigente → 200): ![AC-4](capturas/codigo/iss-07-04-vigente.png)
+
+### 2026-09-13 — ISS-08 — Feature Carrera CA
+**Herramienta de IA:** Antigravity (modo agente)
+**Prompt usado:**
+Instrucciones para leer el contrato arquitectónico (`Prompt.md`) y `trazabilidad/ISS-08.md`
+antes de escribir código. Implementar la feature Carrera en `src/features/business/trips/`
+siguiendo la Clean Architecture de 4 capas:
+- Domain: entidad `Carrera` (sin `createdAt`/`updatedAt`) con método `cambiarEstado()`
+  encapsulando la máquina de estados (solicitada→aceptada→en_curso→cerrada / cancelada);
+  lanza `EstadoInvalidoException` (409) en transiciones inválidas. `ICarreraRepository`,
+  `CarreraNotFoundException`.
+- Application: `CreateCarreraDto` (solo `pasajeroId`, `turnoId`, `observaciones?`);
+  `CreateCarreraUseCase` (valida Pasajero activo, Turno activo, Tarifa vigente);
+  `CambiarEstadoCarreraUseCase` (al cerrar fija `fechaFin` y calcula `total = tarifa.valorBase`
+  en servidor). Casos de uso List y GetById. `ChangeEstadoCarreraDto`.
+- Infrastructure: `CarreraModel` (`timestamps: false`, registrado en `ALL_MODELS`); repositorio;
+  adapters reales `CarreraActivaPasajeroAdapter`, `CarreraActivaTurnoAdapter`,
+  `CarreraActivaTarifaAdapter` que reemplazan los stubs de ISS-03/06/07 consultando
+  `CarreraModel` filtrando por `pasajeroId`/`turnoId`/`tarifaId`.
+- Presentation: `CarrerasController` (POST, GET, PATCH /estado); `DespachosController`
+  (POST /api/despachos/:id alias de despachar a `aceptada`).
+Restricciones: sin seeders, sin commit automático, `liquidacionId` queda nullable.
+
+**Lo que propuso la IA:** Feature completa con todos los casos de uso, máquina de
+estados en la entidad, `total` calculado server-side, tres adapters reales conectados
+a `CarreraModel`, `TripsModule` registrado en `BusinessModule`, y `forwardRef` donde
+hubiera dependencia circular con Pasajeros/Turnos/Tarifas.
+
+**Lo que corregí y por qué:**
+- **Los 3 stubs no habían sido reemplazados en el primer reporte:**
+  `StubCarreraActivaAdapter` en Pasajero y Turno, y `StubCarreraActivaTarifaAdapter`
+  en Tarifa, seguían activos y sus archivos `.ts` existían en disco. Se completó el
+  reemplazo por los adapters reales `CarreraActiva*Adapter` en los módulos
+  correspondientes y se eliminaron los 3 ficheros stub.
+- **Referencia incorrecta ISS-09 → ISS-08:** el comentario en
+  `passengers/application/use-cases/delete-pasajero.use-case.ts` decía "ISS-09"
+  para referirse a la feature Carrera; corregido a "ISS-08" (número real en el Guion),
+  junto con los JSDoc de las 3 interfaces de puerto afectadas.
+- **Confirmación de `forbidNonWhitelisted`:** se probó enviando `total` en el body de
+  `POST /api/carreras` → el `ValidationPipe` global rechazó con 400 ("property total
+  should not exist"). Sin cambios necesarios.
+- **Confirmación de ruta de despachos:** se decidió mantener `POST /api/despachos/:id`
+  (id en la URL) en vez del body; es la opción más RESTful para el alias de despacho.
+
+**Problemas encontrados y cómo se resolvieron:**
+- Rutas relativas a `common/` con un nivel de anidamiento incorrecto desde `trips/`
+  (se generaron con `../../../../common/` cuando debían ser `../../../../../common/`).
+  Resuelto con un script Node que recalcula el prefijo correcto basándose en la
+  profundidad relativa desde `src/` y reemplaza en masa.
+- Error de inyección en tiempo de ejecución: `CreateCarreraUseCase` inyectaba use-cases
+  cross-module (`GetPasajeroByIdUseCase`, etc.) en vez de repositorios; corregido para
+  inyectar directamente `IPasajeroRepository`, `ITurnoRepository`, `ITarifaRepository`
+  vía sus tokens `Symbol`, eliminando la dependencia de use-cases ajenos.
+- Nombre de método incorrecto en `CarreraActivaPasajeroAdapter`: implementaba
+  `hasActiveCarreras()` pero el puerto `ICarreraActivaPort` exige
+  `hasBlockingCarrerasForPasajero()`; corregido.
+
+**Resultado / commit:** `pendiente`
+
+**Evidencia (capturas):**
+- AC-1 (crear carrera válida → 201, solicitada): ![AC-1](capturas/codigo/iss-08-01-crear.png)
+- AC-2 (turno inexistente → 404): ![AC-2](capturas/codigo/iss-08-02-notfound.png)
+- AC-3 (transición inválida → 409): ![AC-3](capturas/codigo/iss-08-03-transicion-invalida.png)
+- AC-4 (cerrada con total calculado): ![AC-4](capturas/codigo/iss-08-04-cerrada.png)
+- Extra (DELETE bloqueado en carrera cerrada → 409): ![Extra](capturas/codigo/iss-08-05-delete-cerrada.png)
+- Extra (cancelación válida desde solicitada → 200): ![Extra](capturas/codigo/iss-08-06-cancelada.png)
+- Extra (POST /despachos/:id funcional): ![Extra](capturas/codigo/iss-08-07-despacho.png)
+- Extra (integración: bloqueo real en Pasajero/Turno/Tarifa): ![Extra](capturas/codigo/iss-08-08-integracion.png)

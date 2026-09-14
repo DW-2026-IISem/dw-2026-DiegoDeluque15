@@ -44,26 +44,54 @@
 
 ## 3. IA usada — En curso
 
-**Herramienta / modelo:** pendiente  
-**Fecha:** pendiente  
+**Herramienta / modelo:** Antigravity (modo agente)
+**Fecha:** 2026-09-13
 **Prompt enviado:**
 
 ```text
-(pendiente — copiar de docs/Guion_IA_Desarrollo_Software.md ISS-08)
+Antes de escribir una sola línea de código, lee completo docs/Prompt.md y
+docs/trazabilidad/ISS-08.md, y muéstrame textualmente los campos exactos que
+ISS-08.md define para la entidad Carrera, los Criterios de Aceptación completos
+y si la entidad incluye o no createdAt/updatedAt.
+[Confirmación del desarrollador]
+Implementa la feature completa en src/features/business/trips/ dependiendo de
+ISS-03 (Pasajero), ISS-06 (Turno) e ISS-07 (Tarifa):
+DOMAIN: Entidad Carrera (id, pasajeroId, turnoId, tarifaId, fechaInicio, fechaFin?,
+total?, estado, observaciones?, liquidacionId?) SIN timestamps. Método cambiarEstado()
+dentro de la entidad con máquina de estados: solicitada→aceptada→en_curso→cerrada /
+solicitada|aceptada→cancelada. Cualquier otra transición lanza EstadoInvalidoException
+(409). ICarreraRepository, CarreraNotFoundException.
+APPLICATION: CreateCarreraDto solo con pasajeroId y turnoId. CreateCarreraUseCase
+valida Pasajero activo (404), Turno activo (404), Tarifa vigente. CambiarEstadoUseCase:
+al pasar a cerrada fija fechaFin y total=tarifa.valorBase en servidor. List y GetById.
+INFRASTRUCTURE: CarreraModel (timestamps:false), registrar en ALL_MODELS. Reemplazar
+los stubs en PassengersModule, TurnosModule y PricingModule por adapters reales que
+consultan CarreraModel. TripsModule con forwardRef donde haya circularidad.
+PRESENTATION: POST /api/carreras (201), PATCH /api/carreras/:id/estado, GET lista y por
+id. POST /api/despachos/:id como alias de despachar (aceptada). Sin seeders. Sin commit.
 ```
 
-**Ajustes o correcciones:** pendiente
+**Ajustes o correcciones:**
+- Los 3 stubs (`StubCarreraActivaAdapter` en Pasajero y Turno,
+  `StubCarreraActivaTarifaAdapter` en Tarifa) no habían sido reemplazados en el primer
+  reporte; se completó el reemplazo y se eliminaron los 3 archivos stub.
+- Referencia incorrecta "ISS-09" → "ISS-08" en comentarios de Pasajero; corregida.
+- Confirmado que `forbidNonWhitelisted` ya rechaza `total` en el body con 400.
+- Confirmada la decisión de mantener `POST /api/despachos/:id` (id en URL).
 
 ---
 
 ## 4. EVI — Verificación
 
 | Fecha | Tipo | AC | Enlace | Cómo reproducir |
-|-------|------|-----|--------|-----------------|
-| | | | | |
+|-------|------|-----|---------|-----------------| 
+| 2026-09-13 | curl/node | AC-1 | capturas/iss-08-01-crear.png | POST /api/carreras con pasajeroId y turnoId válidos → 201, estado: solicitada |
+| 2026-09-13 | curl/node | AC-2 | capturas/iss-08-02-notfound.png | POST /api/carreras con turnoId: 999999 → 404 |
+| 2026-09-13 | curl/node | AC-3 | capturas/iss-08-03-transicion-invalida.png | PATCH /api/carreras/:id/estado con estado: cerrada desde solicitada → 409 |
+| 2026-09-13 | curl/node | AC-4 | capturas/iss-08-04-cerrada.png | Secuencia solicitada→aceptada→en_curso→cerrada; respuesta incluye total: 15000 |
 
 **Commit (hash):** pendiente  
-**Autoevaluación AC:** pendiente
+**Autoevaluación AC:** AC-1 ✅ AC-2 ✅ AC-3 ✅ AC-4 ✅
 
 ---
 

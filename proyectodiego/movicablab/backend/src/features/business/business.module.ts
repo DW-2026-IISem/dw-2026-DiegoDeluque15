@@ -3,13 +3,14 @@ import { PassengersModule } from './passengers/passengers.module';
 import { FleetsModule } from './fleets/fleets.module';
 import { DriversModule } from './drivers/drivers.module';
 import { PricingModule } from './pricing/pricing.module';
+import { TripsModule } from './trips/trips.module';
 
 /**
  * BusinessModule — ISS-01 + ISS-03 + ISS-04.
  * Agrega submódulos de negocio (passengers, fleets, drivers, pricing, trips, settlements).
  */
 @Module({
-  imports: [PassengersModule, FleetsModule, DriversModule, PricingModule],
-  exports: [PassengersModule, FleetsModule, DriversModule, PricingModule],
+  imports: [PassengersModule, FleetsModule, DriversModule, PricingModule, TripsModule],
+  exports: [PassengersModule, FleetsModule, DriversModule, PricingModule, TripsModule],
 })
 export class BusinessModule {}
