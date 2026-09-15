@@ -1,3 +1,9 @@
+import { UserModel } from '../../../features/identity/users/infrastructure/persistence/models/users.model';
+import { RoleModel } from '../../../features/identity/roles/infrastructure/persistence/models/roles.model';
+import { RoleUserModel } from '../../../features/identity/role-users/infrastructure/persistence/models/role-users.model';
+import { ResourceModel } from '../../../features/identity/resources/infrastructure/persistence/models/resources.model';
+import { ResourceRoleModel } from '../../../features/identity/resource-roles/infrastructure/persistence/models/resource-roles.model';
+import { RefreshTokenModel } from '../../../features/identity/refresh-tokens/infrastructure/persistence/models/refresh-tokens.model';
 import { LiquidacionModel } from '../../../features/business/settlements/liquidaciones/infrastructure/persistence/models/liquidacion.model';
 import { PagoModel } from '../../../features/business/settlements/pagos/infrastructure/persistence/models/pago.model';
 import { CalificacionModel } from '../../../features/business/settlements/calificaciones/infrastructure/persistence/models/calificacion.model';
@@ -14,4 +20,5 @@ import { CarreraModel } from '../../../features/business/trips/infrastructure/pe
  * Registro central de modelos Sequelize.
  * Cada issue de feature añade aquí sus models (ISS-03+).
  */
-export const ALL_MODELS: ModelCtor[] = [PasajeroModel, EmpresaModel, VehiculoModel, ConductorModel, TurnoModel, TarifaModel, CarreraModel, PagoModel, CalificacionModel, LiquidacionModel];
+export const ALL_MODELS: ModelCtor[] = [
+  UserModel, RoleModel, RoleUserModel, ResourceModel, ResourceRoleModel, RefreshTokenModel,PasajeroModel, EmpresaModel, VehiculoModel, ConductorModel, TurnoModel, TarifaModel, CarreraModel, PagoModel, CalificacionModel, LiquidacionModel];

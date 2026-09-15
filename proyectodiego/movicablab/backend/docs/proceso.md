@@ -466,3 +466,29 @@ Implementar la feature Liquidacion (Domain, Application, Infrastructure, Present
 - AC-2 (GET con carreras agrupadas, valor tipo number): ![AC-2](capturas/codigo/iss-10-02-detalle.png)
 - AC-3 (segunda solicitud mismo rango → 409, excluye liquidadas): ![AC-3](capturas/codigo/iss-10-03-sin-carreras.png)
 - AC-4 (anular libera liquidacionId de las carreras): ![AC-4](capturas/codigo/iss-10-04-anular.png)
+
+### 2026-09-15 — ISS-11 — Entidades identidad RBAC (datos)
+**Herramienta de IA:** Antigravity (modo agente)
+**Prompt usado:**
+(Ver `trazabilidad/ISS-11.md` sección "IA usada")
+
+**Lo que propuso la IA:** Script generador Node.js con configuración declarativa por entidad y 6 módulos CRUD en `src/features/identity/` (users, roles, role-users, resources, resource-roles, refresh-tokens), registrados en `IdentityModule` y `ALL_MODELS`.
+**Lo que corregí y por qué:**
+1. Confirmación previa del alcance: ISS-11.md confirma explícitamente "sin auth" en tres lugares distintos (metadata, OBJ, REQ), sin contradicción real con Prompt.md §1.
+2. Se usó un script generador Node para crear los 6 módulos de forma consistente (diferenciando unicidad simple vs. compuesta según configuración declarativa).
+3. El script generador usaba `@nestjs/sequelize` (paquete no instalado) en los 6 repositorios y módulos — el MISMO error de ISS-09, reintroducido a mayor escala (54 errores de build). Se corrigió el script para usar el patrón `sequelize-typescript` consistente del resto del proyecto, y se regeneraron los 6 módulos desde cero.
+4. Los 6 controllers generados duplicaban el envelope de respuesta manualmente — el MISMO bug de ISS-09. Corregido para retornar datos planos.
+5. Los IDs se generaron como UUID (con el paquete `uuid`) en vez de INTEGER autoincremental, inconsistente con las 10 entidades de negocio ya existentes. Corregido a INTEGER + AutoIncrement, ajustando también los tipos de FK.
+6. El script tenía una inconsistencia de nomenclatura entre `plural.toLowerCase()` (sin guiones) y kebab (con guiones) para nombrar archivos, causando imports rotos. Unificado a kebab en todo el script.
+7. Se detectó que un reporte inicial de la IA minimizaba el trabajo real realizado ("ya usaban sequelize-typescript, no requirieron cambios"), contradiciendo el propio código fuente del script compartido previamente; se le pidió corregir esa inexactitud antes de aceptar la documentación.
+
+**Problemas encontrados y cómo se resolvieron:**
+Tras corregir el script y regenerar, `npm run build` pasó con 0 errores y `npm run start:dev` arrancó limpio (30 rutas identity mapeadas, sin errores Sequelize/MySQL). Verificado con `curl`: POST /api/users → 201 sin `passwordHash` en respuesta; GET /api/roles → 200.
+
+**Resultado / commit:** `pendiente`
+
+**Evidencia (capturas):**
+- AC-1 (user creado sin passwordHash en respuesta → 201): ![AC-1](capturas/codigo/iss-11-01-user-crear.png)
+- AC-2 (email duplicado → 409): ![AC-2](capturas/codigo/iss-11-02-email-duplicado.png)
+- AC-3 (role-user duplicado → 409): ![AC-3](capturas/codigo/iss-11-03-roleuser-duplicado.png)
+- AC-4 (sin features/auth, find vacío): ![AC-4](capturas/codigo/iss-11-04-sin-auth.png)
