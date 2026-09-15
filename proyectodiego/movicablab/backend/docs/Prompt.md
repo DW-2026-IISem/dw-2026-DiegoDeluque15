@@ -73,6 +73,8 @@ src/
 | Calificacion | `calificaciones` | id, carrera_id (UQ), puntaje, comentario, is_active | 0..1 por carrera; solo tras cerrada *(Nota: campos actualizados en ISS-09 de nombre/descripcion genéricos a puntaje 1-5 y comentario)* |
 | Liquidacion | `liquidaciones` | id, fecha, valor, estado, observaciones | agrupa carreras cerradas; valor = suma totales |
 
+> **Nota sobre Liquidacion**: ni Prompt.md ni ISS-10.md especifican agrupar por conductor/empresa (solo dicen "agrupa carreras cerradas"). Se restaura el criterio de la especificación original del profesor: CreateLiquidacionDto recibe conductorId (obligatorio) + fechaDesde + fechaHasta, y solo agrupa carreras cerradas y sin liquidar CUYO TURNO pertenezca a ese conductor, dentro del rango de fechas. Decisión tomada en ISS-10, ya que agrupar sin discriminar conductor no tiene sentido de negocio real (¿a quién se le paga la liquidación?).
+
 ### 4.2 Identidad (solo datos, sin auth)
 
 | Entidad | Tabla | Campos clave | Invariantes |

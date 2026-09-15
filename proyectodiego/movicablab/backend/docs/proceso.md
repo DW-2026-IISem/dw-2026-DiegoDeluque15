@@ -441,3 +441,28 @@ Esta fue la sesión con más iteraciones de corrección hasta ahora. Cada correc
 - AC-3 (calificación duplicada → 409): ![AC-3](capturas/codigo/iss-09-03-calificacion-duplicada.png)
 - AC-4 (calificación sobre carrera no cerrada → 409): ![AC-4](capturas/codigo/iss-09-04-calificacion-no-cerrada.png)
 - Extra (validación de rango de puntaje → 400): ![Extra](capturas/codigo/iss-09-05-puntaje-rango.png)
+
+### ISS-10: Liquidacion (Feature)
+
+**Herramienta / modelo:** Antigravity (modo agente)
+
+**Lo que me pidieron:**
+Implementar la feature Liquidacion (Domain, Application, Infrastructure, Presentation) para agrupar las carreras cerradas en una transacción, y validar su flujo de negocio.
+
+**Lo que analicé:**
+- La agrupación de carreras requiere que sea dentro de una transacción para mantener la consistencia (todas se asignan o ninguna).
+- El diseño requería que la Liquidación sea inmutable respecto al `valor`.
+
+**Lo que corregí:**
+1. La decisión de restaurar la agrupación por conductorId (con la nota agregada en docs/Prompt.md), ya que ni Prompt.md ni ISS-10.md especificaban agrupar por conductor/empresa originalmente.
+2. La inconsistencia de tipo en "valor" (number en creación, string "45000.00" en lecturas posteriores por ser DECIMAL en MySQL); corregido con un getter Number() en el modelo Sequelize, manteniendo DECIMAL(12,2) en la base de datos.
+3. Confirmación (sin cambios necesarios) de que forbidNonWhitelisted ya protege "valor" de modificaciones vía PATCH.
+4. Confirmación de que doble anulación y transición inválida por PATCH (anulada vía PATCH en vez del endpoint dedicado) ya estaban correctamente bloqueadas desde la implementación inicial.
+
+**Resultado / commit:** `pendiente`
+
+**Evidencia (capturas):**
+- AC-1 (crear liquidación con valor sumado → 201): ![AC-1](capturas/codigo/iss-10-01-crear.png)
+- AC-2 (GET con carreras agrupadas, valor tipo number): ![AC-2](capturas/codigo/iss-10-02-detalle.png)
+- AC-3 (segunda solicitud mismo rango → 409, excluye liquidadas): ![AC-3](capturas/codigo/iss-10-03-sin-carreras.png)
+- AC-4 (anular libera liquidacionId de las carreras): ![AC-4](capturas/codigo/iss-10-04-anular.png)

@@ -1,3 +1,4 @@
+import { LiquidacionModel } from '../../../features/business/settlements/liquidaciones/infrastructure/persistence/models/liquidacion.model';
 import { PagoModel } from '../../../features/business/settlements/pagos/infrastructure/persistence/models/pago.model';
 import { CalificacionModel } from '../../../features/business/settlements/calificaciones/infrastructure/persistence/models/calificacion.model';
 import { ModelCtor } from 'sequelize-typescript';
@@ -13,4 +14,4 @@ import { CarreraModel } from '../../../features/business/trips/infrastructure/pe
  * Registro central de modelos Sequelize.
  * Cada issue de feature añade aquí sus models (ISS-03+).
  */
-export const ALL_MODELS: ModelCtor[] = [PasajeroModel, EmpresaModel, VehiculoModel, ConductorModel, TurnoModel, TarifaModel, CarreraModel, PagoModel, CalificacionModel];
+export const ALL_MODELS: ModelCtor[] = [PasajeroModel, EmpresaModel, VehiculoModel, ConductorModel, TurnoModel, TarifaModel, CarreraModel, PagoModel, CalificacionModel, LiquidacionModel];
