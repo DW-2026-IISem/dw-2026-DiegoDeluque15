@@ -70,7 +70,7 @@ src/
 | Tarifa | `tarifas` | id, nombre, regla_calculo, valor_base, vigencia_desde, vigencia_hasta, is_active | valor_base > 0; vigencia_desde < vigencia_hasta; sin solape de vigencias activas |
 | Carrera | `carreras` | id, pasajero_id, turno_id, tarifa_id, fecha_inicio, fecha_fin, total, estado, observaciones, liquidacion_id (nullable) | estado ∈ {solicitada, aceptada, en_curso, cerrada, cancelada}; total calculado en servidor |
 | Pago | `pagos` | id, referencia_tipo, referencia_id, metodo, monto, fecha, estado | referencia_tipo = 'carrera'; monto = Carrera.total; inmutable |
-| Calificacion | `calificaciones` | id, carrera_id (UQ), nombre, descripcion, is_active | 0..1 por carrera; solo tras cerrada |
+| Calificacion | `calificaciones` | id, carrera_id (UQ), puntaje, comentario, is_active | 0..1 por carrera; solo tras cerrada *(Nota: campos actualizados en ISS-09 de nombre/descripcion genéricos a puntaje 1-5 y comentario)* |
 | Liquidacion | `liquidaciones` | id, fecha, valor, estado, observaciones | agrupa carreras cerradas; valor = suma totales |
 
 ### 4.2 Identidad (solo datos, sin auth)

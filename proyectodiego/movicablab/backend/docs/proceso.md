@@ -414,3 +414,30 @@ hubiera dependencia circular con Pasajeros/Turnos/Tarifas.
 - Extra (cancelación válida desde solicitada → 200): ![Extra](capturas/codigo/iss-08-06-cancelada.png)
 - Extra (POST /despachos/:id funcional): ![Extra](capturas/codigo/iss-08-07-despacho.png)
 - Extra (integración: bloqueo real en Pasajero/Turno/Tarifa): ![Extra](capturas/codigo/iss-08-08-integracion.png)
+
+
+### 2026-09-14 — ISS-09 — Features Pago y Calificacion CA
+**Herramienta de IA:** Antigravity (modo agente)
+**Prompt usado:**
+(Ver `trazabilidad/ISS-09.md` sección "IA usada")
+
+**Lo que propuso la IA:** Feature `Pago` y `Calificacion` completas con entidades puras, repositorios Sequelize y controladores, registradas en `SettlementsModule`.
+**Lo que corregí y por qué:**
+1. Confirmación previa a implementar: los campos de Calificacion no estaban definidos con sentido semántico en docs/Prompt.md (solo nombre/descripcion genéricos); se decidió usar carreraId, puntaje (1-5), comentario, isActive, y se documentó esa decisión como nota en Prompt.md.
+2. Build inicial con 26 errores: la implementación usó @nestjs/sequelize (SequelizeModule, InjectModel), un paquete no instalado y un patrón distinto al resto del proyecto (sequelize-typescript con factory manual). Corregido para seguir el patrón consistente de TripsModule. También había rutas relativas rotas hacia trips/.
+3. Tras corregir el build, el servidor se caía al arrancar con un error real de MySQL (ER_KEY_COLUMN_DOES_NOT_EXITS) al crear el índice único de Calificacion: el modelo no tenía underscored: true, causando un desajuste entre el nombre de columna en TypeScript (carreraId) y en la base de datos real (carrera_id). Corregido agregando underscored: true y definiendo la unicidad a nivel de columna con field: 'carrera_id'.
+4. Las respuestas de POST /api/pagos y POST /api/calificaciones tenían el envelope de éxito duplicado (el controller construía uno manual además del interceptor global). Corregido para que los controllers retornen el objeto plano.
+5. La ruta de actualización de estado de Pago no coincidía con el contrato (PATCH /api/pagos/:id en vez de PATCH /api/pagos/:id/estado). Corregida.
+6. Los PATCH de Pago y Calificacion devolvían data: null pese a que el update sí se aplicaba correctamente en la base de datos (confirmado con GET posterior). Corregido para que ambos devuelvan la entidad completa actualizada.
+
+**Problemas encontrados y cómo se resolvieron:**
+Esta fue la sesión con más iteraciones de corrección hasta ahora. Cada corrección fue verificada con peticiones `curl` reales contra el servidor local antes de darla por aceptada, garantizando así su correcto funcionamiento más allá de la compilación exitosa (ej. validación del whitelist, estructura del DTO, y estado de la base de datos).
+
+**Resultado / commit:** `pendiente`
+
+**Evidencia (capturas):**
+- AC-1 (pago creado con monto automático → 201): ![AC-1](capturas/codigo/iss-09-01-pago-crear.png)
+- AC-2/interpretación (pago sobre carrera no cerrada → 409): ![AC-2](capturas/codigo/iss-09-02-pago-no-cerrada.png)
+- AC-3 (calificación duplicada → 409): ![AC-3](capturas/codigo/iss-09-03-calificacion-duplicada.png)
+- AC-4 (calificación sobre carrera no cerrada → 409): ![AC-4](capturas/codigo/iss-09-04-calificacion-no-cerrada.png)
+- Extra (validación de rango de puntaje → 400): ![Extra](capturas/codigo/iss-09-05-puntaje-rango.png)
