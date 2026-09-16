@@ -22,14 +22,14 @@
 - Pagos inmutables.
 
 **AC:**
-- [ ] **AC-1** pago OK → 201.
+- [x] **AC-1** pago OK → 201.
 - [ ] **AC-2** monto incorrecto → 409.
-- [ ] **AC-3** calificación duplicada → 409.
-- [ ] **AC-4** carrera no cerrada → 409.
+- [x] **AC-3** calificación duplicada → 409.
+- [x] **AC-4** carrera no cerrada → 409.
 
 **Checklist interno (IA, En curso):**
-- [ ] Pago
-- [ ] Calificación
+- [x] Pago
+- [x] Calificación
 
 ---
 
@@ -43,8 +43,8 @@
 
 ## 3. IA usada — En curso
 
-**Herramienta / modelo:** pendiente  
-**Fecha:** pendiente  
+**Herramienta / modelo:** Antigravity (modo agente)  
+**Fecha:** 2026-09-14  
 **Prompt enviado:**
 
 ```text

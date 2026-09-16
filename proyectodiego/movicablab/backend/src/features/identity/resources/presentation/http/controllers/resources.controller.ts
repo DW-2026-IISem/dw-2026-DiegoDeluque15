@@ -10,6 +10,7 @@ import {
   Patch,
   Post,
 } from '@nestjs/common';
+import { ApiTags } from '@nestjs/swagger';
 import { CreateResourceDto } from '../../../application/dto/create-resources.dto';
 import { UpdateResourceDto } from '../../../application/dto/update-resources.dto';
 import { CreateResourceUseCase } from '../../../application/use-cases/create-resources.use-case';
@@ -18,6 +19,7 @@ import { GetResourceByIdUseCase } from '../../../application/use-cases/get-resou
 import { UpdateResourceUseCase } from '../../../application/use-cases/update-resources.use-case';
 import { DeleteResourceUseCase } from '../../../application/use-cases/delete-resources.use-case';
 
+@ApiTags('resources')
 @Controller('resources')
 export class ResourcesController {
   constructor(

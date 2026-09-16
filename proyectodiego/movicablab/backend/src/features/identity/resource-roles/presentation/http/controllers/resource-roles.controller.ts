@@ -10,6 +10,7 @@ import {
   Patch,
   Post,
 } from '@nestjs/common';
+import { ApiTags } from '@nestjs/swagger';
 import { CreateResourceRoleDto } from '../../../application/dto/create-resource-roles.dto';
 import { UpdateResourceRoleDto } from '../../../application/dto/update-resource-roles.dto';
 import { CreateResourceRoleUseCase } from '../../../application/use-cases/create-resource-roles.use-case';
@@ -18,6 +19,7 @@ import { GetResourceRoleByIdUseCase } from '../../../application/use-cases/get-r
 import { UpdateResourceRoleUseCase } from '../../../application/use-cases/update-resource-roles.use-case';
 import { DeleteResourceRoleUseCase } from '../../../application/use-cases/delete-resource-roles.use-case';
 
+@ApiTags('resource-roles')
 @Controller('resource-roles')
 export class ResourceRolesController {
   constructor(

@@ -28,16 +28,16 @@
 - .env no se commitea.
 
 **AC:**
-- [ ] **AC-1** Con .env mysql completo; cuando start:dev; entonces conexión OK.
-- [ ] **AC-2** Sin variable crítica; cuando arranca; entonces Error de configuración antes de conectar.
-- [ ] **AC-3** Única sync es alter false.
-- [ ] **AC-4** .env.example completo; .env no en git status.
+- [x] **AC-1** Con .env mysql completo; cuando start:dev; entonces conexión OK.
+- [x] **AC-2** Sin variable crítica; cuando arranca; entonces Error de configuración antes de conectar.
+- [x] **AC-3** Única sync es alter false.
+- [x] **AC-4** .env.example completo; .env no en git status.
 
 **Checklist interno (IA, En curso):**
-- [ ] Env
-- [ ] Sequelize factory
-- [ ] Common
-- [ ] .env.example
+- [x] Env
+- [x] Sequelize factory
+- [x] Common
+- [x] .env.example
 
 ---
 

@@ -492,3 +492,25 @@ Tras corregir el script y regenerar, `npm run build` pasó con 0 errores y `npm 
 - AC-2 (email duplicado → 409): ![AC-2](capturas/codigo/iss-11-02-email-duplicado.png)
 - AC-3 (role-user duplicado → 409): ![AC-3](capturas/codigo/iss-11-03-roleuser-duplicado.png)
 - AC-4 (sin features/auth, find vacío): ![AC-4](capturas/codigo/iss-11-04-sin-auth.png)
+
+### 2026-09-15 — ISS-12 — Integración, seeders y demo
+**Herramienta de IA:** Antigravity (modo agente)
+**Prompt usado:**
+(Ver `trazabilidad/ISS-12.md` sección "IA usada")
+
+**Lo que propuso la IA:** Orquestador de seeders idempotente en `src/infrastructure/database/seeders/`, enganchado en `DatabaseModule` post-`sync()`; completado Swagger con `@ApiTags` en las 9 features que faltaban y plugin `classValidatorShim`; `README.md` con requisitos, arranque y libreto demo reproducible.
+**Lo que corregí y por qué:**
+Sin correcciones al entregable inicial: tras verificación completa (`npm run build`, arranque con seeders, idempotencia en segundo arranque, libreto demo, Swagger 17 tags, grep sin auth), el trabajo inicial fue **aceptado sin cambios de código**.
+
+**Problemas encontrados y cómo se resolvieron:**
+El intento inicial de crear una carrera con `pasajeroId: 6` falló con 404 porque ese pasajero estaba inactivo (`isActive: false`) — dato residual de pruebas manuales previas, no de los seeders. Se resolvió usando un pasajero activo sembrado por el runner (`id: 9`, "Ana García Demo") y el libreto completó el flujo de punta a punta.
+
+**Resultado / commit:** `pendiente`
+
+**Evidencia (capturas):**
+- AC-1 (BD vacía, seeders corren al arrancar): ![AC-1](capturas/codigo/iss-12-01-seeders-arranque.png)
+- AC-2 (libreto demo completo, carrera de punta a punta): ![AC-2](capturas/iss-12-02-libreto-completo.png)
+- AC-3 (sin auth, grep y find vacíos): ![AC-3](capturas/iss-12-03-sin-auth.png)
+- AC-4 (README visible): ![AC-4](capturas/iss-12-04-readme.png)
+- AC-5 (Swagger con 17 secciones organizadas): ![AC-5](capturas/iss-12-05-swagger.png)
+- Extra (idempotencia: mismos totales antes/después de reiniciar): ![Extra](capturas/iss-12-06-idempotencia.png)

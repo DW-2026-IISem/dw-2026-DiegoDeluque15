@@ -23,14 +23,14 @@
 - Total nunca del cliente.
 
 **AC:**
-- [ ] **AC-1** POST → 201 solicitada.
-- [ ] **AC-2** turno inactivo → 404.
-- [ ] **AC-3** transición inválida → 409.
-- [ ] **AC-4** cerrada fija total.
+- [x] **AC-1** POST → 201 solicitada.
+- [x] **AC-2** turno inactivo → 404.
+- [x] **AC-3** transición inválida → 409.
+- [x] **AC-4** cerrada fija total.
 
 **Checklist interno (IA, En curso):**
-- [ ] State machine
-- [ ] Use-cases
+- [x] State machine
+- [x] Use-cases
 
 ---
 

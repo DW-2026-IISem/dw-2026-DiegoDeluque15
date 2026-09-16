@@ -8,6 +8,7 @@ import {
   Post,
   Query,
 } from '@nestjs/common';
+import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import { CrearLiquidacion } from '../../../application/use-cases/crear-liquidacion.use-case';
 import { AnularLiquidacion } from '../../../application/use-cases/anular-liquidacion.use-case';
 import { ListLiquidaciones } from '../../../application/use-cases/list-liquidaciones.use-case';
@@ -16,6 +17,7 @@ import { UpdateLiquidacionEstado } from '../../../application/use-cases/update-l
 import { CreateLiquidacionDto } from '../../../application/dto/create-liquidacion.dto';
 import { UpdateLiquidacionEstadoDto } from '../../../application/dto/update-liquidacion-estado.dto';
 
+@ApiTags('liquidaciones')
 @Controller('liquidaciones')
 export class LiquidacionesController {
   constructor(
@@ -27,6 +29,7 @@ export class LiquidacionesController {
   ) {}
 
   @Post()
+  @ApiOperation({ summary: 'Crear liquidación agrupando carreras cerradas del conductor' })
   async create(@Body() dto: CreateLiquidacionDto) {
     return this.crearLiquidacion.execute(dto);
   }

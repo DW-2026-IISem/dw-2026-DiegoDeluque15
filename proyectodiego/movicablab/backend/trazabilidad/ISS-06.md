@@ -23,13 +23,13 @@
 - Un turno activo por conductor y vehículo.
 
 **AC:**
-- [ ] **AC-1** POST válido → 201.
-- [ ] **AC-2** turno duplicado → 409.
-- [ ] **AC-3** conductor inactivo → 404.
-- [ ] **AC-4** filtro conductor_id.
+- [x] **AC-1** POST válido → 201.
+- [x] **AC-2** turno duplicado → 409.
+- [x] **AC-3** conductor inactivo → 404.
+- [x] **AC-4** filtro conductor_id.
 
 **Checklist interno (IA, En curso):**
-- [ ] Unicidad
+- [x] Unicidad
 - [ ] Seeder
 
 ---
@@ -44,7 +44,7 @@
 
 ## 3. IA usada — En curso
 
-**Herramienta / modelo:** Gemini 3.1 Pro (High) (modo agente)
+**Herramienta / modelo:** Antigravity (modo agente)
 **Fecha:** 2026-09-13
 **Prompt enviado:**
 
@@ -112,12 +112,6 @@ ni Gate), mostrándome el diff antes de confirmar.
 
 | Fecha | Tipo | AC | Enlace | Cómo reproducir |
 |-------|------|-----|--------|-----------------|
-| | | | | |
-
-**Commit (hash):** pendiente  
-**Autoevaluación AC:** pendiente
-
--------|------|-----|--------|-----------------|
 | | | | | |
 
 **Commit (hash):** pendiente  

@@ -10,6 +10,7 @@ import {
   Patch,
   Post,
 } from '@nestjs/common';
+import { ApiTags } from '@nestjs/swagger';
 import { CreateRefreshTokenDto } from '../../../application/dto/create-refresh-tokens.dto';
 import { UpdateRefreshTokenDto } from '../../../application/dto/update-refresh-tokens.dto';
 import { CreateRefreshTokenUseCase } from '../../../application/use-cases/create-refresh-tokens.use-case';
@@ -18,6 +19,7 @@ import { GetRefreshTokenByIdUseCase } from '../../../application/use-cases/get-r
 import { UpdateRefreshTokenUseCase } from '../../../application/use-cases/update-refresh-tokens.use-case';
 import { DeleteRefreshTokenUseCase } from '../../../application/use-cases/delete-refresh-tokens.use-case';
 
+@ApiTags('refresh-tokens')
 @Controller('refresh-tokens')
 export class RefreshTokensController {
   constructor(

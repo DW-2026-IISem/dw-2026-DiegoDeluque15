@@ -10,6 +10,7 @@ import {
   Patch,
   Post,
 } from '@nestjs/common';
+import { ApiTags } from '@nestjs/swagger';
 import { CreateRoleDto } from '../../../application/dto/create-roles.dto';
 import { UpdateRoleDto } from '../../../application/dto/update-roles.dto';
 import { CreateRoleUseCase } from '../../../application/use-cases/create-roles.use-case';
@@ -18,6 +19,7 @@ import { GetRoleByIdUseCase } from '../../../application/use-cases/get-roles-by-
 import { UpdateRoleUseCase } from '../../../application/use-cases/update-roles.use-case';
 import { DeleteRoleUseCase } from '../../../application/use-cases/delete-roles.use-case';
 
+@ApiTags('roles')
 @Controller('roles')
 export class RolesController {
   constructor(

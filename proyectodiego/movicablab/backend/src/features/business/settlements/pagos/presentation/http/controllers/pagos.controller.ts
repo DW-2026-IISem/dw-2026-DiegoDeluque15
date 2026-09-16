@@ -1,4 +1,5 @@
 import { Controller, Post, Body, Get, Param, Patch, ParseIntPipe } from '@nestjs/common';
+import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import { CrearPago } from '../../../application/use-cases/crear-pago.use-case';
 import { CreatePagoDto } from '../../../application/dto/create-pago.dto';
 import { UpdatePagoEstadoDto } from '../../../application/dto/update-pago.dto';
@@ -6,6 +7,7 @@ import { Inject } from '@nestjs/common';
 import { IPagoRepository, IPAGO_REPOSITORY } from '../../../domain/interfaces/pago-repository.interface';
 import { PagoNotFoundException } from '../../../domain/exceptions/pago.exceptions';
 
+@ApiTags('pagos')
 @Controller('pagos')
 export class PagosController {
   constructor(
@@ -15,6 +17,7 @@ export class PagosController {
   ) {}
 
   @Post()
+  @ApiOperation({ summary: 'Crear pago sobre carrera cerrada' })
   async create(@Body() createPagoDto: CreatePagoDto) {
     const result = await this.crearPagoUseCase.execute(createPagoDto);
     return result;

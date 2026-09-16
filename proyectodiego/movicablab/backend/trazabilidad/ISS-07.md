@@ -23,13 +23,13 @@
 - valor_base > 0.
 
 **AC:**
-- [ ] **AC-1** POST válido → 201.
-- [ ] **AC-2** valor_base <= 0 → 400.
-- [ ] **AC-3** solape → 409.
-- [ ] **AC-4** GET vigente OK.
+- [x] **AC-1** POST válido → 201.
+- [x] **AC-2** valor_base <= 0 → 400.
+- [x] **AC-3** solape → 409.
+- [x] **AC-4** GET vigente OK.
 
 **Checklist interno (IA, En curso):**
-- [ ] Validación vigencias
+- [x] Validación vigencias
 - [ ] Seeder
 
 ---
@@ -115,12 +115,6 @@ diff ya es claro.
 
 | Fecha | Tipo | AC | Enlace | Cómo reproducir |
 |-------|------|-----|--------|-----------------|
-| | | | | |
-
-**Commit (hash):** pendiente  
-**Autoevaluación AC:** pendiente
-
--------|------|-----|--------|-----------------|
 | | | | | |
 
 **Commit (hash):** pendiente  

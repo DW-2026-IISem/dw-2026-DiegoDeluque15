@@ -23,14 +23,14 @@
 - Transacción obligatoria.
 
 **AC:**
-- [ ] **AC-1** POST → 201.
-- [ ] **AC-2** valor = suma.
-- [ ] **AC-3** excluye liquidadas.
-- [ ] **AC-4** anular libera FK.
+- [x] **AC-1** POST → 201.
+- [x] **AC-2** valor = suma.
+- [x] **AC-3** excluye liquidadas.
+- [x] **AC-4** anular libera FK.
 
 **Checklist interno (IA, En curso):**
-- [ ] Transaction
-- [ ] Query elegibles
+- [x] Transaction
+- [x] Query elegibles
 
 ---
 

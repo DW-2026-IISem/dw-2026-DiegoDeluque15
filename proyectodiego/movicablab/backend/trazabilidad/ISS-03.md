@@ -26,16 +26,16 @@
 - Sin Auth.
 
 **AC:**
-- [ ] **AC-1** POST pasajero válido → 201.
-- [ ] **AC-2** POST sin nombre → 400.
-- [ ] **AC-3** GET id inexistente → 404.
-- [ ] **AC-4** Soft delete is_active false.
+- [x] **AC-1** POST pasajero válido → 201.
+- [x] **AC-2** POST sin nombre → 400.
+- [x] **AC-3** GET id inexistente → 404.
+- [x] **AC-4** Soft delete is_active false.
 
 **Checklist interno (IA, En curso):**
-- [ ] Entidad pura
-- [ ] Repository
-- [ ] Use-cases
-- [ ] Controller
+- [x] Entidad pura
+- [x] Repository
+- [x] Use-cases
+- [x] Controller
 
 ---
 
@@ -115,9 +115,9 @@ global en `/api/docs`.
 2. **Swagger mantenido:** sin cambios tras decisión del autor (planeado ISS-13).
 3. **Puerto Carrera documentado:** comentarios explícitos de que el stub siempre retorna
    `false` y el 409 por carreras activas no es verificable hasta ISS-09.
-4. **Numeración de issue corregida:** referencias a Carrera unificadas en ISS-09 (no
-   ISS-08) en `carrera-activa.port.interface.ts`, `stub-carrera-activa.adapter.ts` y
-   `delete-pasajero.use-case.ts`.
+4. **Numeración de issue corregida:** referencias a Carrera unificadas en ISS-08 (no
+   ISS-07, que es Tarifa) en `carrera-activa.port.interface.ts`,
+   `stub-carrera-activa.adapter.ts` y `delete-pasajero.use-case.ts`.
 
 ---
 

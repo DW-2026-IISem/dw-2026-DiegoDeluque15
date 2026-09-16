@@ -24,14 +24,14 @@
 - NIT inmutable tras crear.
 
 **AC:**
-- [ ] **AC-1** POST válido → 201.
-- [ ] **AC-2** NIT duplicado → 409.
-- [ ] **AC-3** GET list con conteos.
+- [x] **AC-1** POST válido → 201.
+- [x] **AC-2** NIT duplicado → 409.
+- [x] **AC-3** GET list con conteos.
 - [ ] **AC-4** DELETE con activos → 409.
 
 **Checklist interno (IA, En curso):**
-- [ ] Entity
-- [ ] Validación NIT
+- [x] Entity
+- [x] Validación NIT
 - [ ] Seeder
 
 ---
@@ -46,7 +46,7 @@
 
 ## 3. IA usada — En curso
 
-**Herramienta / modelo:** Antigravity IDE — Claude Opus 4.6 (modo agente)  
+**Herramienta / modelo:** Antigravity (modo agente)  
 **Fecha:** 2026-09-12  
 **Prompt enviado:**
 

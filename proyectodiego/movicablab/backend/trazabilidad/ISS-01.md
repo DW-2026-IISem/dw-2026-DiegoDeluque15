@@ -28,16 +28,16 @@
 - No borrar `docs/` ni `trazabilidad/`.
 
 **AC:**
-- [ ] **AC-1** Dado workspace con docs y trazabilidad; cuando IA termina; entonces existen package.json, src/main.ts intactos.
-- [ ] **AC-2** Dado deps instaladas; cuando npm run start:dev; entonces arranque en puerto 3002.
-- [ ] **AC-3** Dado app arriba; cuando GET /api/health; entonces 200 y status ok.
-- [ ] **AC-4** Dado src/; entonces carpetas CA existen y no existe features/auth/.
+- [x] **AC-1** Dado workspace con docs y trazabilidad; cuando IA termina; entonces existen package.json, src/main.ts intactos.
+- [x] **AC-2** Dado deps instaladas; cuando npm run start:dev; entonces arranque en puerto 3002.
+- [x] **AC-3** Dado app arriba; cuando GET /api/health; entonces 200 y status ok.
+- [x] **AC-4** Dado src/; entonces carpetas CA existen y no existe features/auth/.
 
 **Checklist interno (IA, En curso):**
-- [ ] Generar Nest sin borrar docs
-- [ ] Árbol CA
-- [ ] Health
-- [ ] free-port
+- [x] Generar Nest sin borrar docs
+- [x] Árbol CA
+- [x] Health
+- [x] free-port
 
 ---
 
@@ -51,7 +51,7 @@
 
 ## 3. IA usada — En curso
 
-**Herramienta / modelo:** Antigravity IDE — Claude Sonnet 4.6 (modo agente)  
+**Herramienta / modelo:** Antigravity (modo agente)  
 **Fecha:** 2026-09-12  
 **Prompt enviado:**
 

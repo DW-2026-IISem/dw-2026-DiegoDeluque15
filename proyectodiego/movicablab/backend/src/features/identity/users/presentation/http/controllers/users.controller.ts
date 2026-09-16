@@ -10,6 +10,7 @@ import {
   Patch,
   Post,
 } from '@nestjs/common';
+import { ApiTags } from '@nestjs/swagger';
 import { CreateUserDto } from '../../../application/dto/create-users.dto';
 import { UpdateUserDto } from '../../../application/dto/update-users.dto';
 import { CreateUserUseCase } from '../../../application/use-cases/create-users.use-case';
@@ -18,6 +19,7 @@ import { GetUserByIdUseCase } from '../../../application/use-cases/get-users-by-
 import { UpdateUserUseCase } from '../../../application/use-cases/update-users.use-case';
 import { DeleteUserUseCase } from '../../../application/use-cases/delete-users.use-case';
 
+@ApiTags('users')
 @Controller('users')
 export class UsersController {
   constructor(

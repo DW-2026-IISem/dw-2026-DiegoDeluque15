@@ -23,14 +23,14 @@
 - FK validada en use-case.
 
 **AC:**
-- [ ] **AC-1** Conductor con empresa → 201.
-- [ ] **AC-2** Vehículo sin empresa → 400.
-- [ ] **AC-3** empresa inexistente → 404.
-- [ ] **AC-4** empresa inactiva → 409.
+- [x] **AC-1** Conductor con empresa → 201.
+- [x] **AC-2** Vehículo sin empresa → 400.
+- [x] **AC-3** empresa inexistente → 404.
+- [x] **AC-4** empresa inactiva → 409.
 
 **Checklist interno (IA, En curso):**
-- [ ] Dos features
-- [ ] FK models
+- [x] Dos features
+- [x] FK models
 - [ ] Seeders
 
 ---

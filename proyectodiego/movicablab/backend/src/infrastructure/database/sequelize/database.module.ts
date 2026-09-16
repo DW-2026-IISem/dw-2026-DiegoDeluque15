@@ -1,5 +1,6 @@
 import { Global, Inject, Module, OnModuleInit } from '@nestjs/common';
 import { Sequelize } from 'sequelize-typescript';
+import { runSeeders } from '../seeders/seed.runner';
 import { createSequelizeInstance } from './sequelize.factory';
 import { SEQUELIZE } from './sequelize.constants';
 
@@ -19,5 +20,6 @@ export class DatabaseModule implements OnModuleInit {
   async onModuleInit(): Promise<void> {
     await this.sequelize.authenticate();
     await this.sequelize.sync({ alter: false });
+    await runSeeders(this.sequelize);
   }
 }

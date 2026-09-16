@@ -23,13 +23,13 @@
 - Prohibido login, JWT, guards, bcrypt.
 
 **AC:**
-- [ ] **AC-1** user → 201 sin hash.
-- [ ] **AC-2** email dup → 409.
-- [ ] **AC-3** role-user dup → 409.
-- [ ] **AC-4** sin features/auth.
+- [x] **AC-1** user → 201 sin hash.
+- [x] **AC-2** email dup → 409.
+- [x] **AC-3** role-user dup → 409.
+- [x] **AC-4** sin features/auth.
 
 **Checklist interno (IA, En curso):**
-- [ ] 6 modules
+- [x] 6 modules
 - [ ] Seed roles
 
 ---
