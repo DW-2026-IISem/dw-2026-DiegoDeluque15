@@ -3,11 +3,11 @@
 # ISS-10 — Feature Liquidación CA
 
 **Naturaleza:** práctico (MoviCab backend pista IA)  
-**Issue GitHub:** `movicab-backend #__`  
+**Issue GitHub:** `movicab-backend #11`  
 **Responsable (desarrollador):** Diego Armando De Luque Castillo  
 **Revisor humano:**  
 **Dependencias:** ISS-09 en Hecho  
-**Commit esperado:** `feat(iss-10): feature liquidacion CA` con `Refs #__`
+**Commit esperado:** `feat(iss-10): feature liquidacion CA` con `Refs #11`
 
 ---
 
@@ -146,8 +146,15 @@ REGLAS IMPORTANTES:
 - Extra (doble anulación → 409): `![Extra](capturas/iss-10-07-doble-anulacion.png)`
 - Extra (transición inválida por PATCH → 400): `![Extra](capturas/iss-10-08-transicion-patch.png)`
 
-**Commit (hash):** pendiente  
-**Autoevaluación AC:** pendiente
+| Fecha | Tipo | AC | Enlace | Cómo reproducir |
+|-------|------|-----|--------|-----------------|
+| | curl | AC-1 | capturas/iss-10-01-crear.png | Crear liquidación con valor sumado → 201 |
+| | curl | AC-2 | capturas/iss-10-02-detalle.png | GET con carreras agrupadas, valor tipo number |
+| | curl | AC-3 | capturas/iss-10-03-sin-carreras.png | Segunda solicitud mismo rango → 409, excluye liquidadas |
+| | curl | AC-4 | capturas/iss-10-04-anular.png | Anular libera `liquidacionId` de las carreras |
+
+**Commit (hash):** `68cab7e`  
+**Autoevaluación AC:** Todos los AC verificados con evidencia real (ver tabla EVI).
 
 ---
 

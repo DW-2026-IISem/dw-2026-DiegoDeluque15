@@ -3,11 +3,11 @@
 # ISS-09 — Features Pago y Calificación CA
 
 **Naturaleza:** práctico (MoviCab backend pista IA)  
-**Issue GitHub:** `movicab-backend #__`  
+**Issue GitHub:** `movicab-backend #10`  
 **Responsable (desarrollador):** Diego Armando De Luque Castillo  
 **Revisor humano:**  
 **Dependencias:** ISS-08 en Hecho  
-**Commit esperado:** `feat(iss-09): features pago y calificacion CA` con `Refs #__`
+**Commit esperado:** `feat(iss-09): features pago y calificacion CA` con `Refs #10`
 
 ---
 
@@ -138,8 +138,16 @@ REGLAS TRANSVERSALES
 - AC-3 (calificación duplicada → 409): `![AC-3](capturas/iss-09-03-calificacion-duplicada.png)`
 - AC-4 (calificación sobre carrera no cerrada → 409): `![AC-4](capturas/iss-09-04-calificacion-no-cerrada.png)`
 - Extra (validación de rango de puntaje → 400): `![Extra](capturas/iss-09-05-puntaje-rango.png)`
-**Commit (hash):** pendiente  
-**Autoevaluación AC:** pendiente
+
+| Fecha | Tipo | AC | Enlace | Cómo reproducir |
+|-------|------|-----|--------|-----------------|
+| 2026-09-14 | curl | AC-1 | capturas/iss-09-01-pago-crear.png | Pago creado con monto automático → 201 |
+| 2026-09-14 | curl | AC-2 | capturas/iss-09-02-pago-no-cerrada.png | Pago sobre carrera no cerrada → 409 (interpretación; no es monto incorrecto) |
+| 2026-09-14 | curl | AC-3 | capturas/iss-09-03-calificacion-duplicada.png | Calificación duplicada → 409 |
+| 2026-09-14 | curl | AC-4 | capturas/iss-09-04-calificacion-no-cerrada.png | Calificación sobre carrera no cerrada → 409 |
+
+**Commit (hash):** `2436e64`  
+**Autoevaluación AC:** AC-1, AC-3 y AC-4 verificados con evidencia real (ver tabla EVI). AC-2 (monto incorrecto → 409) sin evidencia de captura en proceso.md; la captura iss-09-02 documenta carrera no cerrada, no monto incorrecto.
 
 ---
 

@@ -3,11 +3,11 @@
 # ISS-07 — Feature Tarifa CA
 
 **Naturaleza:** práctico (MoviCab backend pista IA)  
-**Issue GitHub:** `movicab-backend #__`  
+**Issue GitHub:** `movicab-backend #8`  
 **Responsable (desarrollador):** Diego Armando De Luque Castillo  
 **Revisor humano:**  
 **Dependencias:** ISS-06 en Hecho  
-**Commit esperado:** `feat(iss-07): feature tarifa CA` con `Refs #__`
+**Commit esperado:** `feat(iss-07): feature tarifa CA` con `Refs #8`
 
 ---
 
@@ -115,10 +115,13 @@ diff ya es claro.
 
 | Fecha | Tipo | AC | Enlace | Cómo reproducir |
 |-------|------|-----|--------|-----------------|
-| | | | | |
+| 2026-09-13 | curl | AC-1 | capturas/iss-07-01-crear.png | Crear tarifa válida → 201 |
+| 2026-09-13 | curl | AC-2 | capturas/iss-07-02-validacion.png | `valorBase <= 0` → 400 |
+| 2026-09-13 | curl | AC-3 | capturas/iss-07-03-solape.png | Solape de vigencia → 409 |
+| 2026-09-13 | curl | AC-4 | capturas/iss-07-04-vigente.png | GET `/vigente` → 200 |
 
-**Commit (hash):** pendiente  
-**Autoevaluación AC:** pendiente
+**Commit (hash):** `a2f4f8a`  
+**Autoevaluación AC:** Todos los AC verificados con evidencia real (ver tabla EVI).
 
 ---
 

@@ -3,11 +3,11 @@
 # ISS-11 — Entidades identidad RBAC (datos)
 
 **Naturaleza:** práctico (MoviCab backend pista IA)  
-**Issue GitHub:** `movicab-backend #__`  
+**Issue GitHub:** `movicab-backend #12`  
 **Responsable (desarrollador):** Diego Armando De Luque Castillo  
 **Revisor humano:**  
 **Dependencias:** ISS-10 en Hecho  
-**Commit esperado:** `feat(iss-11): entidades identidad RBAC datos` con `Refs #__`
+**Commit esperado:** `feat(iss-11): entidades identidad RBAC datos` con `Refs #12`
 
 ---
 
@@ -134,8 +134,15 @@ REGLAS TRANSVERSALES:
 - AC-3 (role-user duplicado → 409): `![AC-3](capturas/iss-11-03-roleuser-duplicado.png)`
 - AC-4 (sin features/auth, find vacío): `![AC-4](capturas/iss-11-04-sin-auth.png)`
 
-**Commit (hash):** pendiente  
-**Autoevaluación AC:** pendiente
+| Fecha | Tipo | AC | Enlace | Cómo reproducir |
+|-------|------|-----|--------|-----------------|
+| 2026-09-15 | curl | AC-1 | capturas/iss-11-01-user-crear.png | User creado sin `passwordHash` en respuesta → 201 |
+| 2026-09-15 | curl | AC-2 | capturas/iss-11-02-email-duplicado.png | Email duplicado → 409 |
+| 2026-09-15 | curl | AC-3 | capturas/iss-11-03-roleuser-duplicado.png | Role-user duplicado → 409 |
+| 2026-09-15 | curl | AC-4 | capturas/iss-11-04-sin-auth.png | Sin `features/auth`, find vacío |
+
+**Commit (hash):** `a529789`  
+**Autoevaluación AC:** Todos los AC verificados con evidencia real (ver tabla EVI).
 
 ---
 

@@ -3,11 +3,11 @@
 # ISS-04 — Feature Empresa CA
 
 **Naturaleza:** práctico (MoviCab backend pista IA)  
-**Issue GitHub:** `movicab-backend #__`  
+**Issue GitHub:** `movicab-backend #5`  
 **Responsable (desarrollador):** Diego Armando De Luque Castillo  
 **Revisor humano:**  
 **Dependencias:** ISS-03 en Hecho  
-**Commit esperado:** `feat(iss-04): feature empresa CA` con `Refs #__`
+**Commit esperado:** `feat(iss-04): feature empresa CA` con `Refs #5`
 
 ---
 
@@ -96,10 +96,13 @@ exactamente el mismo patrón de 4 capas que usaste para Pasajero en ISS-03:
 
 | Fecha | Tipo | AC | Enlace | Cómo reproducir |
 |-------|------|-----|--------|-----------------|
-| | | | | |
+| 2026-09-12 | curl | AC-1 | capturas/iss-04-01-crear.png | POST válido → 201 |
+| 2026-09-12 | curl | AC-2 | capturas/iss-04-02-nit-duplicado.png | NIT duplicado → 409 |
+| 2026-09-12 | curl | AC-3 | capturas/iss-04-03-listado.png | GET list con conteos |
+| 2026-09-12 | curl | AC-4 | capturas/iss-04-04-delete-pendiente.png | DELETE con activos → 409 (pendiente hasta ISS-05/ISS-06) |
 
-**Commit (hash):** pendiente  
-**Autoevaluación AC:** pendiente
+**Commit (hash):** `bee73ed`  
+**Autoevaluación AC:** AC-1 a AC-3 verificados con evidencia real (ver tabla EVI). AC-4 sin marcar en §1: captura documenta estado pendiente hasta ISS-05/ISS-06, no verificación completa del criterio.
 
 **Evidencia (capturas):**
 - AC-1 (POST válido → 201): `![AC-1](capturas/iss-04-01-crear.png)`

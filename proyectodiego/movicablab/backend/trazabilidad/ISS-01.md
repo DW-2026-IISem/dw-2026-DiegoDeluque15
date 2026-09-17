@@ -3,11 +3,11 @@
 # ISS-01 — Esqueleto NestJS CA arrancable
 
 **Naturaleza:** práctico (MoviCab backend pista IA)  
-**Issue GitHub:** `movicab-backend #__`  
+**Issue GitHub:** `movicab-backend #1`  
 **Responsable (desarrollador):** Diego Armando De Luque Castillo  
 **Revisor humano:**  
 **Dependencias:** ninguna  
-**Commit esperado:** `feat(iss-01): esqueleto NestJS CA arrancable` con `Refs #__`
+**Commit esperado:** `feat(iss-01): esqueleto NestJS CA arrancable` con `Refs #1`
 
 ---
 
@@ -85,10 +85,13 @@ Reglas importantes:
 
 | Fecha | Tipo | AC | Enlace | Cómo reproducir |
 |-------|------|-----|--------|-----------------|
-| | | | | |
+| 2026-09-12 | curl | AC-1 | capturas/codigo/iss-01-01-estructura.png | Verificar estructura de carpetas (package.json, src/main.ts intactos) |
+| 2026-09-12 | curl | AC-2 | capturas/codigo/iss-01-02-arranque.png | `npm run start:dev` → arranque exitoso |
+| 2026-09-12 | curl | AC-3 | capturas/codigo/iss-01-03-health.png | `GET /api/health` → 200 y status ok |
+| 2026-09-12 | curl | AC-4 | capturas/codigo/iss-01-01-estructura.png | Verificar que no existe `features/auth/` |
 
-**Commit (hash):** pendiente  
-**Autoevaluación AC:** pendiente
+**Commit (hash):** `0c88f6d`  
+**Autoevaluación AC:** Todos los AC verificados con evidencia real (ver tabla EVI).
 
 ---
 
@@ -114,4 +117,4 @@ Preguntas guía: Señala qué va en config, common, infrastructure, features/bus
 - AC-1 (estructura de carpetas): `![AC-1](../docs/capturas/iss-01-01-estructura.png)`
 - AC-2 (arranque exitoso): `![AC-2](../docs/capturas/iss-01-02-arranque.png)`
 - AC-3 (health check): `![AC-3](../docs/capturas/iss-01-03-health.png)`
-- AC-4 (features/auth no existe): `![AC-1](../docs/capturas/iss-01-01-estructura.png)`
+- AC-4 (features/auth no existe): `![AC-4](../docs/capturas/iss-01-01-estructura.png)`

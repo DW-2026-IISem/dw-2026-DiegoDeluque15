@@ -3,11 +3,11 @@
 # ISS-02 — Entorno Sequelize y common
 
 **Naturaleza:** práctico (MoviCab backend pista IA)  
-**Issue GitHub:** `movicab-backend #__`  
+**Issue GitHub:** `movicab-backend #2`  
 **Responsable (desarrollador):** Diego Armando De Luque Castillo  
 **Revisor humano:**  
 **Dependencias:** ISS-01 en Hecho  
-**Commit esperado:** `feat(iss-02): entorno Sequelize y common` con `Refs #__`
+**Commit esperado:** `feat(iss-02): entorno Sequelize y common` con `Refs #2`
 
 ---
 
@@ -124,10 +124,14 @@ existe; el resto del bloque activo sigue exigiendo no-vacío.
 
 | Fecha | Tipo | AC | Enlace | Cómo reproducir |
 |-------|------|-----|--------|-----------------|
-| | | | | |
+| 2026-09-12 | curl | AC-1 | capturas/codigo/iss-02-01-conexion.png | Conexión exitosa con `.env` mysql completo; `npm run start:dev` |
+| 2026-09-12 | curl | AC-2 | capturas/codigo/iss-02-02a-fail-fast.png | Fail-fast: variable crítica faltante → error de configuración antes de conectar |
+| 2026-09-12 | curl | AC-2 | capturas/codigo/iss-02-02b-restaurado.png | Restaurar variable; vuelve a arrancar |
+| 2026-09-12 | curl | AC-3 | capturas/codigo/iss-02-03-sync.png | Única sync es `alter: false` |
+| 2026-09-12 | curl | AC-4 | capturas/codigo/iss-02-04-envstatus.png | `.env.example` completo; `.env` no en git status |
 
-**Commit (hash):** pendiente  
-**Autoevaluación AC:** pendiente
+**Commit (hash):** `b882e36`  
+**Autoevaluación AC:** Todos los AC verificados con evidencia real (ver tabla EVI).
 
 ---
 

@@ -128,7 +128,7 @@ subdirectorios de negocio vacíos, e `IdentityModule` stub.
   intentar reemplazar paquetes ya escritos por la primera). Se resolvió con
   `rm -rf node_modules && npm install` limpio.
 
-**Resultado / commit:** `pendiente`
+**Resultado / commit:** `0c88f6d`
 
 **Evidencia (capturas):**
 - AC-1 (estructura de carpetas): ![AC-1](capturas/codigo/iss-01-01-estructura.png)
@@ -172,7 +172,7 @@ del bloque activo sigue exigiendo no-vacío. Mismo criterio aplicado en
 con `.env.example`. Tras la corrección de contraseñas vacías, `npm run start:dev` arrancó
 y conectó correctamente a MySQL en puerto 3307.
 
-**Resultado / commit:** `pendiente`
+**Resultado / commit:** `b882e36`
 
 **Evidencia (capturas):**
 - AC-1 (conexión exitosa): ![AC-1](capturas/codigo/iss-02-01-conexion.png)
@@ -221,7 +221,7 @@ idempotente en `onModuleInit`, e integración vía `PassengersModule` → `Busin
   se instaló `@nestjs/swagger@^7.4.0` compatible con Nest 10. No hubo otros bloqueos tras
   las correcciones de seeder y numeración de issues.
 
-**Resultado / commit:** `pendiente`
+**Resultado / commit:** `aaaf892`
 
 **Evidencia (capturas):**
 - AC-1 (POST válido → 201): ![AC-1](capturas/codigo/iss-03-01-crear.png)
@@ -270,7 +270,7 @@ entidad y DTO.
   la tabla no tenía las columnas created_at/updated_at. Se resolvió alineando el
   modelo con la tabla real y con el contrato de docs/sdd.md.
 
-**Resultado / commit:** `pendiente`
+**Resultado / commit:** `bee73ed`
 
 **Evidencia (capturas):**
 - AC-1 (POST válido → 201): ![AC-1](capturas/codigo/iss-04-01-crear.png)
@@ -295,7 +295,7 @@ entidad y DTO.
 - Se hicieron dos commits separados (Vehiculo y Conductor) sin que el desarrollador lo autorizara explícitamente; se revisaron ambos antes de continuar.
 - Tras el segundo commit, aparecieron cambios sin commitear en toda la feature Vehiculo; se verificó con `git diff -w` que eran solo diferencias de fin de línea (CRLF/LF), sin cambios de contenido real, y se descartaron con `git restore`.
 **Problemas encontrados y cómo se resolvieron:** Diferencias de fin de línea CRLF/LF entre archivos al ejecutar scripts desde WSL sobre archivos creados en Windows. Resuelto con `git restore` tras confirmar que no había cambios reales.
-**Resultado / commit:** `pendiente`
+**Resultado / commit:** `9b23106`
 
 **Evidencia (capturas):**
 - AC-1 (Conductor con empresa activa → 201): ![AC-1](capturas/codigo/iss-05-01-conductor-crear.png)
@@ -317,7 +317,7 @@ Instrucciones detalladas para leer el contrato arquitectónico y ACs de ISS-06. 
 - Se verificó con `grep` que la numeración de ISS-08 (Carrera) era correcta desde el inicio para poder documentar el stub de eliminación de turnos con seguridad.
 - Se confirmó con `git diff --stat` que el reemplazo de stubs en `ConductoresModule` y `VehiculosModule` fue mínimo y acotado (solo las inserciones/eliminaciones estrictamente necesarias en los providers y los imports para inyectar los nuevos adaptadores de TurnosModule).
 **Problemas encontrados y cómo se resolvieron:** Rutas relativas erróneas en los imports a través de múltiples subdirectorios inter-módulos (`business` > `drivers` > `fleets`); resuelto en masa mediante un script de Node para reemplazar las referencias defectuosas y luego validando con `tsc`.
-**Resultado / commit:** `pendiente`
+**Resultado / commit:** `28dccf1`
 
 **Evidencia (capturas):**
 - AC-1 (crear turno válido → 201): ![AC-1](capturas/codigo/iss-06-01-crear.png)
@@ -339,7 +339,7 @@ Instrucciones para implementar la feature Tarifa en `src/features/business/prici
 **Lo que corregí y por qué:**
 - Se corrigió el código HTTP devuelto al enviar fechas de vigencia invertidas (`vigenciaDesde >= vigenciaHasta`). Originalmente se lanzaba una excepción de negocio (`BusinessRuleException` -> 409), pero siendo un error de validación lógica de entrada, se modificó para lanzar una `DomainException` (400 Bad Request).
 **Problemas encontrados y cómo se resolvieron:** Paths de importación hacia la carpeta `common` desde subdirectorios anidados con un nivel extra; solucionado masivamente mediante un script de Node antes de compilar.
-**Resultado / commit:** `pendiente`
+**Resultado / commit:** `a2f4f8a`
 
 **Evidencia (capturas):**
 - AC-1 (crear tarifa válida → 201): ![AC-1](capturas/codigo/iss-07-01-crear.png)
@@ -403,7 +403,7 @@ hubiera dependencia circular con Pasajeros/Turnos/Tarifas.
   `hasActiveCarreras()` pero el puerto `ICarreraActivaPort` exige
   `hasBlockingCarrerasForPasajero()`; corregido.
 
-**Resultado / commit:** `pendiente`
+**Resultado / commit:** `51bda76`
 
 **Evidencia (capturas):**
 - AC-1 (crear carrera válida → 201, solicitada): ![AC-1](capturas/codigo/iss-08-01-crear.png)
@@ -433,7 +433,7 @@ hubiera dependencia circular con Pasajeros/Turnos/Tarifas.
 **Problemas encontrados y cómo se resolvieron:**
 Esta fue la sesión con más iteraciones de corrección hasta ahora. Cada corrección fue verificada con peticiones `curl` reales contra el servidor local antes de darla por aceptada, garantizando así su correcto funcionamiento más allá de la compilación exitosa (ej. validación del whitelist, estructura del DTO, y estado de la base de datos).
 
-**Resultado / commit:** `pendiente`
+**Resultado / commit:** `2436e64`
 
 **Evidencia (capturas):**
 - AC-1 (pago creado con monto automático → 201): ![AC-1](capturas/codigo/iss-09-01-pago-crear.png)
@@ -459,7 +459,7 @@ Implementar la feature Liquidacion (Domain, Application, Infrastructure, Present
 3. Confirmación (sin cambios necesarios) de que forbidNonWhitelisted ya protege "valor" de modificaciones vía PATCH.
 4. Confirmación de que doble anulación y transición inválida por PATCH (anulada vía PATCH en vez del endpoint dedicado) ya estaban correctamente bloqueadas desde la implementación inicial.
 
-**Resultado / commit:** `pendiente`
+**Resultado / commit:** `68cab7e`
 
 **Evidencia (capturas):**
 - AC-1 (crear liquidación con valor sumado → 201): ![AC-1](capturas/codigo/iss-10-01-crear.png)
@@ -485,7 +485,7 @@ Implementar la feature Liquidacion (Domain, Application, Infrastructure, Present
 **Problemas encontrados y cómo se resolvieron:**
 Tras corregir el script y regenerar, `npm run build` pasó con 0 errores y `npm run start:dev` arrancó limpio (30 rutas identity mapeadas, sin errores Sequelize/MySQL). Verificado con `curl`: POST /api/users → 201 sin `passwordHash` en respuesta; GET /api/roles → 200.
 
-**Resultado / commit:** `pendiente`
+**Resultado / commit:** `a529789`
 
 **Evidencia (capturas):**
 - AC-1 (user creado sin passwordHash en respuesta → 201): ![AC-1](capturas/codigo/iss-11-01-user-crear.png)
@@ -505,7 +505,7 @@ Sin correcciones al entregable inicial: tras verificación completa (`npm run bu
 **Problemas encontrados y cómo se resolvieron:**
 El intento inicial de crear una carrera con `pasajeroId: 6` falló con 404 porque ese pasajero estaba inactivo (`isActive: false`) — dato residual de pruebas manuales previas, no de los seeders. Se resolvió usando un pasajero activo sembrado por el runner (`id: 9`, "Ana García Demo") y el libreto completó el flujo de punta a punta.
 
-**Resultado / commit:** `pendiente`
+**Resultado / commit:** `bb52d27`
 
 **Evidencia (capturas):**
 - AC-1 (BD vacía, seeders corren al arrancar): ![AC-1](capturas/codigo/iss-12-01-seeders-arranque.png)

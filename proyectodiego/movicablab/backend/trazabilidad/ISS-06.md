@@ -3,11 +3,11 @@
 # ISS-06 — Feature Turno CA
 
 **Naturaleza:** práctico (MoviCab backend pista IA)  
-**Issue GitHub:** `movicab-backend #__`  
+**Issue GitHub:** `movicab-backend #7`  
 **Responsable (desarrollador):** Diego Armando De Luque Castillo  
 **Revisor humano:**  
 **Dependencias:** ISS-05 en Hecho  
-**Commit esperado:** `feat(iss-06): feature turno CA` con `Refs #__`
+**Commit esperado:** `feat(iss-06): feature turno CA` con `Refs #7`
 
 ---
 
@@ -112,10 +112,13 @@ ni Gate), mostrándome el diff antes de confirmar.
 
 | Fecha | Tipo | AC | Enlace | Cómo reproducir |
 |-------|------|-----|--------|-----------------|
-| | | | | |
+| 2026-09-13 | curl | AC-1 | capturas/iss-06-01-crear.png | Crear turno válido → 201 |
+| 2026-09-13 | curl | AC-2 | capturas/iss-06-02-solape.png | Solape de conductor/vehículo → 409 |
+| 2026-09-13 | curl | AC-3 | capturas/iss-06-03-notfound.png | Conductor inexistente → 404 |
+| 2026-09-13 | curl | AC-4 | capturas/iss-06-04-filtro.png | Filtro por `conductorId` |
 
-**Commit (hash):** pendiente  
-**Autoevaluación AC:** pendiente
+**Commit (hash):** `28dccf1`  
+**Autoevaluación AC:** Todos los AC verificados con evidencia real (ver tabla EVI).
 
 ---
 

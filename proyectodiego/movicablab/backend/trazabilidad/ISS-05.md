@@ -3,11 +3,11 @@
 # ISS-05 — Features Conductor y Vehículo CA
 
 **Naturaleza:** práctico (MoviCab backend pista IA)  
-**Issue GitHub:** `movicab-backend #__`  
+**Issue GitHub:** `movicab-backend #6`  
 **Responsable (desarrollador):** Diego Armando De Luque Castillo  
 **Revisor humano:**  
 **Dependencias:** ISS-04 en Hecho  
-**Commit esperado:** `feat(iss-05): features conductor y vehiculo CA` con `Refs #__`
+**Commit esperado:** `feat(iss-05): features conductor y vehiculo CA` con `Refs #6`
 
 ---
 
@@ -31,7 +31,7 @@
 **Checklist interno (IA, En curso):**
 - [x] Dos features
 - [x] FK models
-- [ ] Seeders
+- [x] Seeders
 
 ---
 
@@ -87,10 +87,13 @@ Reglas importantes:
 
 | Fecha | Tipo | AC | Enlace | Cómo reproducir |
 |-------|------|-----|--------|-----------------|
-| | | | | |
+| 2026-09-13 | curl | AC-1 | capturas/codigo/iss-05-01-conductor-crear.png | Conductor con empresa activa → 201 |
+| 2026-09-13 | curl | AC-2 | capturas/codigo/iss-05-02-vehiculo-validacion.png | Vehículo sin empresa → 400 |
+| 2026-09-13 | curl | AC-3 | capturas/codigo/iss-05-03-vehiculo-notfound.png | Vehículo con empresa inexistente → 404 |
+| 2026-09-13 | curl | AC-4 | capturas/codigo/iss-05-04-vehiculo-inactiva.png | Vehículo con empresa inactiva → 409 |
 
-**Commit (hash):** pendiente  
-**Autoevaluación AC:** pendiente
+**Commit (hash):** `9b23106`  
+**Autoevaluación AC:** Todos los AC verificados con evidencia real (ver tabla EVI).
 
 ---
 

@@ -207,3 +207,20 @@ Validación **fail-fast**: exigir solo el bloque del `DB_DIALECT` activo. Mensaj
 - Seeders idempotentes: `findOrCreate`
 - Swagger en `/api/docs` (ISS-12)
 - Nombres en español para dominio MoviCab; código en camelCase en TS, snake_case en BD
+
+---
+
+## 10. Integridad referencial en BD (FKs)
+
+Sequelize sincroniza columnas FK pero no siempre crea restricciones en MySQL. La
+migración manual `docs/migrations/add-missing-fks.sql` agrega las FK reales para
+10 relaciones verificadas sin filas huérfanas.
+
+**Excluido a propósito:** `pagos.referencia_id → carreras.id`.
+
+`Pago` usa referencia **polimórfica** (`referencia_tipo` + `referencia_id`). En el
+alcance actual de la pista solo se usa `referencia_tipo = 'carrera'`, pero una FK
+directa sobre `referencia_id` no valida el tipo y asumiría erróneamente que todo
+pago apunta a `carreras` aunque el dominio permita otros tipos en el futuro. La
+integridad de Pago se valida en aplicación (`CreatePagoUseCase`: carrera existente,
+estado cerrada, monto tomado del servidor).

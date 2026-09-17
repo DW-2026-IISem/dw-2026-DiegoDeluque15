@@ -3,11 +3,11 @@
 # ISS-08 — Feature Carrera CA
 
 **Naturaleza:** práctico (MoviCab backend pista IA)  
-**Issue GitHub:** `movicab-backend #__`  
+**Issue GitHub:** `movicab-backend #9`  
 **Responsable (desarrollador):** Diego Armando De Luque Castillo  
 **Revisor humano:**  
 **Dependencias:** ISS-07 en Hecho  
-**Commit esperado:** `feat(iss-08): feature carrera CA` con `Refs #__`
+**Commit esperado:** `feat(iss-08): feature carrera CA` con `Refs #9`
 
 ---
 
@@ -84,14 +84,14 @@ id. POST /api/despachos/:id como alias de despachar (aceptada). Sin seeders. Sin
 ## 4. EVI — Verificación
 
 | Fecha | Tipo | AC | Enlace | Cómo reproducir |
-|-------|------|-----|---------|-----------------| 
-| 2026-09-13 | curl/node | AC-1 | capturas/iss-08-01-crear.png | POST /api/carreras con pasajeroId y turnoId válidos → 201, estado: solicitada |
-| 2026-09-13 | curl/node | AC-2 | capturas/iss-08-02-notfound.png | POST /api/carreras con turnoId: 999999 → 404 |
-| 2026-09-13 | curl/node | AC-3 | capturas/iss-08-03-transicion-invalida.png | PATCH /api/carreras/:id/estado con estado: cerrada desde solicitada → 409 |
-| 2026-09-13 | curl/node | AC-4 | capturas/iss-08-04-cerrada.png | Secuencia solicitada→aceptada→en_curso→cerrada; respuesta incluye total: 15000 |
+|-------|------|-----|--------|-----------------|
+| 2026-09-13 | curl | AC-1 | capturas/codigo/iss-08-01-crear.png | Crear carrera válida → 201, estado: solicitada |
+| 2026-09-13 | curl | AC-2 | capturas/codigo/iss-08-02-notfound.png | Turno inexistente → 404 |
+| 2026-09-13 | curl | AC-3 | capturas/codigo/iss-08-03-transicion-invalida.png | Transición inválida → 409 |
+| 2026-09-13 | curl | AC-4 | capturas/codigo/iss-08-04-cerrada.png | Cerrada con total calculado |
 
-**Commit (hash):** pendiente  
-**Autoevaluación AC:** AC-1 ✅ AC-2 ✅ AC-3 ✅ AC-4 ✅
+**Commit (hash):** `51bda76`  
+**Autoevaluación AC:** Todos los AC verificados con evidencia real (ver tabla EVI).
 
 ---
 

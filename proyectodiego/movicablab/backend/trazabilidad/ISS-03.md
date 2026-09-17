@@ -3,11 +3,11 @@
 # ISS-03 — Feature Pasajero CA
 
 **Naturaleza:** práctico (MoviCab backend pista IA)  
-**Issue GitHub:** `movicab-backend #__`  
+**Issue GitHub:** `movicab-backend #4`  
 **Responsable (desarrollador):** Diego Armando De Luque Castillo  
 **Revisor humano:**  
 **Dependencias:** ISS-02 en Hecho  
-**Commit esperado:** `feat(iss-03): feature pasajero CA` con `Refs #__`
+**Commit esperado:** `feat(iss-03): feature pasajero CA` con `Refs #4`
 
 ---
 
@@ -125,10 +125,13 @@ global en `/api/docs`.
 
 | Fecha | Tipo | AC | Enlace | Cómo reproducir |
 |-------|------|-----|--------|-----------------|
-| | | | | |
+| 2026-09-12 | curl | AC-1 | capturas/codigo/iss-03-01-crear.png | POST pasajero válido → 201 |
+| 2026-09-12 | curl | AC-2 | capturas/codigo/iss-03-02-validacion.png | POST sin nombre → 400 |
+| 2026-09-12 | curl | AC-3 | capturas/codigo/iss-03-03-notfound.png | GET id inexistente → 404 |
+| 2026-09-12 | curl | AC-4 | capturas/codigo/iss-03-04-softdelete.png | Soft delete, `isActive=false` |
 
-**Commit (hash):** pendiente  
-**Autoevaluación AC:** pendiente
+**Commit (hash):** `aaaf892`  
+**Autoevaluación AC:** Todos los AC verificados con evidencia real (ver tabla EVI).
 
 ---
 

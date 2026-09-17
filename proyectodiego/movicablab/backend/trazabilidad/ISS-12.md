@@ -3,11 +3,11 @@
 # ISS-12 — Integración, seeders y demo
 
 **Naturaleza:** práctico (MoviCab backend pista IA)  
-**Issue GitHub:** `movicab-backend #__`  
+**Issue GitHub:** `movicab-backend #13`  
 **Responsable (desarrollador):** Diego Armando De Luque Castillo  
 **Revisor humano:**  
 **Dependencias:** ISS-01…11 en Hecho  
-**Commit esperado:** `feat(iss-12): integracion seeders y demo movicab` con `Refs #__`
+**Commit esperado:** `feat(iss-12): integracion seeders y demo movicab` con `Refs #13`
 
 ---
 
@@ -148,8 +148,16 @@ Sin correcciones al entregable inicial tras verificación completa: build 0 erro
 - AC-5 (Swagger con 17 secciones organizadas): `![AC-5](capturas/iss-12-05-swagger.png)`
 - Extra (idempotencia: mismos totales antes/después de reiniciar): `![Extra](capturas/iss-12-06-idempotencia.png)`
 
-**Commit (hash):** pendiente  
-**Autoevaluación AC:** pendiente
+| Fecha | Tipo | AC | Enlace | Cómo reproducir |
+|-------|------|-----|--------|-----------------|
+| 2026-09-15 | curl | AC-1 | capturas/iss-12-01-seeders-arranque.png | BD vacía, seeders corren al arrancar |
+| 2026-09-15 | curl | AC-2 | capturas/iss-12-02-libreto-completo.png | Libreto demo completo, carrera de punta a punta |
+| 2026-09-15 | curl | AC-3 | capturas/iss-12-03-sin-auth.png | Sin auth, grep y find vacíos |
+| 2026-09-15 | curl | AC-4 | capturas/iss-12-04-readme.png | README visible |
+| 2026-09-15 | curl | AC-5 | capturas/iss-12-05-swagger.png | Swagger con 17 secciones organizadas |
+
+**Commit (hash):** `bb52d27`  
+**Autoevaluación AC:** Todos los AC verificados con evidencia real (ver tabla EVI).
 
 ---
 
