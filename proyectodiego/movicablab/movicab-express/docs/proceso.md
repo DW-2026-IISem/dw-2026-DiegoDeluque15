@@ -34,3 +34,8 @@ Qué se hizo: se creó src/config/index.ts (clase App: settings, middlewares con
 Fecha: 2026-09-26
 Qué se hizo: se ejecutó "npm run dev" y el servidor levantó correctamente en el puerto configurado.
 ![Evidencia ISS-01](evidencias/iss-01-npm-run-dev.png)
+
+## ISS-02 / 3.1 — Drivers Sequelize y .env
+Fecha: 2026-09-26
+Qué se hizo: se instaló el ORM Sequelize, sus tipos y los drivers para MySQL, Postgres, MSSQL y Oracle. Se creó el archivo .env con la configuración de motores y base de datos (DB_ENGINE=mysql por defecto).
+Evidencia: docs/evidencias/3.1-sequelize-env.png
