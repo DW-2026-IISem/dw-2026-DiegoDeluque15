@@ -1,0 +1,12 @@
+### Feature TipoVehiculo — DELETE fisico / DELETE logico (status = inactive)
+### Leyenda: SIN AUTH (sin middleware JWT / sin autenticacion)
+@baseUrl = http://localhost:4000
+@id = 1
+
+# @name deleteTipoVehiculoPhysical
+DELETE {{baseUrl}}/api/tipos-vehiculo/{{id}}
+
+###
+
+# @name deleteTipoVehiculoLogical
+PATCH {{baseUrl}}/api/tipos-vehiculo/{{id}}/deactivate

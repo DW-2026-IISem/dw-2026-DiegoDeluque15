@@ -27,5 +27,15 @@ export class TipoVehiculoRoutes {
       .route("/api/tipos-vehiculo/:id")
       .put(this.vehiculoTypeController.updatePut.bind(this.vehiculoTypeController))
       .patch(this.vehiculoTypeController.updatePatch.bind(this.vehiculoTypeController));
+
+    // delete fisico
+    app
+      .route("/api/tipos-vehiculo/:id")
+      .delete(this.vehiculoTypeController.deletePhysical.bind(this.vehiculoTypeController));
+
+    // delete logico
+    app
+      .route("/api/tipos-vehiculo/:id/deactivate")
+      .patch(this.vehiculoTypeController.deleteLogical.bind(this.vehiculoTypeController));
   }
 }

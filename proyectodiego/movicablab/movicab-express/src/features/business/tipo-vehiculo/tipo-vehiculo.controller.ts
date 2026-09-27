@@ -50,7 +50,6 @@ export class TipoVehiculoController {
   }
 
   // ================== UPDATE ==================
-  // (rellenar en ISS-06 / 11.2-C)
   public async updatePut(req: Request, res: Response) {
     try {
       const id = paramId(req);
@@ -91,5 +90,38 @@ export class TipoVehiculoController {
   }
 
   // ================== DELETE ==================
-  // (rellenar en ISS-06 / 11.2-D)
+  /** Eliminacion fisica */
+  public async deletePhysical(req: Request, res: Response) {
+    try {
+      const id = paramId(req);
+      const tipo_vehiculo = await TipoVehiculo.findByPk(id);
+      if (!tipo_vehiculo) {
+        res.status(404).json({ error: "Vehiculo type not found" });
+        return;
+      }
+      await tipo_vehiculo.destroy();
+      res.status(200).json({ message: "Vehiculo type permanently deleted", id });
+    } catch (error) {
+      res.status(500).json({ error: "Error deleting vehiculo type", detail: String(error) });
+    }
+  }
+
+  /** Eliminacion logica -> status = inactive */
+  public async deleteLogical(req: Request, res: Response) {
+    try {
+      const id = paramId(req);
+      const tipo_vehiculo = await TipoVehiculo.findByPk(id);
+      if (!tipo_vehiculo) {
+        res.status(404).json({ error: "Vehiculo type not found" });
+        return;
+      }
+      await tipo_vehiculo.update({ status: "inactive" });
+      res.status(200).json({
+        message: "Vehiculo type deactivated (logical delete)",
+        tipo_vehiculo,
+      });
+    } catch (error) {
+      res.status(500).json({ error: "Error deactivating vehiculo type", detail: String(error) });
+    }
+  }
 }
