@@ -1,0 +1,24 @@
+### Feature TipoVehiculo — UPDATE (PUT) / UPDATE (PATCH)
+### Leyenda: SIN AUTH (sin middleware JWT / sin autenticacion)
+@baseUrl = http://localhost:4000
+@id = 1
+
+# @name updateTipoVehiculoPut
+PUT {{baseUrl}}/api/tipos-vehiculo/{{id}}
+Content-Type: application/json
+
+{
+  "name": "Sedan Actualizado",
+  "description": "Categoria renovada",
+  "status": "active"
+}
+
+###
+
+# @name updateTipoVehiculoPatch
+PATCH {{baseUrl}}/api/tipos-vehiculo/{{id}}
+Content-Type: application/json
+
+{
+  "description": "Descripcion parcial actualizada"
+}

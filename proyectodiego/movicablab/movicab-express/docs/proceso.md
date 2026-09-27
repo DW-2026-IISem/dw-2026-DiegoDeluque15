@@ -108,3 +108,8 @@ Fecha: 2026-09-27
 Qué se hizo: se agregó el método create en tipo-vehiculo.controller.ts, se registró la ruta POST /api/tipos-vehiculo en tipo-vehiculo.routes.ts, y se creó http/tipos-vehiculo.create.http. Verificado: retorna 201 con el registro recién creado (id=1 en BD).
 Cómo capturarlo: ejecutar `npm run dev` y en otra terminal `curl -s -X POST http://localhost:4000/api/tipos-vehiculo -H 'Content-Type: application/json' --data-raw '{"name":"Sedan","description":"Vehiculo de 4 puertas","status":"active"}' | python3 -m json.tool`. Debe retornar 201 con el objeto creado.
 ![Evidencia ISS-06-B](evidencias/iss-06-b-post-tipo-vehiculo.png)
+## ISS-06 / 11.2-C — Update PUT y PATCH (TipoVehiculo)
+Fecha: 2026-09-27
+Qué se hizo: se agregaron los métodos updatePut y updatePatch en tipo-vehiculo.controller.ts, se registraron las rutas PUT y PATCH /api/tipos-vehiculo/:id en tipo-vehiculo.routes.ts, y se creó http/tipos-vehiculo.update.http. La respuesta retorna el registro actualizado con 200.
+Cómo capturarlo: ejecutar `npm run dev` y luego `curl -s -X PUT http://localhost:4000/api/tipos-vehiculo/1 -H 'Content-Type: application/json' --data-raw '{"name":"Sedan Actualizado","description":"Categoria renovada","status":"active"}' | python3 -m json.tool` y `curl -s -X PATCH http://localhost:4000/api/tipos-vehiculo/2 -H 'Content-Type: application/json' --data-raw '{"description":"Descripcion parcial actualizada"}' | python3 -m json.tool`. Deben retornar 200 con el registro actualizado.
+![Evidencia ISS-06-C](evidencias/iss-06-c-put-tipo-vehiculo.png)

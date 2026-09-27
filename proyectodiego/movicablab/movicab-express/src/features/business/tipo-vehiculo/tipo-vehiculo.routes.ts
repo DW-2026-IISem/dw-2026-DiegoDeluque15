@@ -21,5 +21,11 @@ export class TipoVehiculoRoutes {
     app
       .route("/api/tipos-vehiculo")
       .post(this.vehiculoTypeController.create.bind(this.vehiculoTypeController));
+
+    // update (PUT / PATCH)
+    app
+      .route("/api/tipos-vehiculo/:id")
+      .put(this.vehiculoTypeController.updatePut.bind(this.vehiculoTypeController))
+      .patch(this.vehiculoTypeController.updatePatch.bind(this.vehiculoTypeController));
   }
 }

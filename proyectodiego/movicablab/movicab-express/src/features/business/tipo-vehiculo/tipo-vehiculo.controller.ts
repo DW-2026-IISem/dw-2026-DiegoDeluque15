@@ -35,7 +35,6 @@ export class TipoVehiculoController {
   }
 
   // ================== CREATE ==================
-  // (rellenar en ISS-06 / 11.2-B)
   public async create(req: Request, res: Response) {
     try {
       const body = req.body as TipoVehiculoI;
@@ -52,6 +51,44 @@ export class TipoVehiculoController {
 
   // ================== UPDATE ==================
   // (rellenar en ISS-06 / 11.2-C)
+  public async updatePut(req: Request, res: Response) {
+    try {
+      const id = paramId(req);
+      const body = req.body as TipoVehiculoI;
+      const tipo_vehiculo = await TipoVehiculo.findByPk(id);
+      if (!tipo_vehiculo) {
+        res.status(404).json({ error: "Vehiculo type not found" });
+        return;
+      }
+
+      await tipo_vehiculo.update({
+        name: body.name,
+        description: body.description ?? null,
+        status: body.status ?? tipo_vehiculo.status,
+      });
+
+      res.status(200).json({ tipo_vehiculo });
+    } catch (error) {
+      res.status(500).json({ error: "Error updating vehiculo type (PUT)", detail: String(error) });
+    }
+  }
+
+  public async updatePatch(req: Request, res: Response) {
+    try {
+      const id = paramId(req);
+      const body = req.body as Partial<TipoVehiculoI>;
+      const tipo_vehiculo = await TipoVehiculo.findByPk(id);
+      if (!tipo_vehiculo) {
+        res.status(404).json({ error: "Vehiculo type not found" });
+        return;
+      }
+
+      await tipo_vehiculo.update(body);
+      res.status(200).json({ tipo_vehiculo });
+    } catch (error) {
+      res.status(500).json({ error: "Error updating vehiculo type (PATCH)", detail: String(error) });
+    }
+  }
 
   // ================== DELETE ==================
   // (rellenar en ISS-06 / 11.2-D)
