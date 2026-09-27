@@ -9,8 +9,6 @@ function paramId(req: Request): number {
 
 export class PasajeroController {
   // ================== READ ==================
-  // (rellenar en ISS-03-B) getAll, luego getOne
-
   public async getAll(req: Request, res: Response) {
     try {
       const pasajeros = await Pasajero.findAll({
@@ -40,8 +38,6 @@ export class PasajeroController {
   }
 
   // ================== CREATE ==================
-  // (rellenar en ISS-03-C)
-
   public async create(req: Request, res: Response) {
     try {
       const body = req.body as PasajeroI;
@@ -61,8 +57,6 @@ export class PasajeroController {
   }
 
   // ================== UPDATE ==================
-  // (rellenar en ISS-03-D)
-
   public async updatePut(req: Request, res: Response) {
     try {
       const id = paramId(req);
@@ -108,5 +102,36 @@ export class PasajeroController {
   }
 
   // ================== DELETE ==================
-  // (rellenar en ISS-03-E)
+  /** Eliminacion fisica */
+  public async deletePhysical(req: Request, res: Response) {
+    try {
+      const id = paramId(req);
+      const pasajero = await Pasajero.findByPk(id);
+      if (!pasajero) {
+        res.status(404).json({ error: "Pasajero not found" });
+        return;
+      }
+      await pasajero.destroy();
+      res.status(200).json({ message: "Pasajero permanently deleted", id });
+    } catch (error) {
+      res.status(500).json({ error: "Error deleting pasajero", detail: String(error) });
+    }
+  }
+
+  /** Eliminacion logica: status = inactive */
+  public async deleteLogical(req: Request, res: Response) {
+    try {
+      const id = paramId(req);
+      const pasajero = await Pasajero.findByPk(id);
+      if (!pasajero) {
+        res.status(404).json({ error: "Pasajero not found" });
+        return;
+      }
+      await pasajero.update({ status: "inactive" });
+      const { password, ...safe } = pasajero.toJSON() as PasajeroI & { password?: string };
+      res.status(200).json({ message: "Pasajero deactivated (logical delete)", pasajero: safe });
+    } catch (error) {
+      res.status(500).json({ error: "Error deactivating pasajero", detail: String(error) });
+    }
+  }
 }

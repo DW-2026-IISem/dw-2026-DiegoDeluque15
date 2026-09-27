@@ -6,7 +6,6 @@ export class PasajeroRoutes {
 
   public routes(app: Application): void {
     // ================== RUTAS SIN AUTENTICACION / SIN MIDDLEWARE JWT ==================
-    // (rellenar en ISS-03-B a E)
 
     // getAll
     app
@@ -28,5 +27,15 @@ export class PasajeroRoutes {
       .route("/api/pasajeros/:id")
       .put(this.pasajeroController.updatePut.bind(this.pasajeroController))
       .patch(this.pasajeroController.updatePatch.bind(this.pasajeroController));
+
+    // delete fisico
+    app
+      .route("/api/pasajeros/:id")
+      .delete(this.pasajeroController.deletePhysical.bind(this.pasajeroController));
+
+    // delete logico
+    app
+      .route("/api/pasajeros/:id/deactivate")
+      .patch(this.pasajeroController.deleteLogical.bind(this.pasajeroController));
   }
 }
