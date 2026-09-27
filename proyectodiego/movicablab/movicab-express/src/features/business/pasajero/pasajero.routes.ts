@@ -17,5 +17,10 @@ export class PasajeroRoutes {
     app
       .route("/api/pasajeros/:id")
       .get(this.pasajeroController.getOne.bind(this.pasajeroController));
+
+    // create
+    app
+      .route("/api/pasajeros")
+      .post(this.pasajeroController.create.bind(this.pasajeroController));
   }
 }
