@@ -1,0 +1,12 @@
+### Feature TipoVehiculo — GET ALL / GET ONE
+### Leyenda: SIN AUTH (sin middleware JWT / sin autenticacion)
+@baseUrl = http://localhost:4000
+@id = 1
+
+# @name getAllTipoVehiculos
+GET {{baseUrl}}/api/tipos-vehiculo
+
+###
+
+# @name getOneTipoVehiculo
+GET {{baseUrl}}/api/tipos-vehiculo/{{id}}

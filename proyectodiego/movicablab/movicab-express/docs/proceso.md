@@ -94,3 +94,12 @@ Fecha: 2026-09-27
 Que se hizo: se implementaron deletePhysical (DELETE /api/pasajeros/:id — borrado permanente) y deleteLogical (PATCH /api/pasajeros/:id/deactivate — status = inactive). Se verifico: tras borrado logico el registro desaparece del GET /api/pasajeros (filtra active), pero queda en la tabla; tras borrado fisico se elimina de la BD. La respuesta nunca expone el password.
 Como capturarlo: ejecutar `npm run dev`, crear un pasajero con POST /api/pasajeros y anotar el id. Luego ejecutar `curl -s -X PATCH http://localhost:4000/api/pasajeros/<id>/deactivate` para el borrado logico y verificar con `curl -s http://localhost:4000/api/pasajeros` que ya no aparece. Despues `curl -s -X DELETE http://localhost:4000/api/pasajeros/<id>` para el borrado fisico y confirmar con GET que la lista queda vacia.
 ![Evidencia ISS-03-E](evidencias/iss-03-e-delete-pasajero.png)
+## ISS-06 / 11.1 — Modelo TipoVehiculo
+Fecha: 2026-09-27
+Qué se hizo: se creó el modelo TipoVehiculo en tipo-vehiculo.model.ts con los campos (name, description, status) y timestamps activos. Se importó el modelo en src/config/index.ts para su sincronización con la base de datos (Sequelize).
+Evidencia: N/A (paso estructural, sin captura)
+## ISS-06 / 11.2-A — GetAll y GetOne (TipoVehiculo)
+Fecha: 2026-09-27
+Qué se hizo: se creó tipo-vehiculo.controller.ts con los métodos getAll y getOne, tipo-vehiculo.routes.ts con las rutas GET, http/tipos-vehiculo.get.http, y se cableó en src/routes/index.ts y src/config/index.ts.
+Cómo capturarlo: ejecutar `npm run dev` y en otra terminal `curl -s http://localhost:4000/api/tipos-vehiculo | python3 -m json.tool` (debe retornar array vacío) y `curl -s http://localhost:4000/api/tipos-vehiculo/999 | python3 -m json.tool` (debe retornar 404).
+![Evidencia ISS-06-GetAll-GetOne](evidencias/iss-06-a-get-tipos-vehiculo.png)
