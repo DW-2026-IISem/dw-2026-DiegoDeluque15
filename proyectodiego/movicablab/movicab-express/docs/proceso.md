@@ -71,3 +71,9 @@ Evidencia: N/A (paso estructural)
 Fecha: 2026-09-26
 Qué se hizo: se creó src/routes/index.ts con clase Routes/pasajeroRoutes. Se parcheó src/config/index.ts: imports de db/modelo/Routes, propiedad routePrv, métodos routes() y dbConnection() con sync alter:true.
 Evidencia: N/A (paso estructural)
+
+## ISS-03-B / 5.1 — GetAll y GetOne (Pasajero)
+Fecha: 2026-09-27
+Qué se hizo: se implementaron los métodos getAll y getOne en pasajero.controller.ts, se registraron las rutas GET en pasajero.routes.ts y se creó el archivo HTTP para pruebas, excluyendo el campo password de las respuestas.
+Cómo capturarlo: ejecutar `npm run dev` en una terminal y en otra ejecutar `curl -s http://localhost:4000/api/pasajeros` y `curl -s http://localhost:4000/api/pasajeros/1`. Debe verse un array vacío y un error 404 respectivamente.
+![Evidencia ISS-03-B](evidencias/iss-03-b-get-pasajeros.png)
