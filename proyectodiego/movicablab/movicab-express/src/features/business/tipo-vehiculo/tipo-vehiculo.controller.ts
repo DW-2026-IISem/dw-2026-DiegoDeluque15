@@ -9,8 +9,6 @@ function paramId(req: Request): number {
 
 export class TipoVehiculoController {
   // ================== READ ==================
-  // (rellenar en ISS-06 / 11.2)
-
   public async getAll(req: Request, res: Response) {
     try {
       const tipos_vehiculo = await TipoVehiculo.findAll({
@@ -37,11 +35,24 @@ export class TipoVehiculoController {
   }
 
   // ================== CREATE ==================
-  // (rellenar en ISS-06 / 11.2-C)
+  // (rellenar en ISS-06 / 11.2-B)
+  public async create(req: Request, res: Response) {
+    try {
+      const body = req.body as TipoVehiculoI;
+      const tipo_vehiculo = await TipoVehiculo.create({
+        name: body.name,
+        description: body.description ?? null,
+        status: body.status ?? "active",
+      });
+      res.status(201).json({ tipo_vehiculo });
+    } catch (error) {
+      res.status(500).json({ error: "Error creating vehiculo type", detail: String(error) });
+    }
+  }
 
   // ================== UPDATE ==================
-  // (rellenar en ISS-06 / 11.2-D)
+  // (rellenar en ISS-06 / 11.2-C)
 
   // ================== DELETE ==================
-  // (rellenar en ISS-06 / 11.2-E)
+  // (rellenar en ISS-06 / 11.2-D)
 }

@@ -16,5 +16,10 @@ export class TipoVehiculoRoutes {
     app
       .route("/api/tipos-vehiculo/:id")
       .get(this.vehiculoTypeController.getOne.bind(this.vehiculoTypeController));
+
+    // create
+    app
+      .route("/api/tipos-vehiculo")
+      .post(this.vehiculoTypeController.create.bind(this.vehiculoTypeController));
   }
 }
