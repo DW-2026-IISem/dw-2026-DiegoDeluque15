@@ -7,7 +7,7 @@ export class PasajeroRoutes {
   public routes(app: Application): void {
     // ================== RUTAS SIN AUTENTICACION / SIN MIDDLEWARE JWT ==================
     // (rellenar en ISS-03-B a E)
-    
+
     // getAll
     app
       .route("/api/pasajeros")
@@ -22,5 +22,11 @@ export class PasajeroRoutes {
     app
       .route("/api/pasajeros")
       .post(this.pasajeroController.create.bind(this.pasajeroController));
+
+    // update (PUT / PATCH)
+    app
+      .route("/api/pasajeros/:id")
+      .put(this.pasajeroController.updatePut.bind(this.pasajeroController))
+      .patch(this.pasajeroController.updatePatch.bind(this.pasajeroController));
   }
 }

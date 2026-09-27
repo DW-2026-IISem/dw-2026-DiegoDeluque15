@@ -63,6 +63,50 @@ export class PasajeroController {
   // ================== UPDATE ==================
   // (rellenar en ISS-03-D)
 
+  public async updatePut(req: Request, res: Response) {
+    try {
+      const id = paramId(req);
+      const body = req.body as PasajeroI;
+      const pasajero = await Pasajero.findByPk(id);
+      if (!pasajero) {
+        res.status(404).json({ error: "Pasajero not found" });
+        return;
+      }
+
+      await pasajero.update({
+        name: body.name,
+        address: body.address,
+        phone: body.phone,
+        email: body.email,
+        password: body.password ?? pasajero.password,
+        status: body.status ?? pasajero.status,
+      });
+
+      const { password, ...safe } = pasajero.toJSON() as PasajeroI & { password?: string };
+      res.status(200).json({ pasajero: safe });
+    } catch (error) {
+      res.status(500).json({ error: "Error updating pasajero (PUT)", detail: String(error) });
+    }
+  }
+
+  public async updatePatch(req: Request, res: Response) {
+    try {
+      const id = paramId(req);
+      const body = req.body as Partial<PasajeroI>;
+      const pasajero = await Pasajero.findByPk(id);
+      if (!pasajero) {
+        res.status(404).json({ error: "Pasajero not found" });
+        return;
+      }
+
+      await pasajero.update(body);
+      const { password, ...safe } = pasajero.toJSON() as PasajeroI & { password?: string };
+      res.status(200).json({ pasajero: safe });
+    } catch (error) {
+      res.status(500).json({ error: "Error updating pasajero (PATCH)", detail: String(error) });
+    }
+  }
+
   // ================== DELETE ==================
   // (rellenar en ISS-03-E)
 }
