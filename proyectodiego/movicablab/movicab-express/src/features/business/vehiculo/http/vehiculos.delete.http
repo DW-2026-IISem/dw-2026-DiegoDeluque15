@@ -1,0 +1,7 @@
+### Delete logico (deactivate)
+PATCH http://localhost:4000/api/vehiculos/1/deactivate HTTP/1.1
+
+###
+
+### Delete fisico
+DELETE http://localhost:4000/api/vehiculos/1 HTTP/1.1

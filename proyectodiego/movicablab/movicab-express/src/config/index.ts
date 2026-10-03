@@ -7,9 +7,11 @@ import "../features/business/pasajero/pasajero.model";
 import "../features/business/tipo-vehiculo/tipo-vehiculo.model";
 import "../features/business/empresa/empresa.model";
 import "../features/business/conductor/conductor.model";
+import "../features/business/vehiculo/vehiculo.model";
 import { Routes } from "../routes/index";
 import { setupSwagger } from "../swagger/index";
 import { setupConductorAssociations } from "../features/business/conductor/conductor.associations";
+import { setupVehiculoAssociations } from "../features/business/vehiculo/vehiculo.associations";
 
 dotenv.config();
 
@@ -43,10 +45,12 @@ export class App {
     this.routePrv.vehiculoTypeRoutes.routes(this.app);
     this.routePrv.empresaRoutes.routes(this.app);
     this.routePrv.conductorRoutes.routes(this.app);
+    this.routePrv.vehiculoRoutes.routes(this.app);
   }
 
   private associations(): void {
     setupConductorAssociations();
+    setupVehiculoAssociations();
   }
 
   private docs(): void {
