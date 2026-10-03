@@ -8,6 +8,7 @@ import "../../features/business/vehiculo/vehiculo.model";
 import "../../features/business/turno/turno.model";
 import "../../features/business/tarifa/tarifa.model";
 import "../../features/business/carrera/carrera.model";
+import "../../features/business/pago/pago.model";
 import { seedPasajeros } from "../../features/business/pasajero/pasajero.seeder";
 import { seedTipoVehiculos } from "../../features/business/tipo-vehiculo/tipo-vehiculo.seeder";
 import { seedEmpresas } from "../../features/business/empresa/empresa.seeder";
@@ -16,6 +17,7 @@ import { seedVehiculos } from "../../features/business/vehiculo/vehiculo.seeder"
 import { seedTurnos } from "../../features/business/turno/turno.seeder";
 import { seedTarifas } from "../../features/business/tarifa/tarifa.seeder";
 import { seedCarreras } from "../../features/business/carrera/carrera.seeder";
+import { seedPagos } from "../../features/business/pago/pago.seeder";
 import { resolveSeedCounts } from "./counts";
 
 dotenv.config();
@@ -52,6 +54,7 @@ export async function runAllSeeders(): Promise<void> {
   await seedTurnos(counts.turnos);
   await seedTarifas(counts.tarifas);
   await seedCarreras(counts.carreras);
+  await seedPagos();
 
   console.log("🌱 SeedersRunner finalizado");
 }

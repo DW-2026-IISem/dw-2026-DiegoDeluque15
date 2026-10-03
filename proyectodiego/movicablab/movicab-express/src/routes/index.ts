@@ -6,6 +6,7 @@ import { VehiculoRoutes } from "../features/business/vehiculo/vehiculo.routes";
 import { TurnoRoutes } from "../features/business/turno/turno.routes";
 import { TarifaRoutes } from "../features/business/tarifa/tarifa.routes";
 import { CarreraRoutes } from "../features/business/carrera/carrera.routes";
+import { PagoRoutes } from "../features/business/pago/pago.routes";
 
 export class Routes {
   public pasajeroRoutes: PasajeroRoutes = new PasajeroRoutes();
@@ -16,4 +17,5 @@ export class Routes {
   public turnoRoutes: TurnoRoutes = new TurnoRoutes();
   public tarifaRoutes: TarifaRoutes = new TarifaRoutes();
   public carreraRoutes: CarreraRoutes = new CarreraRoutes();
+  public pagoRoutes: PagoRoutes = new PagoRoutes();
 }

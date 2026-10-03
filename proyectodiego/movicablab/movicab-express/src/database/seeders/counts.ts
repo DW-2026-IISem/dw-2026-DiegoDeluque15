@@ -13,6 +13,7 @@ export type SeedCounts = {
   turnos: number;
   tarifas: number;
   carreras: number;
+  pagos: number;
 };
 
 export const DEFAULT_SEED_COUNTS: SeedCounts = {
@@ -24,6 +25,7 @@ export const DEFAULT_SEED_COUNTS: SeedCounts = {
   turnos: 20,
   tarifas: 5,
   carreras: 10,
+  pagos: 0, // seeder determina la cantidad por carreras cerradas
 };
 
 export function resolveSeedCounts(argv: string[] = process.argv.slice(2)): SeedCounts {

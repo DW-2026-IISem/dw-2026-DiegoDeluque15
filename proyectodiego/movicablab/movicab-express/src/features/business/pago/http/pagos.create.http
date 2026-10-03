@@ -1,0 +1,42 @@
+### Prerequisito: obtener una carrera cerrada y una no cerrada
+# @name GetCarreras
+GET http://localhost:4000/api/carreras
+
+### Variables (ajusta los IDs según la respuesta de arriba)
+@carreraIdCerrada = 1
+@carreraIdNoCerrada = 6
+
+### 1. POST — Pago válido sobre carrera cerrada
+POST http://localhost:4000/api/pagos
+Content-Type: application/json
+
+{
+  "referencia_id": {{carreraIdCerrada}},
+  "metodo": "efectivo"
+}
+
+### 2. 404 — Carrera inexistente
+POST http://localhost:4000/api/pagos
+Content-Type: application/json
+
+{
+  "referencia_id": 99999,
+  "metodo": "tarjeta"
+}
+
+### 3. 409 — Carrera no está cerrada
+POST http://localhost:4000/api/pagos
+Content-Type: application/json
+
+{
+  "referencia_id": {{carreraIdNoCerrada}},
+  "metodo": "nequi"
+}
+
+### 4. 400 — Faltan campos requeridos
+POST http://localhost:4000/api/pagos
+Content-Type: application/json
+
+{
+  "referencia_id": {{carreraIdCerrada}}
+}

@@ -11,6 +11,7 @@ import "../features/business/vehiculo/vehiculo.model";
 import "../features/business/turno/turno.model";
 import "../features/business/tarifa/tarifa.model";
 import "../features/business/carrera/carrera.model";
+import "../features/business/pago/pago.model";
 import { Routes } from "../routes/index";
 import { setupSwagger } from "../swagger/index";
 import { setupConductorAssociations } from "../features/business/conductor/conductor.associations";
@@ -54,6 +55,7 @@ export class App {
     this.routePrv.turnoRoutes.routes(this.app);
     this.routePrv.tarifaRoutes.routes(this.app);
     this.routePrv.carreraRoutes.routes(this.app);
+    this.routePrv.pagoRoutes.routes(this.app);
   }
 
   private associations(): void {

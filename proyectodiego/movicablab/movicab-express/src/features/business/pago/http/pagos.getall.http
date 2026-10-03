@@ -1,0 +1,5 @@
+### GET todos los pagos
+GET http://localhost:4000/api/pagos
+
+### GET pago por ID
+GET http://localhost:4000/api/pagos/1

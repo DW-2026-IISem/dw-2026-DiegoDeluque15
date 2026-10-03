@@ -189,3 +189,12 @@ Qué función cumple: Registra cada viaje desde su solicitud hasta su cierre, en
 Para qué sirve: Es el insumo principal de ISS-13 (Pago), ISS-14 (Reporte) e ISS-15 (Liquidación). Sin carreras cerradas no hay nada qué pagar ni qué liquidar.
 Evidencia: evidencias/iss-12-carrera-estados.png
 ![Evidencia ISS-12](evidencias/iss-12-carrera-estados.png)
+
+## ISS-13 — Feature Pago (INMUTABLE)
+Fecha: 2026-10-03
+Qué se hizo: se implementó el feature `pago`, que es intencionalmente inmutable: solo tiene `GET all`, `GET one` y `POST`. No existen rutas de `PUT`, `PATCH` ni `DELETE`. El modelo almacena `referencia_tipo` (siempre "carrera" por ahora), `referencia_id` (ID de la Carrera, SIN FK física — polimórfico por diseño), `metodo`, `monto` (copiado del servidor desde `Carrera.total`, el body no puede sobreescribirlo), `fecha` y `estado` (siempre "registrado"). El controller valida: (1) que `referencia_id` sea de una carrera existente (404), y (2) que esa carrera esté en estado `cerrada` (409 si no). El seeder consulta dinámicamente las carreras cerradas y crea un pago por cada una usando su `total` real.
+Por qué: El registro de pago es un hecho contable — no se puede modificar ni borrar sin comprometer la trazabilidad financiera del sistema. La FK polimórfica (sin FK física) permite que en el futuro `referencia_tipo` apunte a otras entidades pagables.
+Qué función cumple: Registra el cobro efectivo de una carrera cerrada, copiando el monto calculado en ISS-12.
+Para qué sirve: Es el insumo para el ISS-15 (Liquidación), donde se agrupan los pagos para su liquidación a los conductores.
+Evidencia: evidencias/iss-13-pago-inmutable.png
+![Evidencia ISS-13](evidencias/iss-13-pago-inmutable.png)
