@@ -11,6 +11,7 @@ export type SeedCounts = {
   conductores: number;
   vehiculos: number;
   turnos: number;
+  tarifas: number;
 };
 
 export const DEFAULT_SEED_COUNTS: SeedCounts = {
@@ -20,6 +21,7 @@ export const DEFAULT_SEED_COUNTS: SeedCounts = {
   conductores: 20,
   vehiculos: 20,
   turnos: 20,
+  tarifas: 5,
 };
 
 export function resolveSeedCounts(argv: string[] = process.argv.slice(2)): SeedCounts {
@@ -33,6 +35,11 @@ export function resolveSeedCounts(argv: string[] = process.argv.slice(2)): SeedC
   const envEmpresas = process.env.SEED_EMPRESAS;
   if (envEmpresas !== undefined && envEmpresas !== "") {
     counts.empresas = Number(envEmpresas);
+  }
+
+  const envTarifas = process.env.SEED_TARIFAS;
+  if (envTarifas !== undefined && envTarifas !== "") {
+    counts.tarifas = Number(envTarifas);
   }
 
   const envTurnos = process.env.SEED_TURNOS;

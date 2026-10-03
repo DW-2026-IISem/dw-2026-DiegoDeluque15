@@ -171,3 +171,12 @@ Qué función cumple: Sirve de puente temporal entre un conductor activo y un ve
 Para qué sirve: Prepara la base para el ISS-11 (Carrera), ya que los viajes se asignan a turnos vigentes y no a conductores sueltos.
 Evidencia: evidencias/iss-10-turno-crud.png
 ![Evidencia ISS-10](evidencias/iss-10-turno-crud.png)
+
+## ISS-11 — Feature Tarifa
+Fecha: 2026-10-03
+Qué se hizo: se implementó el feature completo `tarifa`. Se creó el modelo `Tarifa` con las validaciones de negocio en `tarifa.controller.ts`: valor_base > 0, vigencia_desde < vigencia_hasta, y prevención de solapes temporales de vigencias activas (retornando 409 Conflict si la fecha se cruza con otra tarifa). Se agregó el endpoint adicional `/api/tarifas/vigente` con registro de precedencia en `tarifa.routes.ts` para no chocar con el endpoint `/:id`. El seeder genera 5 tarifas con intervalos sucesivos sin solape de vigencias de 30 días, asegurando que la primera empiece 15 días en el pasado para cubrir el "hoy". Las pruebas `.http` validan exhaustivamente cada una de estas tres reglas de negocio. Todo el módulo se integró a `routes`, `config`, `swagger` y `seeders/index.ts`.
+Por qué: Porque es imprescindible contar con esquemas de precios organizados temporalmente, sin conflictos ni ambigüedades sobre qué regla de cálculo aplicar en un momento dado, y asegurando datos coherentes.
+Qué función cumple: Gestiona el catálogo de precios, definiendo bases y reglas. El endpoint `/vigente` permite al sistema consultar rápidamente qué tarifa aplica en el instante de cotizar un servicio.
+Para qué sirve: Será el insumo fundamental para el cálculo del precio de una Carrera (ISS-12), garantizando que siempre se seleccione de forma unívoca la tarifa correspondiente.
+Evidencia: evidencias/iss-11-tarifa-crud.png
+![Evidencia ISS-11](evidencias/iss-11-tarifa-crud.png)

@@ -1,0 +1,51 @@
+### Crear Tarifa Valida
+POST http://localhost:4000/api/tarifas
+Content-Type: application/json
+
+{
+  "nombre": "Tarifa Valida Test",
+  "regla_calculo": "Base",
+  "valor_base": 100,
+  "vigencia_desde": "2030-01-01T00:00:00Z",
+  "vigencia_hasta": "2030-12-31T23:59:59Z",
+  "status": "active"
+}
+
+### 400 - Valor base <= 0
+POST http://localhost:4000/api/tarifas
+Content-Type: application/json
+
+{
+  "nombre": "Tarifa Cero",
+  "regla_calculo": "Base",
+  "valor_base": 0,
+  "vigencia_desde": "2031-01-01T00:00:00Z",
+  "vigencia_hasta": "2031-12-31T23:59:59Z",
+  "status": "active"
+}
+
+### 400 - vigencia_desde >= vigencia_hasta
+POST http://localhost:4000/api/tarifas
+Content-Type: application/json
+
+{
+  "nombre": "Tarifa Fechas Mal",
+  "regla_calculo": "Base",
+  "valor_base": 100,
+  "vigencia_desde": "2032-12-31T23:59:59Z",
+  "vigencia_hasta": "2032-01-01T00:00:00Z",
+  "status": "active"
+}
+
+### 409 - Solape de vigencias
+POST http://localhost:4000/api/tarifas
+Content-Type: application/json
+
+{
+  "nombre": "Tarifa Solape",
+  "regla_calculo": "Base",
+  "valor_base": 100,
+  "vigencia_desde": "2030-06-01T00:00:00Z",
+  "vigencia_hasta": "2031-06-01T00:00:00Z",
+  "status": "active"
+}
