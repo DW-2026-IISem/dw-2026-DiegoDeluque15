@@ -162,3 +162,12 @@ Qué función cumple: Vehiculo es el activo físico del sistema. Se enlaza a la 
 Para qué sirve: Permite registrar y gestionar la flota de vehículos disponibles para los turnos. Al incluir empresa_id obligatoria, garantiza que cada vehículo pertenece a una empresa activa. El campo tipo_vehiculo_id opcional permite clasificar la flota sin hacerlo mandatorio desde el inicio.
 Evidencia: evidencias/iss-09-vehiculo-crud.png
 ![Evidencia ISS-09](evidencias/iss-09-vehiculo-crud.png)
+
+## ISS-10 — Feature Turno + relación Conductor/Vehiculo
+Fecha: 2026-10-03
+Qué se hizo: se implementó el feature `turno` con su modelo, asociaciones (Conductor 1:N Turno, Vehiculo 1:N Turno), CRUD, validaciones y seeder. Se programó la regla de negocio crítica "regla de unicidad": antes de crear o reactivar un turno, se verifica que el conductor y el vehículo no estén ya asignados a otro turno `active` (retornando 409 Conflict si lo están). El seeder fue programado para iterar simultáneamente listas de conductores y vehículos activos y emparejarlos sin repetir, garantizando que los turnos generados inicialmente respeten esta unicidad en la base de datos. Swagger configurado y las pruebas validaron con éxito los casos válidos, fallos de FK y conflicto 409.
+Por qué: Para poder asignar conductores a vehículos formando unidades operativas (turnos) capaces de aceptar carreras, evitando cruces (un conductor no puede manejar dos vehículos a la vez y un vehículo no puede ser manejado por dos conductores simultáneamente).
+Qué función cumple: Sirve de puente temporal entre un conductor activo y un vehículo activo. El `deactivate` de un turno libera inmediatamente los activos para conformar un nuevo turno.
+Para qué sirve: Prepara la base para el ISS-11 (Carrera), ya que los viajes se asignan a turnos vigentes y no a conductores sueltos.
+Evidencia: evidencias/iss-10-turno-crud.png
+![Evidencia ISS-10](evidencias/iss-10-turno-crud.png)

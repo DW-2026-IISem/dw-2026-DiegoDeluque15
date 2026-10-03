@@ -1,0 +1,74 @@
+### Obtener un conductor activo
+# @name GetConductor
+GET http://localhost:4000/api/conductores
+Content-Type: application/json
+
+### Obtener un vehiculo activo
+# @name GetVehiculo
+GET http://localhost:4000/api/vehiculos
+Content-Type: application/json
+
+### Variables derivadas de las respuestas anteriores
+@conductorId1 = {{GetConductor.response.body.$.conductores[0].id}}
+@conductorId2 = {{GetConductor.response.body.$.conductores[1].id}}
+@vehiculoId1 = {{GetVehiculo.response.body.$.vehiculos[0].id}}
+@vehiculoId2 = {{GetVehiculo.response.body.$.vehiculos[1].id}}
+
+### 1. Crear un turno (Valido)
+POST http://localhost:4000/api/turnos
+Content-Type: application/json
+
+{
+  "nombre": "Turno Valido",
+  "descripcion": "Turno creado desde REST Client",
+  "conductor_id": {{conductorId1}},
+  "vehiculo_id": {{vehiculoId1}},
+  "status": "active"
+}
+
+### 2. 409 Conflicto por Conductor (Conductor ya en turno activo)
+POST http://localhost:4000/api/turnos
+Content-Type: application/json
+
+{
+  "nombre": "Turno Duplicado Conductor",
+  "conductor_id": {{conductorId1}},
+  "vehiculo_id": {{vehiculoId2}},
+  "status": "active"
+}
+
+### 3. 409 Conflicto por Vehiculo (Vehiculo ya en turno activo)
+POST http://localhost:4000/api/turnos
+Content-Type: application/json
+
+{
+  "nombre": "Turno Duplicado Vehiculo",
+  "conductor_id": {{conductorId2}},
+  "vehiculo_id": {{vehiculoId1}},
+  "status": "active"
+}
+
+### 4. 404 Conductor inexistente
+POST http://localhost:4000/api/turnos
+Content-Type: application/json
+
+{
+  "nombre": "Turno Conductor 404",
+  "conductor_id": 99999,
+  "vehiculo_id": {{vehiculoId2}},
+  "status": "active"
+}
+
+### Desactivar el vehiculo 2 para la prueba de 400
+PATCH http://localhost:4000/api/vehiculos/{{vehiculoId2}}/deactivate
+
+### 5. 400 Vehiculo inactivo
+POST http://localhost:4000/api/turnos
+Content-Type: application/json
+
+{
+  "nombre": "Turno Vehiculo Inactivo",
+  "conductor_id": {{conductorId2}},
+  "vehiculo_id": {{vehiculoId2}},
+  "status": "active"
+}\n

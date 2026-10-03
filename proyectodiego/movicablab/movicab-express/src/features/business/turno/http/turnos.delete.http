@@ -1,0 +1,5 @@
+### Desactivar turno (Borrado logico, libera recursos)
+PATCH http://localhost:4000/api/turnos/1/deactivate
+
+### Eliminar turno fisicamente de la base de datos
+DELETE http://localhost:4000/api/turnos/1\n

@@ -5,6 +5,7 @@ import { vehiculoTypeSwagger } from "../features/business/tipo-vehiculo/tipo-veh
 import { empresaSwagger } from "../features/business/empresa/empresa.swagger";
 import { conductorSwagger } from "../features/business/conductor/conductor.swagger";
 import { vehiculoSwagger } from "../features/business/vehiculo/vehiculo.swagger";
+import { turnoSwagger } from "../features/business/turno/turno.swagger";
 
 export type FeatureSwaggerModule = {
   tags: unknown[];
@@ -22,6 +23,7 @@ const featureSwaggerModules: FeatureSwaggerModule[] = [
   empresaSwagger,
   conductorSwagger,
   vehiculoSwagger,
+  turnoSwagger,
   // userSwagger,
 ];
 
