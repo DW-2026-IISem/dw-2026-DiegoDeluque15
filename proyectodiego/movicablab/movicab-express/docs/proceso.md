@@ -126,3 +126,12 @@ Qué función cumple: es la capa de datos de prueba del backend — se ejecuta c
 Para qué sirve: acelera el desarrollo y las pruebas (ya no hay que crear pasajeros/tipos de vehículo a mano antes de probar otras features), y es evidencia de que el backend puede arrancar desde una base vacía y quedar operativo solo.
 Evidencia: evidencias/iss-04-seed-idempotente.png
 ![Evidencia ISS-04](evidencias/iss-04-seed-idempotente.png)
+
+## ISS-05 — Swagger / OpenAPI (feature + registry externo)
+Fecha: 2026-10-03
+Qué se hizo: se crearon los módulos de documentación OpenAPI `pasajero.swagger.ts` y `tipo-vehiculo.swagger.ts` dentro de cada feature, el registry externo `src/swagger/index.ts` que los fusiona en un solo documento OpenAPI 3.0.3, y se cableó en `config/index.ts` con el método `docs()`. Se instalaron `swagger-ui-express` y `@types/swagger-ui-express`. Swagger UI queda montado en `/api/docs` y el JSON en `/api/docs.json`.
+Por qué: sin documentación interactiva, cualquier persona que quiera consumir o probar el API tiene que adivinar los endpoints leyendo código fuente o archivos `.http`. Swagger genera una interfaz visual explorable donde se puede ver cada ruta, sus parámetros, schemas y hasta probar las peticiones en vivo.
+Qué función cumple: es la capa de documentación viva del backend — cada feature exporta su propio módulo swagger y el registry los fusiona automáticamente, siguiendo el mismo patrón de orquestación externa que los seeders. Al agregar una nueva entidad, basta con crear su `.swagger.ts` e importarlo en el registry.
+Para qué sirve: permite a cualquier desarrollador (o al profesor) abrir `/api/docs` en el navegador y ver de un vistazo todos los endpoints disponibles, sus schemas, y probarlos sin herramientas externas. También sirve como contrato formal del API para integraciones futuras con el frontend.
+Evidencia: evidencias/iss-05-swagger-ui.png
+![Evidencia ISS-05](evidencias/iss-05-swagger-ui.png)

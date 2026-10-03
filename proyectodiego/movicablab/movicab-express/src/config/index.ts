@@ -6,6 +6,7 @@ import { sequelize, getDatabaseInfo, testConnection } from "../database/db";
 import "../features/business/pasajero/pasajero.model";
 import "../features/business/tipo-vehiculo/tipo-vehiculo.model";
 import { Routes } from "../routes/index";
+import { setupSwagger } from "../swagger/index";
 
 dotenv.config();
 
@@ -18,6 +19,7 @@ export class App {
     this.settings();
     this.middlewares();
     this.routes();
+    this.docs();
     this.dbConnection();
   }
 
@@ -35,6 +37,10 @@ export class App {
   private routes(): void {
     this.routePrv.pasajeroRoutes.routes(this.app);
     this.routePrv.vehiculoTypeRoutes.routes(this.app);
+  }
+
+  private docs(): void {
+    setupSwagger(this.app);
   }
 
   private async dbConnection(): Promise<void> {
