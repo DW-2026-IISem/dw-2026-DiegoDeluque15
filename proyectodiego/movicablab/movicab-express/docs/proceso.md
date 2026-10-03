@@ -216,3 +216,18 @@ Qué función cumple: Emite comprobantes de pago a los conductores que aglomeran
 Para qué sirve: Cierra el ciclo de ingresos, posibilitando a MoviCab tener el control total de cuánto dinero debe abonarle a cada chofer activo por los servicios prestados en un marco temporal definido.
 Evidencia: evidencias/iss-15-liquidacion-transaccion.png
 ![Evidencia ISS-15](evidencias/iss-15-liquidacion-transaccion.png)
+
+## ISS-16 — Auth base
+Fecha: 2026-10-03
+Qué se hizo: Se extrajeron e implementaron las primitivas de seguridad y los modelos de datos compartidos. Archivos de utilería añadidos:
+- `password.ts`: Implementa el hash y verificación de contraseñas usando `bcrypt`, aislando el costo y el algoritmo para el sistema. También provee una función de tokens opacos.
+- `jwt.ts`: Maneja la emisión (firma) y verificación (validación criptográfica) del Access Token usando RS256/HS256. Garantiza que los tokens emitidos (de corta vida) sean válidos antes de cualquier operación.
+- `resource-match.ts`: Evalúa los permisos basándose en los ResourcePaths para el middleware de RBAC, haciendo matching entre `(method, path)` de express y los strings en base de datos.
+- `auth-user.ts`: Tipado estricto para Express `Request.auth`.
+- `error-response.ts`: Base para centralizar los throws en excepciones formateables de API.
+- Modelos: Se crearon `User` (identidad primaria, con hooks para encriptar clave), `Role` (roles del sistema), `Resource` (catálogo de permisos API), `RoleUser` (concesión a usuarios), `ResourceRole` (concesión de permisos a roles) y `RefreshToken` (gestión de sesiones largas). Asociaciones configuradas en `rbac.associations.ts`.
+Por qué: Para iniciar la Fase III (Autenticación/Autorización), MoviCab requiere infraestructura criptográfica, manejo de sesión y definiciones de RBAC genéricas.
+Qué función cumple: Da el soporte necesario (modelos y middlewares lógicos) para los endpoints de autenticación y protección de rutas venideros.
+Para qué sirve: Sin estos cimientos, no se puede verificar quién es el pasajero o el chofer, ni delimitar sus accesos a los distintos módulos.
+Evidencia: evidencias/iss-16-auth-base.png
+![Evidencia ISS-16](evidencias/iss-16-auth-base.png)

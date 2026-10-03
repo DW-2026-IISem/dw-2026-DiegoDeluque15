@@ -23,6 +23,16 @@ import { setupCarreraAssociations } from "../features/business/carrera/carrera.a
 import { setupCalificacionAssociations } from "../features/business/calificacion/calificacion.associations";
 import { setupLiquidacionAssociations } from "../features/business/liquidacion/liquidacion.associations";
 
+// Fase II — Auth con RBAC
+import "../features/auth/users/user.model";
+import "../features/auth/roles/role.model";
+import "../features/auth/resources/resource.model";
+import "../features/auth/role-users/role-user.model";
+import "../features/auth/resource-roles/resource-role.model";
+import "../features/auth/refresh-tokens/refresh-token.model";
+import "../features/auth/rbac.associations";
+
+
 dotenv.config();
 
 export class App {
