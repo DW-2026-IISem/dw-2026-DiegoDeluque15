@@ -180,3 +180,12 @@ Qué función cumple: Gestiona el catálogo de precios, definiendo bases y regla
 Para qué sirve: Será el insumo fundamental para el cálculo del precio de una Carrera (ISS-12), garantizando que siempre se seleccione de forma unívoca la tarifa correspondiente.
 Evidencia: evidencias/iss-11-tarifa-crud.png
 ![Evidencia ISS-11](evidencias/iss-11-tarifa-crud.png)
+
+## ISS-12 — Feature Carrera + Máquina de Estados
+Fecha: 2026-10-03
+Qué se hizo: se implementó el feature `carrera` completo. El modelo incluye `pasajero_id`, `turno_id`, `tarifa_id` (3 FKs obligatorias), `fecha_inicio` (fijada al crear), `fecha_fin` (null hasta cerrar), `total` (null hasta cerrar), `estado` (ENUM de 5 estados), `observaciones` y `liquidacion_id` (nullable, FK a liquidaciones se activa en ISS-15). La máquina de estados se implementó en `cambiarEstado` con un mapa explícito de transiciones válidas: `solicitada→aceptada`, `aceptada→en_curso`, `en_curso→cerrada`, y cualquiera de las tres primeras→`cancelada`. Los intentos de saltar estados o retroceder devuelven 409. Al cerrar, se fija `fecha_fin = now()` y `total = tarifa.valor_base` (simplificación documentada: sin datos de distancia real). El endpoint PATCH `/estado` está registrado antes de `/:id` para evitar conflictos de routing. El PATCH normal solo permite editar `observaciones`. El seeder distribuye 10 carreras en distintos estados con al menos 3-4 cerradas (con total seteado) listas para ISS-13/14/15. Las asociaciones se cablearon en `carrera.associations.ts` y registradas en `config/index.ts`.
+Por qué: La carrera es el núcleo operativo del sistema. Su ciclo de vida es progresivo y no invertible, por lo que un mapa de transiciones explícito en el servidor es la única forma segura de garantizar coherencia del estado.
+Qué función cumple: Registra cada viaje desde su solicitud hasta su cierre, enlazando al pasajero con el turno activo y la tarifa vigente. El cierre calcula automáticamente el monto, dejando el registro listo para ser liquidado.
+Para qué sirve: Es el insumo principal de ISS-13 (Pago), ISS-14 (Reporte) e ISS-15 (Liquidación). Sin carreras cerradas no hay nada qué pagar ni qué liquidar.
+Evidencia: evidencias/iss-12-carrera-estados.png
+![Evidencia ISS-12](evidencias/iss-12-carrera-estados.png)

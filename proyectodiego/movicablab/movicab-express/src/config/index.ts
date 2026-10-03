@@ -10,11 +10,13 @@ import "../features/business/conductor/conductor.model";
 import "../features/business/vehiculo/vehiculo.model";
 import "../features/business/turno/turno.model";
 import "../features/business/tarifa/tarifa.model";
+import "../features/business/carrera/carrera.model";
 import { Routes } from "../routes/index";
 import { setupSwagger } from "../swagger/index";
 import { setupConductorAssociations } from "../features/business/conductor/conductor.associations";
 import { setupVehiculoAssociations } from "../features/business/vehiculo/vehiculo.associations";
 import { setupTurnoAssociations } from "../features/business/turno/turno.associations";
+import { setupCarreraAssociations } from "../features/business/carrera/carrera.associations";
 
 dotenv.config();
 
@@ -51,12 +53,14 @@ export class App {
     this.routePrv.vehiculoRoutes.routes(this.app);
     this.routePrv.turnoRoutes.routes(this.app);
     this.routePrv.tarifaRoutes.routes(this.app);
+    this.routePrv.carreraRoutes.routes(this.app);
   }
 
   private associations(): void {
     setupConductorAssociations();
     setupVehiculoAssociations();
     setupTurnoAssociations();
+    setupCarreraAssociations();
   }
 
   private docs(): void {

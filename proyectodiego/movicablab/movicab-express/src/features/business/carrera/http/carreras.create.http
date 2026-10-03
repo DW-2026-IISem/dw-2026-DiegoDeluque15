@@ -1,0 +1,41 @@
+### 1. Crear carrera válida (estado = solicitada)
+# @name CreateCarrera
+POST http://localhost:4000/api/carreras
+Content-Type: application/json
+
+{
+  "pasajero_id": 1,
+  "turno_id": 1,
+  "tarifa_id": 1,
+  "observaciones": "Creada desde REST Client"
+}
+
+### 2. 404 — turno inexistente
+POST http://localhost:4000/api/carreras
+Content-Type: application/json
+
+{
+  "pasajero_id": 1,
+  "turno_id": 99999,
+  "tarifa_id": 1
+}
+
+### 3. 400 — turno inactivo (desactivar primero con PATCH /api/turnos/X/deactivate)
+POST http://localhost:4000/api/carreras
+Content-Type: application/json
+
+{
+  "pasajero_id": 1,
+  "turno_id": 2,
+  "tarifa_id": 1
+}
+
+### 4. 404 — tarifa inexistente
+POST http://localhost:4000/api/carreras
+Content-Type: application/json
+
+{
+  "pasajero_id": 1,
+  "turno_id": 1,
+  "tarifa_id": 99999
+}
