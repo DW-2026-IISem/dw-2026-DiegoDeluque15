@@ -1,0 +1,68 @@
+### 1. Crear una nueva carrera para pruebas de Calificacion
+# @name CreateCarreraCal
+POST http://localhost:4000/api/carreras
+Content-Type: application/json
+
+{
+  "pasajero_id": 2,
+  "turno_id": 2,
+  "tarifa_id": 1
+}
+
+###
+@newCarreraCalId = {{CreateCarreraCal.response.body.$.carrera.id}}
+
+### 2. POST 409 intentar calificar la carrera NO CERRADA
+POST http://localhost:4000/api/calificaciones
+Content-Type: application/json
+
+{
+  "carrera_id": {{newCarreraCalId}},
+  "puntaje": 5
+}
+
+### 3. Avanzar carrera a cerrada
+PATCH http://localhost:4000/api/carreras/{{newCarreraCalId}}/estado
+Content-Type: application/json
+
+{ "estado": "aceptada" }
+
+###
+PATCH http://localhost:4000/api/carreras/{{newCarreraCalId}}/estado
+Content-Type: application/json
+
+{ "estado": "en_curso" }
+
+###
+PATCH http://localhost:4000/api/carreras/{{newCarreraCalId}}/estado
+Content-Type: application/json
+
+{ "estado": "cerrada" }
+
+### 4. POST 400 puntaje invalido (6)
+POST http://localhost:4000/api/calificaciones
+Content-Type: application/json
+
+{
+  "carrera_id": {{newCarreraCalId}},
+  "puntaje": 6
+}
+
+### 5. POST válido
+POST http://localhost:4000/api/calificaciones
+Content-Type: application/json
+
+{
+  "carrera_id": {{newCarreraCalId}},
+  "puntaje": 4,
+  "comentario": "Excelente"
+}
+
+### 6. POST 409 intentar calificar la misma carrera DE NUEVO
+POST http://localhost:4000/api/calificaciones
+Content-Type: application/json
+
+{
+  "carrera_id": {{newCarreraCalId}},
+  "puntaje": 3
+}

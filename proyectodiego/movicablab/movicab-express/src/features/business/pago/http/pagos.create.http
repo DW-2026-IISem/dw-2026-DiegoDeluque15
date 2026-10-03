@@ -1,42 +1,58 @@
-### Prerequisito: obtener una carrera cerrada y una no cerrada
-# @name GetCarreras
-GET http://localhost:4000/api/carreras
+### 1. Crear una nueva carrera para pruebas de Pago
+# @name CreateCarreraPago
+POST http://localhost:4000/api/carreras
+Content-Type: application/json
 
-### Variables (ajusta los IDs según la respuesta de arriba)
-@carreraIdCerrada = 1
-@carreraIdNoCerrada = 6
+{
+  "pasajero_id": 1,
+  "turno_id": 1,
+  "tarifa_id": 1
+}
 
-### 1. POST — Pago válido sobre carrera cerrada
+### 2. Guardar el ID de la carrera
+@newCarreraId = {{CreateCarreraPago.response.body.$.carrera.id}}
+
+### 3. POST 409 — Carrera no está cerrada (intentar pagar estando solicitada)
 POST http://localhost:4000/api/pagos
 Content-Type: application/json
 
 {
-  "referencia_id": {{carreraIdCerrada}},
+  "referencia_id": {{newCarreraId}},
+  "metodo": "nequi"
+}
+
+### 4. Avanzar la carrera hasta cerrada
+PATCH http://localhost:4000/api/carreras/{{newCarreraId}}/estado
+Content-Type: application/json
+
+{ "estado": "aceptada" }
+
+###
+PATCH http://localhost:4000/api/carreras/{{newCarreraId}}/estado
+Content-Type: application/json
+
+{ "estado": "en_curso" }
+
+###
+PATCH http://localhost:4000/api/carreras/{{newCarreraId}}/estado
+Content-Type: application/json
+
+{ "estado": "cerrada" }
+
+### 5. POST — Pago válido sobre carrera cerrada
+POST http://localhost:4000/api/pagos
+Content-Type: application/json
+
+{
+  "referencia_id": {{newCarreraId}},
   "metodo": "efectivo"
 }
 
-### 2. 404 — Carrera inexistente
+### 6. POST 404 — Carrera inexistente
 POST http://localhost:4000/api/pagos
 Content-Type: application/json
 
 {
   "referencia_id": 99999,
   "metodo": "tarjeta"
-}
-
-### 3. 409 — Carrera no está cerrada
-POST http://localhost:4000/api/pagos
-Content-Type: application/json
-
-{
-  "referencia_id": {{carreraIdNoCerrada}},
-  "metodo": "nequi"
-}
-
-### 4. 400 — Faltan campos requeridos
-POST http://localhost:4000/api/pagos
-Content-Type: application/json
-
-{
-  "referencia_id": {{carreraIdCerrada}}
 }

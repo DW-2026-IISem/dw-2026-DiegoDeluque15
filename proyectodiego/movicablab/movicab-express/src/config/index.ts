@@ -12,12 +12,16 @@ import "../features/business/turno/turno.model";
 import "../features/business/tarifa/tarifa.model";
 import "../features/business/carrera/carrera.model";
 import "../features/business/pago/pago.model";
+import "../features/business/calificacion/calificacion.model";
+import "../features/business/liquidacion/liquidacion.model";
 import { Routes } from "../routes/index";
 import { setupSwagger } from "../swagger/index";
 import { setupConductorAssociations } from "../features/business/conductor/conductor.associations";
 import { setupVehiculoAssociations } from "../features/business/vehiculo/vehiculo.associations";
 import { setupTurnoAssociations } from "../features/business/turno/turno.associations";
 import { setupCarreraAssociations } from "../features/business/carrera/carrera.associations";
+import { setupCalificacionAssociations } from "../features/business/calificacion/calificacion.associations";
+import { setupLiquidacionAssociations } from "../features/business/liquidacion/liquidacion.associations";
 
 dotenv.config();
 
@@ -56,6 +60,8 @@ export class App {
     this.routePrv.tarifaRoutes.routes(this.app);
     this.routePrv.carreraRoutes.routes(this.app);
     this.routePrv.pagoRoutes.routes(this.app);
+    this.routePrv.calificacionRoutes.routes(this.app);
+    this.routePrv.liquidacionRoutes.routes(this.app);
   }
 
   private associations(): void {
@@ -63,6 +69,8 @@ export class App {
     setupVehiculoAssociations();
     setupTurnoAssociations();
     setupCarreraAssociations();
+    setupCalificacionAssociations();
+    setupLiquidacionAssociations();
   }
 
   private docs(): void {

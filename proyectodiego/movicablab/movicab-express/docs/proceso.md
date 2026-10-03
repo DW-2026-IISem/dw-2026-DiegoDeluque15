@@ -198,3 +198,21 @@ Qué función cumple: Registra el cobro efectivo de una carrera cerrada, copiand
 Para qué sirve: Es el insumo para el ISS-15 (Liquidación), donde se agrupan los pagos para su liquidación a los conductores.
 Evidencia: evidencias/iss-13-pago-inmutable.png
 ![Evidencia ISS-13](evidencias/iss-13-pago-inmutable.png)
+
+## ISS-14 — Feature Calificacion
+Fecha: 2026-10-03
+Qué se hizo: Se implementó la entidad `calificacion` con FK `carrera_id`. Una carrera solo puede tener una calificación (restricción `UNIQUE` en DB y validación en controller que arroja 409). Solo carreras con estado "cerrada" pueden calificar (409). El puntaje debe estar entre 1 y 5 (400). Se cablearon las asociaciones de 1 a 1 (`Carrera.hasOne`, `Calificacion.belongsTo`). El seeder fue programado dinámicamente para insertar una calificación a todas las carreras "cerradas" existentes (sin asumir un ID hardcodeado). Se documentó en Swagger y se agregó script bash para testear los casos 409 y 400 nativamente.
+Por qué: Control de calidad del servicio. Una sola calificación por carrera asegura consistencia y evita distorsión de métricas.
+Qué función cumple: Da feedback sobre las carreras cerradas.
+Para qué sirve: Puede ser útil más adelante para medir el rendimiento de los conductores.
+Evidencia: evidencias/iss-14-calificacion-unica.png
+![Evidencia ISS-14](evidencias/iss-14-calificacion-unica.png)
+
+## ISS-15 — Feature Liquidacion (Transaccional)
+Fecha: 2026-10-03
+Qué se hizo: Se implementó la entidad inmutable `liquidacion`, con un endpoint `POST` altamente transaccional. La lógica agrupa dinámicamente las carreras "cerradas", "sin liquidar" (`liquidacion_id: null`), pertenecientes al `conductor_id` provisto (vía join `Carrera->Turno->conductor_id`), y que tengan `fecha_fin` dentro de `[fecha_desde, fecha_hasta]`. Se utiliza `sequelize.transaction()` para garantizar atomicidad: si se encuentran carreras, se calcula la suma de sus `total`, se crea la `Liquidacion` con ese valor sumado, y se actualizan todas las `Carrera` encontradas seteando su campo `liquidacion_id` hacia la liquidación recién creada. Si no se hallan carreras, retorna 400. Si cualquier paso falla, se aplica rollback completo. Se configuraron las asociaciones `Liquidacion.hasMany(Carrera)` y `Carrera.belongsTo(Liquidacion)`. **No se creó seeder para Liquidacion**, dejándolo explícitamente para pruebas interactivas/manuales según lo instruido.
+Por qué: Es el núcleo del módulo financiero para los conductores. La atomicidad transaccional (todo o nada) es obligatoria porque no podemos permitir que se cree una liquidación si falla la vinculación de las carreras, ni dejar carreras con un ID "fantasma" si falla la creación de la liquidación.
+Qué función cumple: Emite comprobantes de pago a los conductores que aglomeran múltiples carreras de un período.
+Para qué sirve: Cierra el ciclo de ingresos, posibilitando a MoviCab tener el control total de cuánto dinero debe abonarle a cada chofer activo por los servicios prestados en un marco temporal definido.
+Evidencia: evidencias/iss-15-liquidacion-transaccion.png
+![Evidencia ISS-15](evidencias/iss-15-liquidacion-transaccion.png)
