@@ -3,9 +3,11 @@ import { sequelize, testConnection } from "../db";
 import "../../features/business/pasajero/pasajero.model";
 import "../../features/business/tipo-vehiculo/tipo-vehiculo.model";
 import "../../features/business/empresa/empresa.model";
+import "../../features/business/conductor/conductor.model";
 import { seedPasajeros } from "../../features/business/pasajero/pasajero.seeder";
 import { seedTipoVehiculos } from "../../features/business/tipo-vehiculo/tipo-vehiculo.seeder";
 import { seedEmpresas } from "../../features/business/empresa/empresa.seeder";
+import { seedConductores } from "../../features/business/conductor/conductor.seeder";
 import { resolveSeedCounts } from "./counts";
 
 dotenv.config();
@@ -37,6 +39,7 @@ export async function runAllSeeders(): Promise<void> {
   await seedPasajeros(counts.pasajeros);
   await seedTipoVehiculos(counts.tipos_vehiculo);
   await seedEmpresas(counts.empresas);
+  await seedConductores(counts.conductores);
 
   console.log("🌱 SeedersRunner finalizado");
 }

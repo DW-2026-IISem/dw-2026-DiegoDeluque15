@@ -144,3 +144,12 @@ Qué función cumple: es la entidad raíz del lado empresarial del sistema — s
 Para qué sirve: permite registrar y gestionar las empresas de transporte que operan en MoviCab. A nivel de desarrollo, el 409 de nit duplicado es el primer ejemplo de lógica de negocio real (más allá de 404/500) implementada en el backend, y sirve como referencia para todas las validaciones de unicidad futuras.
 Evidencia: evidencias/iss-07-empresa-crud-409.png
 ![Evidencia ISS-07](evidencias/iss-07-empresa-crud-409.png)
+
+## ISS-08 — Feature Conductor + relación Empresa
+Fecha: 2026-10-03
+Qué se hizo: se implementó el feature completo `conductor` (`src/features/business/conductor/`). Se creó el modelo `conductor.model.ts` con la clave foránea `empresa_id` (nullable). En `conductor.controller.ts` se implementaron los 7 métodos CRUD, añadiendo validaciones en `create` y `update` para garantizar que si se envía `empresa_id`, la Empresa referenciada exista y su status sea `active` (devolviendo 404 o 400 respectivamente). Se definieron las rutas REST en `conductor.routes.ts` y las asociaciones (`Conductor.belongsTo(Empresa)` y `Empresa.hasMany(Conductor)`) en `conductor.associations.ts`, cableadas luego en `config/index.ts`. Adicionalmente, se creó un seeder con Faker (`conductor.seeder.ts`) que asigna un `empresa_id` aleatorio existente, ejecutándose después del seeder de Empresa; y se documentaron todos los endpoints en Swagger (`conductor.swagger.ts`).
+Por qué: Esta es la primera entidad que incluye una relación foránea hacia otra (Empresa). No basta con el constraint SQL en la BD; la regla de negocio dicta que no se pueden asignar conductores a empresas inactivas. Esto requiere validar la integridad referencial y el estado a nivel de controlador de manera controlada (404/400).
+Qué función cumple: Conductor es un pilar fundamental del dominio. Se enlaza a Empresa (a la que pertenece la flota) y luego será padre de Turno y Vehículo. Este feature provee las operaciones REST básicas para gestionar el catálogo de conductores.
+Para qué sirve: Permite a los administradores registrar y administrar conductores, asignándolos opcionalmente a empresas (si forman parte de una flota). La validación garantiza que no existan inconsistencias (conductores apuntando a empresas fantasma o desactivadas).
+Evidencia: evidencias/iss-08-conductor-crud.png
+![Evidencia ISS-08](evidencias/iss-08-conductor-crud.png)

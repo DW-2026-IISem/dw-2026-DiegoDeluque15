@@ -6,8 +6,10 @@ import { sequelize, getDatabaseInfo, testConnection } from "../database/db";
 import "../features/business/pasajero/pasajero.model";
 import "../features/business/tipo-vehiculo/tipo-vehiculo.model";
 import "../features/business/empresa/empresa.model";
+import "../features/business/conductor/conductor.model";
 import { Routes } from "../routes/index";
 import { setupSwagger } from "../swagger/index";
+import { setupConductorAssociations } from "../features/business/conductor/conductor.associations";
 
 dotenv.config();
 
@@ -19,6 +21,7 @@ export class App {
     this.app = express();
     this.settings();
     this.middlewares();
+    this.associations();
     this.routes();
     this.docs();
     this.dbConnection();
@@ -39,6 +42,11 @@ export class App {
     this.routePrv.pasajeroRoutes.routes(this.app);
     this.routePrv.vehiculoTypeRoutes.routes(this.app);
     this.routePrv.empresaRoutes.routes(this.app);
+    this.routePrv.conductorRoutes.routes(this.app);
+  }
+
+  private associations(): void {
+    setupConductorAssociations();
   }
 
   private docs(): void {

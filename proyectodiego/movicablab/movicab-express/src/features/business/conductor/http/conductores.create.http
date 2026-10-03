@@ -1,0 +1,47 @@
+### Crear conductor sin empresa
+POST http://localhost:4000/api/conductores HTTP/1.1
+Content-Type: application/json
+
+{
+  "nombre": "Carlos Martinez",
+  "descripcion": "Conductor experimentado",
+  "status": "active"
+}
+
+###
+
+### Crear conductor con empresa valida
+POST http://localhost:4000/api/conductores HTTP/1.1
+Content-Type: application/json
+
+{
+  "nombre": "Ana Gomez",
+  "descripcion": "Conductora turno nocturno",
+  "empresa_id": 1,
+  "status": "active"
+}
+
+###
+
+### Crear conductor con empresa inexistente (404)
+POST http://localhost:4000/api/conductores HTTP/1.1
+Content-Type: application/json
+
+{
+  "nombre": "Luis Torres",
+  "empresa_id": 9999,
+  "status": "active"
+}
+
+###
+
+### Crear conductor con empresa inactive (400)
+### (Primero desactivar una empresa: PATCH /api/empresas/:id/deactivate)
+POST http://localhost:4000/api/conductores HTTP/1.1
+Content-Type: application/json
+
+{
+  "nombre": "Maria Lopez",
+  "empresa_id": 2,
+  "status": "active"
+}

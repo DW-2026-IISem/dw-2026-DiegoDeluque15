@@ -1,0 +1,12 @@
+### Listar todos los conductores activos
+GET http://localhost:4000/api/conductores HTTP/1.1
+
+###
+
+### Obtener conductor por id
+GET http://localhost:4000/api/conductores/1 HTTP/1.1
+
+###
+
+### Obtener conductor inexistente (404)
+GET http://localhost:4000/api/conductores/999 HTTP/1.1

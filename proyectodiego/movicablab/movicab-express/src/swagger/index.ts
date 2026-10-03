@@ -3,6 +3,7 @@ import swaggerUi from "swagger-ui-express";
 import { pasajeroSwagger } from "../features/business/pasajero/pasajero.swagger";
 import { vehiculoTypeSwagger } from "../features/business/tipo-vehiculo/tipo-vehiculo.swagger";
 import { empresaSwagger } from "../features/business/empresa/empresa.swagger";
+import { conductorSwagger } from "../features/business/conductor/conductor.swagger";
 
 export type FeatureSwaggerModule = {
   tags: unknown[];
@@ -18,6 +19,7 @@ const featureSwaggerModules: FeatureSwaggerModule[] = [
   pasajeroSwagger,
   vehiculoTypeSwagger,
   empresaSwagger,
+  conductorSwagger,
   // userSwagger,
 ];
 
