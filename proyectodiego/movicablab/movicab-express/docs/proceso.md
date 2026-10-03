@@ -118,3 +118,11 @@ Fecha: 2026-09-27
 Qué se hizo: se agregaron los métodos deletePhysical y deleteLogical en tipo-vehiculo.controller.ts, las rutas DELETE /api/tipos-vehiculo/:id y PATCH /api/tipos-vehiculo/:id/deactivate en tipo-vehiculo.routes.ts, y el archivo http/tipos-vehiculo.delete.http. Verificado: borrado lógico oculta el registro en el GET (lo marca como inactive) y el físico lo borra por completo de la BD.
 Cómo capturarlo: ejecutar `npm run dev` y en otra terminal crear un registro de prueba (ej. id 5): `curl -s -X POST http://localhost:4000/api/tipos-vehiculo -H 'Content-Type: application/json' --data-raw '{"name":"Borrar","status":"active"}' | python3 -m json.tool`. Luego hacer delete físico: `curl -s -X DELETE http://localhost:4000/api/tipos-vehiculo/5 | python3 -m json.tool` y confirmar con `curl -s http://localhost:4000/api/tipos-vehiculo | python3 -m json.tool` que ya no está.
 ![Evidencia ISS-06-D](evidencias/iss-06-d-delete-tipo-vehiculo.png)
+## ISS-04 — Seeders con Faker
+Fecha: 2026-10-03
+Qué se hizo: se crearon los seeders `pasajero.seeder.ts` y `tipo-vehiculo.seeder.ts` con @faker-js/faker, el archivo `counts.ts` con las cantidades por defecto (10 pasajeros, 25 tipos de vehículo), y el runner orquestador `database/seeders/index.ts` que los ejecuta en orden y es idempotente (si ya hay datos, los omite en vez de duplicar).
+Por qué: en vez de crear datos de prueba a mano uno por uno con curl cada vez que se reinicia la base, se necesita una forma repetible y automática de poblarla con datos realistas.
+Qué función cumple: es la capa de datos de prueba del backend — se ejecuta con `npm run db:seed` y deja la base lista para probar cualquier endpoint sin pasos manuales previos.
+Para qué sirve: acelera el desarrollo y las pruebas (ya no hay que crear pasajeros/tipos de vehículo a mano antes de probar otras features), y es evidencia de que el backend puede arrancar desde una base vacía y quedar operativo solo.
+Evidencia: evidencias/iss-04-seed-idempotente.png
+![Evidencia ISS-04](evidencias/iss-04-seed-idempotente.png)
