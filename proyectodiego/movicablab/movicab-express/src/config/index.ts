@@ -71,6 +71,7 @@ export class App {
     this.routePrv.rolesRoutes.routes(this.app);
     this.routePrv.resourcesRoutes.routes(this.app);
     this.routePrv.usersRoutes.routes(this.app);
+    this.routePrv.sessionRoutes.routes(this.app);
     this.routePrv.refreshTokensRoutes.routes(this.app);
     this.routePrv.turnoRoutes.routes(this.app);
     this.routePrv.tarifaRoutes.routes(this.app);
@@ -103,7 +104,7 @@ export class App {
         throw new Error(`No se pudo conectar a la base de datos ${dbInfo.engine.toUpperCase()}`);
       }
 
-      await sequelize.sync({ force: false, alter: true });
+      await sequelize.sync({ force: false, alter: false });
       console.log(`✅ Base de datos sincronizada exitosamente`);
     } catch (error) {
       console.error("❌ Error al conectar con la base de datos:", error);

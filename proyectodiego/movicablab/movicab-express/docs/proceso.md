@@ -479,3 +479,61 @@ Todo el ciclo de vida del Refresh Token (emitir, rotar, revocar familiarmente) s
 ### Evidencia — comandos ejecutados
 - `npx tsc --noEmit`: Ejecutado. 0 errores. Tipos conciliados perfectamente.
 - `npm run dev`: Ejecutado. Servidor arriba, conectando a DB, sin caídas.
+
+## ISS-22 — Feature Session (login, refresh, logout, perfil y permisos)
+Fecha: 2026-10-04
+
+### Qué se hizo
+Se implementó el feature de Sesión que consolida el flujo final de autenticación. Este módulo orquesta la seguridad, comprobando credenciales y abriendo/cerrando sesiones sin exponer validación directa de DB a los controladores.
+Se añadieron:
+- **DTOs**: `login.dto.ts`, `refresh-session.dto.ts`, `logout-session.dto.ts`, `session-response.dto.ts`.
+- **Service**: Maneja el ciclo vital invocando validación de contraseñas y operaciones del `RefreshTokensService` con rotación (`login`, `refresh`, `logout`). También proyecta `profile` y `myPermissions`.
+- **Controller/Routes**: Enlaza las tres modalidades de seguridad en un solo archivo:
+  - OPEN: `login`, `refresh`, `logout`. (El middleware no interviene, se valida la credencial de sesión en el Body).
+  - JWT puro: `perfil`, `permisos`. (El middleware `authenticate` certifica la validez del token y expone la identidad, el negocio se encarga del resto).
+  - JWT + RBAC: Probado con las demás rutas del sistema ya protegidas.
+- **Swagger y HTTP tests**: Documentación añadida e importado en `src/routes/index.ts`. Adaptados a `movicab-express` (`/api/pasajeros`, 92 permisos ADMIN, 26 permisos DESPACHO).
+
+### Por qué
+Es la culminación de la arquitectura de seguridad Fase II. Proporciona los puntos de entrada HTTP oficiales (Login y Logout) y materializa el diseño de Refresh Tokens. Al tener la lógica separada, el sistema de acceso funciona limpiamente para 3 niveles distintos (OPEN, JWT, y RBAC). 
+
+### Evidencia — comandos para verificar End-to-End
+Ejecutado con credenciales reales (`admin`/`Admin123!` y `seller`/`Seller123!` sembradas en ISS-17).
+
+- **1) OPEN — login** (Debe dar 200 y devolver par de tokens)
+```bash
+curl -s -X POST http://localhost:4000/api/sesion/login -H "Content-Type: application/json" -d '{"identifier":"admin","password":"Admin123!"}'
+```
+
+- **2) JWT — perfil con el access token**
+```bash
+ADMIN=$(curl -s -X POST http://localhost:4000/api/sesion/login -H "Content-Type: application/json" -d '{"identifier":"admin","password":"Admin123!"}' | node -pe "JSON.parse(require('fs').readFileSync(0)).access_token")
+curl -s -H "Authorization: Bearer $ADMIN" http://localhost:4000/api/sesion/perfil
+```
+
+- **3) JWT + RBAC — admin entra a pasajeros** (Debe dar HTTP 200)
+```bash
+curl -s -o /dev/null -w "%{http_code}\n" -H "Authorization: Bearer $ADMIN" http://localhost:4000/api/pasajeros
+```
+
+- **4) JWT + RBAC — seller/DESPACHO bloqueado en POST pasajeros** (Debe dar HTTP 403)
+```bash
+SELLER=$(curl -s -X POST http://localhost:4000/api/sesion/login -H "Content-Type: application/json" -d '{"identifier":"seller","password":"Seller123!"}' | node -pe "JSON.parse(require('fs').readFileSync(0)).access_token")
+curl -s -o /dev/null -w "%{http_code}\n" -X POST -H "Authorization: Bearer $SELLER" -H "Content-Type: application/json" -d '{"nombre":"x","apellido":"x","telefono":"1","email":"x@x.com"}' http://localhost:4000/api/pasajeros
+```
+
+- **4.1) JWT — permisos de seller/DESPACHO** (Debe devolver 26)
+```bash
+curl -s -H "Authorization: Bearer $SELLER" http://localhost:4000/api/permisos | node -pe "JSON.parse(require('fs').readFileSync(0)).permissions.length"
+```
+
+- **5) Renovación — rotar refresh y detectar reuso**
+```bash
+REFRESH=$(curl -s -X POST http://localhost:4000/api/sesion/login -H "Content-Type: application/json" -d '{"identifier":"admin","password":"Admin123!"}' | node -pe "JSON.parse(require('fs').readFileSync(0)).refresh_token")
+
+# Rota exitosamente (devuelve nuevos tokens)
+curl -s -X POST http://localhost:4000/api/sesion/refresh -H "Content-Type: application/json" -d '{"refresh_token":"'$REFRESH'"}'
+
+# El reuso es detectado y la familia es revocada (devuelve 401: Refresh token reuse detected)
+curl -s -X POST http://localhost:4000/api/sesion/refresh -H "Content-Type: application/json" -d '{"refresh_token":"'$REFRESH'"}'
+```

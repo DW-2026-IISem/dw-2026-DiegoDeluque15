@@ -1,3 +1,4 @@
+import { SessionRoutes } from "../features/auth/session/session.routes";
 import { RefreshTokensRoutes } from "../features/auth/refresh-tokens/refresh-tokens.routes";
 import { PasajeroRoutes } from "../features/business/pasajero/pasajero.routes";
 import { TipoVehiculoRoutes } from "../features/business/tipo-vehiculo/tipo-vehiculo.routes";
@@ -17,6 +18,7 @@ import { CalificacionRoutes } from "../features/business/calificacion/calificaci
 import { LiquidacionRoutes } from "../features/business/liquidacion/liquidacion.routes";
 
 export class Routes {
+  public sessionRoutes: SessionRoutes = new SessionRoutes();
   public refreshTokensRoutes: RefreshTokensRoutes = new RefreshTokensRoutes();
   public pasajeroRoutes: PasajeroRoutes = new PasajeroRoutes();
   public vehiculoTypeRoutes: TipoVehiculoRoutes = new TipoVehiculoRoutes();
