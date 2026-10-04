@@ -1,5 +1,7 @@
 import { Application } from "express";
 import { EmpresaController } from "./empresa.controller";
+import { authenticate, authorize } from "../../auth/access";
+
 
 export class EmpresaRoutes {
   public empresaController: EmpresaController = new EmpresaController();
@@ -10,32 +12,32 @@ export class EmpresaRoutes {
     // getAll
     app
       .route("/api/empresas")
-      .get(this.empresaController.getAll.bind(this.empresaController));
+      .get(authenticate, authorize, this.empresaController.getAll.bind(this.empresaController));
 
     // getOne
     app
       .route("/api/empresas/:id")
-      .get(this.empresaController.getOne.bind(this.empresaController));
+      .get(authenticate, authorize, this.empresaController.getOne.bind(this.empresaController));
 
     // create
     app
       .route("/api/empresas")
-      .post(this.empresaController.create.bind(this.empresaController));
+      .post(authenticate, authorize, this.empresaController.create.bind(this.empresaController));
 
     // update (PUT / PATCH)
     app
       .route("/api/empresas/:id")
-      .put(this.empresaController.updatePut.bind(this.empresaController))
-      .patch(this.empresaController.updatePatch.bind(this.empresaController));
+      .put(authenticate, authorize, this.empresaController.updatePut.bind(this.empresaController))
+      .patch(authenticate, authorize, this.empresaController.updatePatch.bind(this.empresaController));
 
     // delete fisico
     app
       .route("/api/empresas/:id")
-      .delete(this.empresaController.deletePhysical.bind(this.empresaController));
+      .delete(authenticate, authorize, this.empresaController.deletePhysical.bind(this.empresaController));
 
     // delete logico
     app
       .route("/api/empresas/:id/deactivate")
-      .patch(this.empresaController.deleteLogical.bind(this.empresaController));
+      .patch(authenticate, authorize, this.empresaController.deleteLogical.bind(this.empresaController));
   }
 }

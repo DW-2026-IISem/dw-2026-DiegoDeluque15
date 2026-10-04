@@ -415,3 +415,37 @@ curl -s http://localhost:4000/api/usuarios/4/permisos | python3 -c "import json,
 curl -s http://localhost:4000/api/usuarios/5/permisos | python3 -c "import json,sys; print(len(json.load(sys.stdin)['permissions']))"
 # Debería responder: 26
 ```
+![Evidencia ISS-19](evidencias/iss-19-matriz-rbac.png)
+
+## ISS-20 — Middlewares de acceso
+Fecha: 2026-10-04
+
+### Qué se hizo
+Se implementaron los middlewares definitivos de seguridad para proteger las rutas de negocio y de identidad:
+- `authenticate`: Middleware de autenticación JWT (Modalidad 2). Valida firma, caducidad, emisor y audiencia. Extrae el id de usuario, consulta a la base de datos para verificar que el usuario exista y siga activo (`status === 'active'`), y si es exitoso inyecta la identidad en `req.auth`.
+- `authorize`: Middleware de autorización granular RBAC (Modalidad 3). Lee `req.auth`, obtiene la lista de recursos efectivos de ese usuario desde `resource_roles`, y verifica si la petición actual (`req.method` + `req.originalUrl`) coincide con alguno de los permisos otorgados.
+- Se resolvió la extensión de tipos TS para `req.auth` dentro del módulo Express para asegurar que Typescript pase limpiamente.
+
+Se aplicó el PARCHE de protección (inyectar `authenticate` y `authorize` antes del controlador) en **16 archivos de rutas**:
+1. **11 entidades de negocio**: Pasajero, Tipo-Vehiculo, Empresa, Conductor, Vehiculo, Turno, Tarifa, Carrera, Pago, Calificacion, Liquidacion.
+2. **5 entidades de identidad/auth**: Usuarios, Roles, Recursos, RoleUsers, ResourceRoles.
+
+### Por qué
+Para que el sistema RBAC implementado en los ISS anteriores (18 y 19) tenga efecto real, todas las llamadas a la API deben ser interceptadas y validadas antes de tocar los controladores. Esto cierra el ciclo de protección "Default Deny" (nadie entra sin token válido, y ningún token válido entra a un endpoint que no tenga concesionado).
+
+### Evidencia — comandos para verificar
+
+```bash
+# 1. Compilación TypeScript limpia (req.auth tipado correctamente)
+npx tsc --noEmit
+
+# 2. Sin token: Acceso denegado a ruta de negocio (Debe dar 401)
+curl -s -o /dev/null -w "%{http_code}\n" http://localhost:4000/api/pasajeros
+
+# 3. (Opcional - requiere firma manual) Con token SELLER a ruta permitida (200 OK)
+# curl -H "Authorization: Bearer <SELLER_TOKEN>" http://localhost:4000/api/pasajeros
+
+# 4. (Opcional - requiere firma manual) Con token SELLER a ruta prohibida (403 Forbidden)
+# curl -H "Authorization: Bearer <SELLER_TOKEN>" http://localhost:4000/api/usuarios
+```
+![Evidencia ISS-20](evidencias/iss-20-deny-by-default.png)
