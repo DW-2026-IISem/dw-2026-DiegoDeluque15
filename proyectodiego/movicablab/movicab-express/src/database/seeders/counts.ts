@@ -15,6 +15,7 @@ export type SeedCounts = {
   carreras: number;
   pagos: number;
   calificaciones: number;
+  users: number;
 };
 
 export const DEFAULT_SEED_COUNTS: SeedCounts = {
@@ -28,6 +29,7 @@ export const DEFAULT_SEED_COUNTS: SeedCounts = {
   carreras: 10,
   pagos: 0, // seeder determina la cantidad por carreras cerradas
   calificaciones: 0,
+  users: 2,
 };
 
 export function resolveSeedCounts(argv: string[] = process.argv.slice(2)): SeedCounts {

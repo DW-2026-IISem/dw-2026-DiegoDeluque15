@@ -231,3 +231,17 @@ Qué función cumple: Da el soporte necesario (modelos y middlewares lógicos) p
 Para qué sirve: Sin estos cimientos, no se puede verificar quién es el pasajero o el chofer, ni delimitar sus accesos a los distintos módulos.
 Evidencia: evidencias/iss-16-auth-base.png
 ![Evidencia ISS-16](evidencias/iss-16-auth-base.png)
+
+## ISS-17 — Feature Users
+Fecha: 2026-10-04
+Qué se hizo: Se implementó el CRUD completo para la gestión de usuarios (identidades). Archivos clave creados:
+- `dto/`: Reglas de validación para `CreateUserDto`, `UpdateUserDto`, `PatchUserDto` y `ChangePasswordDto`.
+- `users.repository.ts`: Capa de persistencia. **No incluye el password** en las lecturas de API, asegurando que los hashes nunca se fuguen accidentalmente.
+- `users.service.ts`: Lógica de negocio, unicidad, actualización condicional y consulta delegada de permisos efectivos.
+- `users.controller.ts` y `users.routes.ts`: Exposición de endpoints usando modalidad JWT + RBAC.
+- `users.seeder.ts`: Seeder con dos usuarios base (`admin` y `seller`) para la validación de RBAC posterior.
+- `users.swagger.ts`: Documentación OpenAPI de las 9 rutas.
+Por qué: El sistema necesita identidades reales en base de datos para autenticar y autorizar a los actores del sistema (pasajeros, choferes, admins).
+Qué función cumple: Permite listar, registrar, modificar (lógica o físicamente) usuarios, y cambiar su contraseña.
+Para qué sirve: Prepara la base para el login real. Aunque los middlewares `authenticate` y `authorize` están mockeados por ahora (su implementación real será en ISS-20), las rutas ya están estructuradas según el patrón de seguridad definitivo.
+Evidencia: Pruebas locales y compilación limpias.

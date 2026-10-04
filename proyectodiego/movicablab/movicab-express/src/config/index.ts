@@ -66,6 +66,7 @@ export class App {
     this.routePrv.empresaRoutes.routes(this.app);
     this.routePrv.conductorRoutes.routes(this.app);
     this.routePrv.vehiculoRoutes.routes(this.app);
+    this.routePrv.usersRoutes.routes(this.app);
     this.routePrv.turnoRoutes.routes(this.app);
     this.routePrv.tarifaRoutes.routes(this.app);
     this.routePrv.carreraRoutes.routes(this.app);

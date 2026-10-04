@@ -10,6 +10,7 @@ import "../../features/business/tarifa/tarifa.model";
 import "../../features/business/carrera/carrera.model";
 import "../../features/business/pago/pago.model";
 import "../../features/business/calificacion/calificacion.model";
+import { seedUsers } from "../../features/auth/users/users.seeder";
 import { seedPasajeros } from "../../features/business/pasajero/pasajero.seeder";
 import { seedTipoVehiculos } from "../../features/business/tipo-vehiculo/tipo-vehiculo.seeder";
 import { seedEmpresas } from "../../features/business/empresa/empresa.seeder";
@@ -46,6 +47,8 @@ export async function runAllSeeders(): Promise<void> {
   }
 
   await sequelize.sync({ force: false, alter: true });
+
+  await seedUsers(counts.users);
 
   // Orden: business (padres -> hijos)
   await seedPasajeros(counts.pasajeros);
