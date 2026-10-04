@@ -17,6 +17,8 @@ export type SeedCounts = {
   calificaciones: number;
   users: number;
   roles: number;
+  role_users: number;
+  resource_roles: number;
   resources: number;
 };
 
@@ -33,6 +35,8 @@ export const DEFAULT_SEED_COUNTS: SeedCounts = {
   calificaciones: 0,
   users: 2,
   roles: 2,
+  role_users: 2,
+  resource_roles: 0,
   resources: 0,
 };
 

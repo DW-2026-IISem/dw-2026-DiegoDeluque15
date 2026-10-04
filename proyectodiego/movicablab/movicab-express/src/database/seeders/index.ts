@@ -10,6 +10,10 @@ import "../../features/business/tarifa/tarifa.model";
 import "../../features/business/carrera/carrera.model";
 import "../../features/business/pago/pago.model";
 import "../../features/business/calificacion/calificacion.model";
+import "../../features/auth/role-users/role-user.model";
+import "../../features/auth/resource-roles/resource-role.model";
+import { seedRoleUsers } from "../../features/auth/role-users/role-users.seeder";
+import { seedResourceRoles } from "../../features/auth/resource-roles/resource-roles.seeder";
 import { seedRoles } from "../../features/auth/roles/roles.seeder";
 import { seedResources } from "../../features/auth/resources/resources.seeder";
 import { seedUsers } from "../../features/auth/users/users.seeder";
@@ -53,6 +57,8 @@ export async function runAllSeeders(): Promise<void> {
   await seedRoles();
     await seedResources();
     await seedUsers(counts.users);
+    await seedRoleUsers();
+    await seedResourceRoles();
 
   // Orden: business (padres -> hijos)
   await seedPasajeros(counts.pasajeros);

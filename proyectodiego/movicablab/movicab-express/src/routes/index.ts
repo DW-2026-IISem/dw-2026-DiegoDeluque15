@@ -3,6 +3,8 @@ import { TipoVehiculoRoutes } from "../features/business/tipo-vehiculo/tipo-vehi
 import { EmpresaRoutes } from "../features/business/empresa/empresa.routes";
 import { ConductorRoutes } from "../features/business/conductor/conductor.routes";
 import { VehiculoRoutes } from "../features/business/vehiculo/vehiculo.routes";
+import { RoleUsersRoutes } from "../features/auth/role-users/role-users.routes";
+import { ResourceRolesRoutes } from "../features/auth/resource-roles/resource-roles.routes";
 import { RolesRoutes } from "../features/auth/roles/roles.routes";
 import { ResourcesRoutes } from "../features/auth/resources/resources.routes";
 import { UsersRoutes } from "../features/auth/users/users.routes";
@@ -19,6 +21,8 @@ export class Routes {
   public empresaRoutes: EmpresaRoutes = new EmpresaRoutes();
   public conductorRoutes: ConductorRoutes = new ConductorRoutes();
   public vehiculoRoutes: VehiculoRoutes = new VehiculoRoutes();
+  public roleUsersRoutes: RoleUsersRoutes = new RoleUsersRoutes();
+  public resourceRolesRoutes: ResourceRolesRoutes = new ResourceRolesRoutes();
   public rolesRoutes: RolesRoutes = new RolesRoutes();
   public resourcesRoutes: ResourcesRoutes = new ResourcesRoutes();
   public usersRoutes: UsersRoutes = new UsersRoutes();

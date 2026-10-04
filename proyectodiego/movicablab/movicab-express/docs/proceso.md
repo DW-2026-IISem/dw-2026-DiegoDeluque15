@@ -350,3 +350,68 @@ for r in califs: print(r['method'], r['path'])
 "
 ```
 
+
+## ISS-19 — Features RoleUsers y ResourceRoles
+Fecha: 2026-10-04
+
+### Qué se hizo
+Se implementaron los dos features finales de administración RBAC: **RoleUsers** y **ResourceRoles**.
+
+**Feature RoleUsers** (`src/features/auth/role-users/`):
+- Implementación de la tabla pivote `role_users` (asignación de roles a usuarios).
+- DTOs, Repository, Service (`grant`, `deactivate`, `reactivate`), Controller, Routes, Swagger y archivo HTTP de pruebas.
+- `role-users.seeder.ts`: Asigna automáticamente el usuario canónico `admin` al rol `ADMIN`, y `seller` al rol `DESPACHO`.
+
+**Feature ResourceRoles** (`src/features/auth/resource-roles/`):
+- Implementación de la tabla pivote `resource_roles` (la concesión real de permisos).
+- DTOs (incluido `EffectivePermissionDto`), Repository (con la función vital `findEffectiveForUser`), Service (con `reconcileRole`), Controller, Routes, Swagger y HTTP de pruebas.
+- Incorporación de `with-transaction.ts` en `src/shared/database/`.
+- `resource-roles.seeder.ts`: Construcción de la matriz de permisos.
+
+**Construcción de la matriz de permisos para MoviCab:**
+El seeder de `resource_roles` fue programado de manera dinámica para asignar:
+1. Al rol **ADMIN**: Se le asignaron **todos los 92 recursos**.
+2. Al rol **DESPACHO**: Se le asignaron **26 recursos** mediante reglas lógicas:
+   - GET (solo lectura) de las 11 entidades de negocio.
+   - Acceso completo a Carreras (GET, POST, PATCH /estado, PATCH, DELETE).
+   - Acceso completo a Pagos, Calificaciones y Liquidaciones (al ser inmutables/solo agregar, se incluye POST y los GET correspondientes, y para Calificaciones también incluye PATCH/PUT/DELETE según la estructura de rutas).
+   - Sin ningún tipo de acceso (ni GET) a los endpoints de Usuarios, Roles ni Recursos (`/api/usuarios`, `/api/roles`, `/api/recursos`).
+
+### Por qué
+Para cerrar el ciclo RBAC, necesitábamos enlazar a los `Users` con los `Roles` (RoleUsers), y a los `Roles` con los `Resources` (ResourceRoles). Esta cadena de 4 tablas (`users` -> `role_users` -> `roles` -> `resource_roles` -> `resources`) es la que evaluará el middleware en ISS-20 para determinar la autorización de cada request. 
+
+La función `reconcileRole` en el servicio es crucial porque hace que el seeder sea idempotente: si los recursos cambian, correr el seeder nuevamente agrega los que faltan y desactiva los que sobren, manteniendo sincronizada la política de seguridad con la base de datos sin duplicar registros.
+
+### Qué función cumple
+- **RoleUsers**: Determina los grupos de acceso a los que pertenece cada usuario del sistema.
+- **ResourceRoles**: Determina los permisos que tiene cada grupo de acceso (Rol). 
+- El repositorio `ResourceRolesRepository` contiene `findEffectiveForUser()`, la consulta SQL que recorre las 4 tablas uniendo las asociaciones con status="active" para obtener la lista real de endpoints a los que un usuario tiene acceso.
+
+### Para qué sirve (ejemplo práctico DESPACHO vs ADMIN)
+Con esta implementación, la base de datos ya sabe de manera efectiva lo que puede hacer cada usuario.
+
+**Usuario ADMIN (`admin`)**: Tiene 92/92 permisos efectivos. Puede llamar a `DELETE /api/usuarios/3` para eliminar a un conductor o cambiar los permisos en `/api/concesiones-rol` porque posee esos recursos otorgados.
+**Usuario DESPACHO (`seller`)**: Tiene 26/92 permisos efectivos. Puede llamar a `POST /api/carreras` o `PATCH /api/carreras/1/estado` para operar la plataforma de despacho. Sin embargo, si intenta ejecutar `POST /api/usuarios`, el sistema determinará que el recurso no está en sus 26 concesiones activas y (cuando se active el middleware) rechazará la petición automáticamente, garantizando que el despachador no pueda alterar la seguridad del sistema ni borrar información maestra.
+
+### Evidencia — comandos para verificar
+```bash
+# 1. Verificar tipos TypeScript
+npx tsc --noEmit
+
+# 2. Correr el seeder completo (verás el conteo de altas por rol)
+npm run db:seed
+
+# 3. Arrancar el servidor
+npm run dev
+
+# 4. En otra terminal, consultar la identidad de los usuarios sembrados:
+curl -s http://localhost:4000/api/usuarios
+
+# 5. Obtener los permisos del usuario admin (ID 4 - ajustar ID según el log anterior)
+curl -s http://localhost:4000/api/usuarios/4/permisos | python3 -c "import json,sys; print(len(json.load(sys.stdin)['permissions']))"
+# Debería responder: 92
+
+# 6. Obtener los permisos del usuario despacho/seller (ID 5 - ajustar ID según log anterior)
+curl -s http://localhost:4000/api/usuarios/5/permisos | python3 -c "import json,sys; print(len(json.load(sys.stdin)['permissions']))"
+# Debería responder: 26
+```
