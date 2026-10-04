@@ -71,6 +71,7 @@ export class App {
     this.routePrv.rolesRoutes.routes(this.app);
     this.routePrv.resourcesRoutes.routes(this.app);
     this.routePrv.usersRoutes.routes(this.app);
+    this.routePrv.refreshTokensRoutes.routes(this.app);
     this.routePrv.turnoRoutes.routes(this.app);
     this.routePrv.tarifaRoutes.routes(this.app);
     this.routePrv.carreraRoutes.routes(this.app);

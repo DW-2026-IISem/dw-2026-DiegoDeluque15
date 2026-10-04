@@ -449,3 +449,33 @@ curl -s -o /dev/null -w "%{http_code}\n" http://localhost:4000/api/pasajeros
 # curl -H "Authorization: Bearer <SELLER_TOKEN>" http://localhost:4000/api/usuarios
 ```
 ![Evidencia ISS-20](evidencias/iss-20-deny-by-default.png)
+## ISS-21 — Feature RefreshTokens (sesiones renovables y revocables)
+Fecha: 2026-10-04
+
+### Qué se hizo
+Se implementó el feature de `RefreshTokens` completo según el código oficial proporcionado, bajo `src/features/auth/refresh-tokens`.
+- **DTOs**: `refresh-token-response.dto.ts` (nunca expone `token_hash`).
+- **Repository**: Búsquedas por `token_hash`, operaciones transaccionales y con *pessimistic lock* (`FOR UPDATE`) para rotación segura, y consultas de revocación masiva por *family_id*.
+- **Service**: 
+  - Gestión de sesiones propias (`getMine`, `revokeMine`).
+  - Lógica vital de ciclo de vida (`issue`, `rotate`, `revokeByToken`).
+- **Controller/Routes**: Rutas bajo `GET /api/sesiones`, `PATCH /api/sesiones/deactivate-all`, y más, protegidas únicamente con `authenticate` (modalidad 2 - JWT), ya que administrar las propias sesiones es un derecho base.
+- **Swagger y HTTP tests**: Documentación añadida e importado en `src/routes/index.ts`.
+
+### Por qué
+Los *access tokens* (JWT) deben tener una vida muy corta (15 min) para acotar la ventana de riesgo si se comprometen. Para no forzar al usuario a loguearse cada 15 minutos, se emplean los *refresh tokens* persistidos de un solo uso que le permiten a la aplicación renovar el access token de manera silenciosa.
+
+### Seguridad: Rotación y Detección de Reúso (Reuse Detection)
+Esta es la pieza más avanzada de seguridad del backend:
+1. **Un solo uso**: Cuando un usuario usa su *refresh token* actual, se invalida y se genera uno nuevo (rotación), pero ambos comparten un mismo `family_id`.
+2. **Detección de robo**: Si un atacante roba el refresh token y lo usa, el token rota. Cuando el usuario legítimo intente usar el que él creía válido, el sistema (`rotate` service) notará que el token **ya había sido consumido**.
+3. **Revocación de familia**: Al detectar un reuso, asume robo y como defensa revoca (pone inactivos) **todos** los tokens bajo ese `family_id`, desterrando tanto al atacante como al usuario legítimo, obligando a re-autenticación completa mediante credenciales reales.
+El uso de `FOR UPDATE` en la transacción previene que la aplicación permita condiciones de carrera donde un atacante y la víctima envíen el request al mismo microsegundo.
+
+### Pruebas pendientes para ISS-22
+Al no existir aún el endpoint `POST /api/sesion/login`, no es posible invocar el servicio `issue` para emitir nuevas sesiones.
+Todo el ciclo de vida del Refresh Token (emitir, rotar, revocar familiarmente) será ensayado y documentado con llamadas REST Client definitivas durante el ISS-22 (Feature Session).
+
+### Evidencia — comandos ejecutados
+- `npx tsc --noEmit`: Ejecutado. 0 errores. Tipos conciliados perfectamente.
+- `npm run dev`: Ejecutado. Servidor arriba, conectando a DB, sin caídas.
