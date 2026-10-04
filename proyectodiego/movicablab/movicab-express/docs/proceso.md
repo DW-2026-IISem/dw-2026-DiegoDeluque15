@@ -245,3 +245,108 @@ Por qué: El sistema necesita identidades reales en base de datos para autentica
 Qué función cumple: Permite listar, registrar, modificar (lógica o físicamente) usuarios, y cambiar su contraseña.
 Para qué sirve: Prepara la base para el login real. Aunque los middlewares `authenticate` y `authorize` están mockeados por ahora (su implementación real será en ISS-20), las rutas ya están estructuradas según el patrón de seguridad definitivo.
 Evidencia: Pruebas locales y compilación limpias.
+
+## ISS-18 — Features Roles y Resources
+Fecha: 2026-10-04
+
+### Qué se hizo
+Se implementaron los dos features de autorización RBAC: **Roles** y **Resources**,
+siguiendo el patrón de la página oficial del curso adaptado a las entidades reales de MoviCab.
+
+**Feature Roles** (`src/features/auth/roles/`):
+- DTOs: `create-role.dto.ts`, `update-role.dto.ts`, `patch-role.dto.ts`, `role-response.dto.ts`, `dto/index.ts`
+- `roles.repository.ts`: capa de acceso a datos (`findAll`, `findById`, `findByName`, `create`, `update`, `delete`)
+- `roles.service.ts`: lógica de negocio, validación de unicidad de nombre, borrado lógico y físico
+- `roles.controller.ts` + `roles.routes.ts`: 7 endpoints bajo `/api/roles` (modalidad JWT + RBAC)
+- `roles.seeder.ts`: siembra determinista de los 2 roles canónicos (**ADMIN** y **DESPACHO**)
+- `roles.swagger.ts`: documentación OpenAPI completa
+- `http/roles.get.http`: pruebas REST Client para VS Code
+
+**Feature Resources** (`src/features/auth/resources/`):
+- DTOs: `create-resource.dto.ts`, `update-resource.dto.ts`, `patch-resource.dto.ts`, `resource-response.dto.ts`, `dto/index.ts`
+- `resource-catalog.ts`: fuente única de verdad — **92 recursos** reales de MoviCab, derivados
+  automáticamente de todos los archivos `*.routes.ts` del proyecto (ver "Por qué 92" más abajo)
+- `resources.repository.ts`, `resources.service.ts`, `resources.controller.ts`, `resources.routes.ts`:
+  CRUD completo bajo `/api/recursos`
+- `resources.seeder.ts`: siembra el catálogo completo de 92 recursos usando `findOrCreate` (idempotente)
+- `resources.swagger.ts`: documentación OpenAPI
+- `http/resources.get.http`: pruebas REST Client para VS Code
+
+**Adaptaciones MoviCab respecto al curso genérico:**
+- Rol `SELLER` del curso → **`DESPACHO`** en MoviCab (operador de despacho de taxis)
+- Catálogo genérico de 58 recursos del curso → **92 recursos reales** de las rutas montadas en MoviCab
+- `pago` y `liquidacion` son registros inmutables (sin UPDATE/DELETE físico) → solo 3 recursos cada uno
+
+### Por qué
+El sistema de autorización necesita una matriz de permisos (role ↔ resource) para que el middleware
+`authorize` pueda funcionar. Sin el catálogo de roles y recursos no es posible construir esa matriz
+en ISS-19. Los roles definen *quién* puede hacer algo; los recursos definen *qué* está permitido hacer.
+
+### Por qué 92 recursos (no 90)
+La versión inicial del catálogo fue escrita a mano y omitió `PUT /api/calificaciones/:id` y
+`DELETE /api/calificaciones/:id` (se contabilizaron solo 5 recursos para calificaciones en lugar de 7).
+Se corrigió reescribiendo `resource-catalog.ts` mediante un parser que recorre todos los `*.routes.ts`
+con regex, capturando cada `.route("path")` seguido de `.METHOD(` sin deduplicar por path
+(PUT y PATCH sobre el mismo path son **dos recursos distintos**).
+
+Distribución final por entidad:
+
+| Entidad                      | Recursos | Nota |
+|------------------------------|----------|------|
+| Pasajeros                    | 7        | GET×2, POST, PUT, PATCH, DELETE, PATCH/deactivate |
+| Tipos de Vehículo            | 7        | ídem |
+| Empresas                     | 7        | ídem |
+| Conductores                  | 7        | ídem |
+| Vehículos                    | 7        | ídem |
+| Turnos                       | 7        | ídem |
+| Tarifas                      | 8        | + GET /tarifas/vigente |
+| Carreras                     | 6        | + PATCH /carreras/:id/estado; sin PUT |
+| Pagos                        | 3        | inmutable: GET, POST, GET/:id |
+| Calificaciones               | 7        | GET×2, POST, PUT, PATCH, DELETE, PATCH/deactivate |
+| Liquidaciones                | 3        | inmutable: GET, POST, GET/:id |
+| Usuarios                     | 9        | + PATCH/password, GET/permisos |
+| Roles                        | 7        | GET×2, POST, PUT, PATCH, DELETE, PATCH/deactivate |
+| Recursos                     | 7        | ídem |
+| **Total**                    | **92**   | |
+
+### Para qué sirven los roles y usuarios de prueba
+Los usuarios `admin` y `seller` del seeder **no son actores del negocio MoviCab**
+(no son conductores ni despachadores reales). Son **identidades de prueba del sistema de permisos**,
+necesarias para verificar que RBAC funciona correctamente durante el desarrollo:
+
+| Usuario (contraseña) | Rol (ISS-19) | Qué puede hacer |
+|----------------------|--------------|-----------------|
+| `admin` / `Admin123!` | ADMIN | Acceso total a los 92 recursos |
+| `seller` / `Seller123!` | DESPACHO | Solo recursos marcados `despacho: true`: leer catálogo + gestionar carreras, pagos, calificaciones y liquidaciones |
+
+El rol **DESPACHO** modela al operador de despacho: consulta toda la información operativa,
+crea y actualiza carreras, registra pagos y calificaciones, genera liquidaciones — pero NO puede
+administrar usuarios, roles ni permisos del sistema.
+
+### Evidencia — comandos para verificar
+
+```bash
+# 1. Compilación TypeScript sin errores
+npx tsc --noEmit
+
+# 2. Seeder (debe mostrar "roles: 2, resources: 92 nuevos")
+npm run db:seed
+
+# 3. Iniciar servidor
+npm run dev
+
+# 4. Verificar catálogo de roles (debe mostrar ADMIN y DESPACHO)
+curl http://localhost:4000/api/roles | python3 -m json.tool
+
+# 5. Verificar total de recursos (debe mostrar 92 entradas)
+curl -s http://localhost:4000/api/recursos | python3 -c "import json,sys; d=json.load(sys.stdin); print(f'Total recursos: {len(d["resources"])}')"
+
+# 6. Ver un recurso específico de calificaciones (confirma PUT y DELETE)
+curl -s http://localhost:4000/api/recursos | python3 -c "
+import json, sys
+d = json.load(sys.stdin)
+califs = [r for r in d['resources'] if 'calificacion' in r['path']]
+for r in califs: print(r['method'], r['path'])
+"
+```
+
