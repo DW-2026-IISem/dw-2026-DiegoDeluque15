@@ -46,6 +46,7 @@ export class App {
     this.associations();
     this.routes();
     this.docs();
+    this.errorHandling();
     this.dbConnection();
   }
 
@@ -88,6 +89,17 @@ export class App {
     setupCarreraAssociations();
     setupCalificacionAssociations();
     setupLiquidacionAssociations();
+  }
+
+  private errorHandling(): void {
+    const bodyErrorHandler: any = (err: any, _req: any, res: any, next: any) => {
+      if (err instanceof SyntaxError && "body" in err) {
+        res.status(400).json({ error: "Malformed JSON body" });
+        return;
+      }
+      next(err);
+    };
+    this.app.use(bodyErrorHandler);
   }
 
   private docs(): void {

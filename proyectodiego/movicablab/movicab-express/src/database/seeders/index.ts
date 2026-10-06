@@ -10,6 +10,7 @@ import "../../features/business/tarifa/tarifa.model";
 import "../../features/business/carrera/carrera.model";
 import "../../features/business/pago/pago.model";
 import "../../features/business/calificacion/calificacion.model";
+import "../../features/business/liquidacion/liquidacion.model";
 import "../../features/auth/role-users/role-user.model";
 import "../../features/auth/resource-roles/resource-role.model";
 import { seedRoleUsers } from "../../features/auth/role-users/role-users.seeder";
@@ -52,7 +53,19 @@ export async function runAllSeeders(): Promise<void> {
     throw new Error("No hay conexión a la base de datos");
   }
 
-  await sequelize.sync({ force: false, alter: true });
+  
+  const isMysql = sequelize.getDialect() === "mysql" || sequelize.getDialect() === "mariadb";
+  if (isMysql) {
+    await sequelize.query("SET FOREIGN_KEY_CHECKS = 0");
+  }
+  try {
+    await sequelize.sync({ force: true });
+  } finally {
+    if (isMysql) {
+      await sequelize.query("SET FOREIGN_KEY_CHECKS = 1");
+    }
+  }
+
 
   await seedRoles();
     await seedResources();

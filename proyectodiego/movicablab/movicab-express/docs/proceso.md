@@ -537,3 +537,13 @@ curl -s -X POST http://localhost:4000/api/sesion/refresh -H "Content-Type: appli
 # El reuso es detectado y la familia es revocada (devuelve 401: Refresh token reuse detected)
 curl -s -X POST http://localhost:4000/api/sesion/refresh -H "Content-Type: application/json" -d '{"refresh_token":"'$REFRESH'"}'
 ```
+
+## CIERRE-AUTH: Cierre Fase III (Auth con RBAC - backend completo)
+- **18 features** (11 de negocio + 7 de auth) cableadas completamente.
+- **17 tablas** (11 de negocio + 6 RBAC: users, roles, resources, role_users, resource_roles, refresh_tokens).
+- **3 modalidades** aplicadas por ruta: OPEN, JWT, JWT + RBAC.
+- **Seeders deterministas**: 2 roles (ADMIN/DESPACHO), 92 recursos, 2 usuarios, 2 asignaciones, 118 concesiones totales (92 de ADMIN + 26 de DESPACHO).
+- API con Swagger configurado (MoviCab API) usando security schemas earerAuth.
+- Las verificaciones \	sc --noEmit\, \
+pm run db:seed\, y pruebas de humo se ejecutaron satisfactoriamente en las entidades Tarifa y Liquidacion con los 3 niveles de acceso.
+- Todas las capas respetan la convención estricta: \outes -> controller -> service -> repository -> model\.

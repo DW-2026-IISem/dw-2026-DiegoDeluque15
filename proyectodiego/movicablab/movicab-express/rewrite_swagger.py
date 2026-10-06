@@ -1,4 +1,6 @@
-import { Application } from "express";
+import os
+
+swagger_content = """import { Application } from "express";
 import swaggerUi from "swagger-ui-express";
 import { pasajeroSwagger } from "../features/business/pasajero/pasajero.swagger";
 import { vehiculoTypeSwagger } from "../features/business/tipo-vehiculo/tipo-vehiculo.swagger";
@@ -103,3 +105,7 @@ export function setupSwagger(app: Application): void {
   });
   console.log("?? Swagger UI: /api/docs  |  OpenAPI JSON: /api/docs.json");
 }
+"""
+
+with open('src/swagger/index.ts', 'w') as f:
+    f.write(swagger_content)
