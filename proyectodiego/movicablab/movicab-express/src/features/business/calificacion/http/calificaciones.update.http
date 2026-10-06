@@ -1,0 +1,4 @@
+PATCH http://localhost:4000/api/calificaciones/1
+Content-Type: application/json
+
+{"puntaje":4}

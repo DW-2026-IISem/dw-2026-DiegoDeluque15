@@ -1,0 +1,28 @@
+### Feature Pasajero — UPDATE (PUT) / UPDATE (PATCH)
+### Leyenda: SIN AUTH (sin middleware JWT / sin autenticacion)
+@baseUrl = http://localhost:4000
+@id = 1
+
+# @name updatePasajeroPut
+PUT {{baseUrl}}/api/pasajeros/{{id}}
+Content-Type: application/json
+
+{
+  "name": "Ana Perez Actualizada",
+  "address": "Carrera 15 #40-10",
+  "phone": "3009876543",
+  "email": "ana.perez@example.com",
+  "password": "Password123!",
+  "status": "active"
+}
+
+###
+
+# @name updatePasajeroPatch
+PATCH {{baseUrl}}/api/pasajeros/{{id}}
+Content-Type: application/json
+
+{
+  "phone": "3011112233",
+  "address": "Nueva direccion parcial"
+}

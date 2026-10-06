@@ -1,0 +1,7 @@
+### Obtener todas las carreras
+GET http://localhost:4000/api/carreras
+Content-Type: application/json
+
+### Obtener carrera por ID
+GET http://localhost:4000/api/carreras/1
+Content-Type: application/json

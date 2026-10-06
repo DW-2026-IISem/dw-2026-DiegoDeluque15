@@ -1,0 +1,13 @@
+### Feature TipoVehiculo — CREATE
+### Leyenda: SIN AUTH (sin middleware JWT / sin autenticacion)
+@baseUrl = http://localhost:4000
+
+# @name createTipoVehiculo
+POST {{baseUrl}}/api/tipos-vehiculo
+Content-Type: application/json
+
+{
+  "name": "Sedan",
+  "description": "Vehiculo de 4 puertas",
+  "status": "active"
+}

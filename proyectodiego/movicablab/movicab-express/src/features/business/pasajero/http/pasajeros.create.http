@@ -1,0 +1,16 @@
+### Feature Pasajero — CREATE
+### Leyenda: SIN AUTH (sin middleware JWT / sin autenticación)
+@baseUrl = http://localhost:4000
+
+# @name createPasajero
+POST {{baseUrl}}/api/pasajeros
+Content-Type: application/json
+
+{
+  "name": "Ana Pérez",
+  "address": "Calle 10 #20-30",
+  "phone": "3001234567",
+  "email": "ana.perez@example.com",
+  "password": "Password123!",
+  "status": "active"
+}

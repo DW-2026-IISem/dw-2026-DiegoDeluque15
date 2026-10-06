@@ -1,0 +1,38 @@
+### 1. Obtener datos necesarios
+# @name GetPasajero
+GET http://localhost:4000/api/pasajeros
+
+###
+# @name GetTurno
+GET http://localhost:4000/api/turnos
+
+###
+# @name GetTarifa
+GET http://localhost:4000/api/tarifas
+
+### Variables
+@pasajeroId = {{GetPasajero.response.body.$.pasajeros[0].id}}
+@turnoId = {{GetTurno.response.body.$.turnos[0].id}}
+@tarifaId = {{GetTarifa.response.body.$.tarifas[0].id}}
+
+### 2. Crear carrera válida (estado = solicitada)
+# @name CreateCarrera
+POST http://localhost:4000/api/carreras
+Content-Type: application/json
+
+{
+  "pasajero_id": {{pasajeroId}},
+  "turno_id": {{turnoId}},
+  "tarifa_id": {{tarifaId}},
+  "observaciones": "Creada desde REST Client"
+}
+
+### 3. 404 — turno inexistente
+POST http://localhost:4000/api/carreras
+Content-Type: application/json
+
+{
+  "pasajero_id": {{pasajeroId}},
+  "turno_id": 99999,
+  "tarifa_id": {{tarifaId}}
+}

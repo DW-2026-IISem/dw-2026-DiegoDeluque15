@@ -1,0 +1,41 @@
+@carreraId = {{CreateCarrera.response.body.$.carrera.id}}
+
+### A. Transición INVÁLIDA: solicitada → cerrada (409)
+PATCH http://localhost:4000/api/carreras/{{carreraId}}/estado
+Content-Type: application/json
+
+{
+  "estado": "cerrada"
+}
+
+### B. Transición válida: solicitada → aceptada
+PATCH http://localhost:4000/api/carreras/{{carreraId}}/estado
+Content-Type: application/json
+
+{
+  "estado": "aceptada"
+}
+
+### C. Transición válida: aceptada → en_curso
+PATCH http://localhost:4000/api/carreras/{{carreraId}}/estado
+Content-Type: application/json
+
+{
+  "estado": "en_curso"
+}
+
+### D. Transición válida: en_curso → cerrada (fija fecha_fin y total)
+PATCH http://localhost:4000/api/carreras/{{carreraId}}/estado
+Content-Type: application/json
+
+{
+  "estado": "cerrada"
+}
+
+### E. Transición INVÁLIDA: cerrada → cualquier cosa (409)
+PATCH http://localhost:4000/api/carreras/{{carreraId}}/estado
+Content-Type: application/json
+
+{
+  "estado": "cancelada"
+}

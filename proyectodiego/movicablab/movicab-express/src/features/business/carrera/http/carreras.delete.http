@@ -1,0 +1,6 @@
+### NOTA: el flujo normal para cancelar una carrera es via /estado:
+### PATCH /api/carreras/:id/estado  body: { "estado": "cancelada" }
+### El DELETE físico solo debe usarse en casos excepcionales de administración.
+
+### DELETE fisico (usar solo en admin, el flujo normal es cancelar via /estado)
+DELETE http://localhost:4000/api/carreras/99
