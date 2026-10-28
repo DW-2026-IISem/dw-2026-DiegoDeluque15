@@ -1,0 +1,27 @@
+### Ejecuta authLogin una vez en este archivo para obtener un token sin copiarlo.
+@accessToken = {{authLogin.response.body.$.access_token}}
+
+# @name authLogin
+POST {{apiUrl}}/api/sesion/login
+Content-Type: application/json
+
+{
+  "identifier": "{{authUsername}}",
+  "password": "{{authPassword}}"
+}
+
+### Listar conductores activos
+GET http://localhost:4000/api/conductores HTTP/1.1
+Authorization: Bearer {{accessToken}}
+
+###
+
+### Obtener conductor por id
+GET http://localhost:4000/api/conductores/1 HTTP/1.1
+Authorization: Bearer {{accessToken}}
+
+###
+
+### Obtener conductor inexistente (404)
+GET http://localhost:4000/api/conductores/999 HTTP/1.1
+Authorization: Bearer {{accessToken}}

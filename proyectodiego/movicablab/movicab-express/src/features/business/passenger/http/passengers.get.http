@@ -1,0 +1,27 @@
+### Ejecuta authLogin una vez en este archivo para obtener un token sin copiarlo.
+@accessToken = {{authLogin.response.body.$.access_token}}
+
+# @name authLogin
+POST {{apiUrl}}/api/sesion/login
+Content-Type: application/json
+
+{
+  "identifier": "{{authUsername}}",
+  "password": "{{authPassword}}"
+}
+
+### Listar pasajeros activos
+GET http://localhost:4000/api/pasajeros HTTP/1.1
+Authorization: Bearer {{accessToken}}
+
+###
+
+### Obtener pasajero por id
+GET http://localhost:4000/api/pasajeros/1 HTTP/1.1
+Authorization: Bearer {{accessToken}}
+
+###
+
+### Obtener pasajero inexistente (404)
+GET http://localhost:4000/api/pasajeros/999 HTTP/1.1
+Authorization: Bearer {{accessToken}}

@@ -1,3 +1,16 @@
+### Ejecuta authLogin una vez en este archivo para obtener un token sin copiarlo.
+# Selecciona admin, despacho o custom en el entorno de REST Client.
+@accessToken = {{authLogin.response.body.$.access_token}}
+
+# @name authLogin
+POST {{apiUrl}}/api/sesion/login
+Content-Type: application/json
+
+{
+  "identifier": "{{authUsername}}",
+  "password": "{{authPassword}}"
+}
+
 ### Feature Session — REFRESH (modalidad OPEN con credencial de sesión)
 ### Renovación automática: el cliente llama aquí cuando el access token está por expirar.
 ### ROTACIÓN: el refresh token enviado queda inválido y se emite uno nuevo (misma familia).

@@ -264,17 +264,17 @@ siguiendo el patrón de la página oficial del curso adaptado a las entidades re
 
 **Feature Resources** (`src/features/auth/resources/`):
 - DTOs: `create-resource.dto.ts`, `update-resource.dto.ts`, `patch-resource.dto.ts`, `resource-response.dto.ts`, `dto/index.ts`
-- `resource-catalog.ts`: fuente única de verdad — **92 recursos** reales de MoviCab, derivados
+- `resource-catalog.ts`: fuente única de verdad — **102 recursos** reales de MoviCab, derivados
   automáticamente de todos los archivos `*.routes.ts` del proyecto (ver "Por qué 92" más abajo)
 - `resources.repository.ts`, `resources.service.ts`, `resources.controller.ts`, `resources.routes.ts`:
   CRUD completo bajo `/api/recursos`
-- `resources.seeder.ts`: siembra el catálogo completo de 92 recursos usando `findOrCreate` (idempotente)
+- `resources.seeder.ts`: siembra el catálogo completo de 102 recursos usando `findOrCreate` (idempotente)
 - `resources.swagger.ts`: documentación OpenAPI
 - `http/resources.get.http`: pruebas REST Client para VS Code
 
 **Adaptaciones MoviCab respecto al curso genérico:**
 - Rol `SELLER` del curso → **`DESPACHO`** en MoviCab (operador de despacho de taxis)
-- Catálogo genérico de 58 recursos del curso → **92 recursos reales** de las rutas montadas en MoviCab
+- Catálogo genérico de 58 recursos del curso → **102 recursos reales** de las rutas montadas en MoviCab
 - `pago` y `liquidacion` son registros inmutables (sin UPDATE/DELETE físico) → solo 3 recursos cada uno
 
 ### Por qué
@@ -282,12 +282,18 @@ El sistema de autorización necesita una matriz de permisos (role ↔ resource) 
 `authorize` pueda funcionar. Sin el catálogo de roles y recursos no es posible construir esa matriz
 en ISS-19. Los roles definen *quién* puede hacer algo; los recursos definen *qué* está permitido hacer.
 
-### Por qué 92 recursos (no 90)
+### Cobertura del catálogo RBAC
 La versión inicial del catálogo fue escrita a mano y omitió `PUT /api/calificaciones/:id` y
 `DELETE /api/calificaciones/:id` (se contabilizaron solo 5 recursos para calificaciones en lugar de 7).
 Se corrigió reescribiendo `resource-catalog.ts` mediante un parser que recorre todos los `*.routes.ts`
 con regex, capturando cada `.route("path")` seguido de `.METHOD(` sin deduplicar por path
 (PUT y PATCH sobre el mismo path son **dos recursos distintos**).
+
+La revisión posterior encontró que esa lista todavía omitía los 5 endpoints de asignaciones de rol
+y los 5 de concesiones de rol. Se agregaron al catálogo; ambos grupos son exclusivos de ADMIN.
+Para actualizar una base existente sin borrarla, se puede ejecutar `npm run db:seed:rbac`, que
+reconcilia solo recursos y concesiones; `npm run db:seed` hace `sequelize.sync({ force: true })`
+y reinicializa todas las tablas.
 
 Distribución final por entidad:
 
@@ -307,7 +313,9 @@ Distribución final por entidad:
 | Usuarios                     | 9        | + PATCH/password, GET/permisos |
 | Roles                        | 7        | GET×2, POST, PUT, PATCH, DELETE, PATCH/deactivate |
 | Recursos                     | 7        | ídem |
-| **Total**                    | **92**   | |
+| Asignaciones de rol          | 5        | GET×2, POST, PATCH/deactivate, PATCH/reactivate |
+| Concesiones de rol           | 5        | GET×2, POST, PATCH/deactivate, PATCH/reactivate |
+| **Total**                    | **102**  | |
 
 ### Para qué sirven los roles y usuarios de prueba
 Los usuarios `admin` y `seller` del seeder **no son actores del negocio MoviCab**
@@ -316,7 +324,7 @@ necesarias para verificar que RBAC funciona correctamente durante el desarrollo:
 
 | Usuario (contraseña) | Rol (ISS-19) | Qué puede hacer |
 |----------------------|--------------|-----------------|
-| `admin` / `Admin123!` | ADMIN | Acceso total a los 92 recursos |
+| `admin` / `Admin123!` | ADMIN | Acceso total a los 102 recursos |
 | `seller` / `Seller123!` | DESPACHO | Solo recursos marcados `despacho: true`: leer catálogo + gestionar carreras, pagos, calificaciones y liquidaciones |
 
 El rol **DESPACHO** modela al operador de despacho: consulta toda la información operativa,
@@ -329,7 +337,7 @@ administrar usuarios, roles ni permisos del sistema.
 # 1. Compilación TypeScript sin errores
 npx tsc --noEmit
 
-# 2. Seeder (debe mostrar "roles: 2, resources: 92 nuevos")
+# 2. Seeder (debe mostrar "resources: 102 nuevos" en una base vacía)
 npm run db:seed
 
 # 3. Iniciar servidor
@@ -338,7 +346,7 @@ npm run dev
 # 4. Verificar catálogo de roles (debe mostrar ADMIN y DESPACHO)
 curl http://localhost:4000/api/roles | python3 -m json.tool
 
-# 5. Verificar total de recursos (debe mostrar 92 entradas)
+# 5. Verificar total de recursos (debe mostrar 102 entradas)
 curl -s http://localhost:4000/api/recursos | python3 -c "import json,sys; d=json.load(sys.stdin); print(f'Total recursos: {len(d["resources"])}')"
 
 # 6. Ver un recurso específico de calificaciones (confirma PUT y DELETE)
@@ -370,7 +378,7 @@ Se implementaron los dos features finales de administración RBAC: **RoleUsers**
 
 **Construcción de la matriz de permisos para MoviCab:**
 El seeder de `resource_roles` fue programado de manera dinámica para asignar:
-1. Al rol **ADMIN**: Se le asignaron **todos los 92 recursos**.
+1. Al rol **ADMIN**: Se le asignaron **todos los 102 recursos**.
 2. Al rol **DESPACHO**: Se le asignaron **26 recursos** mediante reglas lógicas:
    - GET (solo lectura) de las 11 entidades de negocio.
    - Acceso completo a Carreras (GET, POST, PATCH /estado, PATCH, DELETE).
@@ -390,8 +398,8 @@ La función `reconcileRole` en el servicio es crucial porque hace que el seeder 
 ### Para qué sirve (ejemplo práctico DESPACHO vs ADMIN)
 Con esta implementación, la base de datos ya sabe de manera efectiva lo que puede hacer cada usuario.
 
-**Usuario ADMIN (`admin`)**: Tiene 92/92 permisos efectivos. Puede llamar a `DELETE /api/usuarios/3` para eliminar a un conductor o cambiar los permisos en `/api/concesiones-rol` porque posee esos recursos otorgados.
-**Usuario DESPACHO (`seller`)**: Tiene 26/92 permisos efectivos. Puede llamar a `POST /api/carreras` o `PATCH /api/carreras/1/estado` para operar la plataforma de despacho. Sin embargo, si intenta ejecutar `POST /api/usuarios`, el sistema determinará que el recurso no está en sus 26 concesiones activas y (cuando se active el middleware) rechazará la petición automáticamente, garantizando que el despachador no pueda alterar la seguridad del sistema ni borrar información maestra.
+**Usuario ADMIN (`admin`)**: Tiene 102/102 permisos efectivos. Puede llamar a `DELETE /api/usuarios/3` para eliminar a un conductor o administrar roles, asignaciones y concesiones RBAC.
+**Usuario DESPACHO (`seller`)**: Tiene 26/102 permisos efectivos. Puede llamar a `POST /api/carreras` o `PATCH /api/carreras/1/estado` para operar la plataforma de despacho, pero no administrar usuarios, roles, recursos, asignaciones ni concesiones RBAC.
 
 ### Evidencia — comandos para verificar
 ```bash
@@ -492,7 +500,7 @@ Se añadieron:
   - OPEN: `login`, `refresh`, `logout`. (El middleware no interviene, se valida la credencial de sesión en el Body).
   - JWT puro: `perfil`, `permisos`. (El middleware `authenticate` certifica la validez del token y expone la identidad, el negocio se encarga del resto).
   - JWT + RBAC: Probado con las demás rutas del sistema ya protegidas.
-- **Swagger y HTTP tests**: Documentación añadida e importado en `src/routes/index.ts`. Adaptados a `movicab-express` (`/api/pasajeros`, 92 permisos ADMIN, 26 permisos DESPACHO).
+- **Swagger y HTTP tests**: Documentación añadida e importado en `src/routes/index.ts`. Adaptados a `movicab-express` (`/api/pasajeros`, 102 permisos ADMIN, 26 permisos DESPACHO).
 
 ### Por qué
 Es la culminación de la arquitectura de seguridad Fase II. Proporciona los puntos de entrada HTTP oficiales (Login y Logout) y materializa el diseño de Refresh Tokens. Al tener la lógica separada, el sistema de acceso funciona limpiamente para 3 niveles distintos (OPEN, JWT, y RBAC). 
@@ -542,8 +550,44 @@ curl -s -X POST http://localhost:4000/api/sesion/refresh -H "Content-Type: appli
 - **18 features** (11 de negocio + 7 de auth) cableadas completamente.
 - **17 tablas** (11 de negocio + 6 RBAC: users, roles, resources, role_users, resource_roles, refresh_tokens).
 - **3 modalidades** aplicadas por ruta: OPEN, JWT, JWT + RBAC.
-- **Seeders deterministas**: 2 roles (ADMIN/DESPACHO), 92 recursos, 2 usuarios, 2 asignaciones, 118 concesiones totales (92 de ADMIN + 26 de DESPACHO).
+- **Seeders deterministas**: 2 roles (ADMIN/DESPACHO), 102 recursos, 2 usuarios, 2 asignaciones, 128 concesiones totales (102 de ADMIN + 26 de DESPACHO).
 - API con Swagger configurado (MoviCab API) usando security schemas earerAuth.
 - Las verificaciones \	sc --noEmit\, \
 pm run db:seed\, y pruebas de humo se ejecutaron satisfactoriamente en las entidades Tarifa y Liquidacion con los 3 niveles de acceso.
-- Todas las capas respetan la convenci�n estricta: \outes -> controller -> service -> repository -> model\.
+- Todas las capas respetan la convenci�n estricta: \
+outes -> controller -> service -> repository -> model\.
+
+
+## REFACTOR-EN: Refactorización de Entidades de Negocio y Atributos a Inglés
+- **Alcance**: Se refactorizaron las 11 entidades de negocio (`Company`, `VehicleType`, `Passenger`, `Fare`, `Driver`, `Vehicle`, `Shift`, `Trip`, `Payment`, `Rating`, `Settlement`) para que sus nombres de clase, nombres de tabla, nombres de columna y atributos de interfaces y DTOs estén completamente en inglés tanto en el código fuente como en la base de datos Sequelize.
+- **Carpetas y archivos**: Se renombraron todas las carpetas y archivos bajo `src/features/business/` utilizando `git mv`:
+  - `empresa/` -> `company/` (`company.model.ts`, `company.controller.ts`, etc.)
+  - `tipo-vehiculo/` -> `vehicle-type/` (`vehicle-type.model.ts`, etc.)
+  - `pasajero/` -> `passenger/` (`passenger.model.ts`, etc.)
+  - `tarifa/` -> `fare/` (`fare.model.ts`, etc.)
+  - `conductor/` -> `driver/` (`driver.model.ts`, etc.)
+  - `vehiculo/` -> `vehicle/` (`vehicle.model.ts`, etc.)
+  - `turno/` -> `shift/` (`shift.model.ts`, etc.)
+  - `carrera/` -> `trip/` (`trip.model.ts`, etc.)
+  - `pago/` -> `payment/` (`payment.model.ts`, etc.)
+  - `calificacion/` -> `rating/` (`rating.model.ts`, etc.)
+  - `liquidacion/` -> `settlement/` (`settlement.model.ts`, etc.)
+- **Tablas y Columnas**:
+  - `companies`: `tax_id`, `legal_name`, `primary_contact`, `status`
+  - `vehicle_types`: `name`, `description`, `status`
+  - `passengers`: `name`, `address`, `phone`, `email`, `password`, `status`
+  - `fares`: `name`, `calculation_rule`, `base_value`, `valid_from`, `valid_until`, `status`
+  - `drivers`: `company_id`, `name`, `description`, `status`
+  - `vehicles`: `company_id`, `vehicle_type_id`, `name`, `description`, `status`
+  - `shifts`: `name`, `description`, `driver_id`, `vehicle_id`, `status`
+  - `trips`: `passenger_id`, `shift_id`, `fare_id`, `started_at`, `ended_at`, `total`, `status`, `notes`, `settlement_id`
+  - `payments`: `reference_type`, `reference_id`, `payment_method`, `amount`, `paid_at`, `status`
+  - `ratings`: `trip_id`, `score`, `comment`, `status`
+  - `settlements`: `driver_id`, `date_from`, `date_to`, `generated_at`, `total_amount`, `status`, `notes`
+- **Valores conservados**: Se mantienen intactos los valores en español de los enums y estados (`solicitada`, `aceptada`, `en_curso`, `cerrada`, `cancelada`, `registrado`, `generada`, y `carrera` como valor de `reference_type`).
+- **Contratos y URLs**:
+  - Las URLs se preservan intactas (`/api/pasajeros`, `/api/carreras`, `/api/tipos-vehiculo`, etc.), garantizando que el catálogo de 102 recursos y la matriz de roles (`ADMIN`: 102, `DESPACHO`: 26) se mantengan idénticos.
+  - En `PATCH /api/carreras/:id/estado`, el payload usa `{ status: "..." }`.
+  - En `POST /api/liquidaciones`, el payload usa `{ driver_id, date_from, date_to, notes }` y responde con `{ settlement, trips_settled, trip_ids }`.
+- **Seeders & Counts**: Actualizados `counts.ts` con claves en inglés (`passengers`, `companies`, `trips`, etc.) y variables de entorno `SEED_*` con soporte retrocompatible.
+- **Validación**: Compilación estricta con `npx tsc --noEmit` completada con 0 errores.

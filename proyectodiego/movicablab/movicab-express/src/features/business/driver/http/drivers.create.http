@@ -1,0 +1,49 @@
+### Ejecuta authLogin una vez en este archivo para obtener un token sin copiarlo.
+@accessToken = {{authLogin.response.body.$.access_token}}
+
+# @name authLogin
+POST {{apiUrl}}/api/sesion/login
+Content-Type: application/json
+
+{
+  "identifier": "{{authUsername}}",
+  "password": "{{authPassword}}"
+}
+
+### Crear conductor sin empresa
+POST http://localhost:4000/api/conductores HTTP/1.1
+Authorization: Bearer {{accessToken}}
+Content-Type: application/json
+
+{
+  "name": "Carlos Martinez",
+  "description": "Conductor experimentado",
+  "status": "active"
+}
+
+###
+
+### Crear conductor con empresa valida
+POST http://localhost:4000/api/conductores HTTP/1.1
+Authorization: Bearer {{accessToken}}
+Content-Type: application/json
+
+{
+  "name": "Ana Gomez",
+  "description": "Conductora turno nocturno",
+  "company_id": 1,
+  "status": "active"
+}
+
+###
+
+### Crear conductor con empresa inexistente (404)
+POST http://localhost:4000/api/conductores HTTP/1.1
+Authorization: Bearer {{accessToken}}
+Content-Type: application/json
+
+{
+  "name": "Luis Torres",
+  "company_id": 9999,
+  "status": "active"
+}

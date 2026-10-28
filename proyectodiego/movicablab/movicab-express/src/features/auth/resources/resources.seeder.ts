@@ -5,7 +5,7 @@ import { RESOURCE_CATALOG } from "./resource-catalog";
  * Seeder del catálogo de recursos (`resources`).
  *
  * A diferencia de los seeders de business, este **no usa datos aleatorios**: los
- * 58 recursos son un catálogo determinista definido en `resource-catalog.ts`.
+ * recursos son un catálogo determinista definido en `resource-catalog.ts`.
  * Es idempotente por partida doble: `findOrCreate` por `(method, path)` y
  * reactivación de las filas que ya existían inactivas, de modo que volver a
  * ejecutarlo reconcilia el catálogo sin duplicar ni perder concesiones.

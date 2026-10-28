@@ -1,3 +1,0 @@
-### Obtener tarifa vigente actual
-GET http://localhost:4000/api/tarifas/vigente
-Content-Type: application/json

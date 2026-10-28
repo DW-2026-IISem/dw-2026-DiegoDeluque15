@@ -1,0 +1,49 @@
+### Ejecuta authLogin una vez en este archivo para obtener un token sin copiarlo.
+@accessToken = {{authLogin.response.body.$.access_token}}
+
+# @name authLogin
+POST {{apiUrl}}/api/sesion/login
+Content-Type: application/json
+
+{
+  "identifier": "{{authUsername}}",
+  "password": "{{authPassword}}"
+}
+
+### Crear vehiculo valido (con company y vehicle_type)
+POST http://localhost:4000/api/vehiculos HTTP/1.1
+Authorization: Bearer {{accessToken}}
+Content-Type: application/json
+
+{
+  "name": "Toyota Fortuner",
+  "description": "SUV de alta gama",
+  "company_id": 1,
+  "vehicle_type_id": 1,
+  "status": "active"
+}
+
+###
+
+### Crear vehiculo sin vehicle_type_id (es opcional)
+POST http://localhost:4000/api/vehiculos HTTP/1.1
+Authorization: Bearer {{accessToken}}
+Content-Type: application/json
+
+{
+  "name": "Chevrolet Spark",
+  "company_id": 1,
+  "status": "active"
+}
+
+###
+
+### Crear vehiculo sin company_id (400 - obligatorio)
+POST http://localhost:4000/api/vehiculos HTTP/1.1
+Authorization: Bearer {{accessToken}}
+Content-Type: application/json
+
+{
+  "name": "Sin empresa",
+  "status": "active"
+}

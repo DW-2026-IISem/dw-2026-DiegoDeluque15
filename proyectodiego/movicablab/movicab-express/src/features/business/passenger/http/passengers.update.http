@@ -1,0 +1,36 @@
+### Ejecuta authLogin una vez en este archivo para obtener un token sin copiarlo.
+@accessToken = {{authLogin.response.body.$.access_token}}
+
+# @name authLogin
+POST {{apiUrl}}/api/sesion/login
+Content-Type: application/json
+
+{
+  "identifier": "{{authUsername}}",
+  "password": "{{authPassword}}"
+}
+
+### Actualizar pasajero (PUT)
+PUT http://localhost:4000/api/pasajeros/1 HTTP/1.1
+Authorization: Bearer {{accessToken}}
+Content-Type: application/json
+
+{
+  "name": "Maria Garcia Actualizada",
+  "address": "Calle 20 # 10-50",
+  "phone": "3009876543",
+  "email": "maria.updated@example.com",
+  "password": "NewPassword123!",
+  "status": "active"
+}
+
+###
+
+### Actualizar pasajero parcial (PATCH)
+PATCH http://localhost:4000/api/pasajeros/1 HTTP/1.1
+Authorization: Bearer {{accessToken}}
+Content-Type: application/json
+
+{
+  "phone": "3111111111"
+}

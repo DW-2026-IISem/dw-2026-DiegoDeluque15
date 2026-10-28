@@ -1,3 +1,16 @@
+### Ejecuta authLogin una vez en este archivo para obtener un token sin copiarlo.
+# Selecciona admin, despacho o custom en el entorno de REST Client.
+@accessToken = {{authLogin.response.body.$.access_token}}
+
+# @name authLogin
+POST {{apiUrl}}/api/sesion/login
+Content-Type: application/json
+
+{
+  "identifier": "diego deluque",
+  "password": "Contraseña123#"
+}
+
 ### Feature Session — LOGOUT y PERFIL (OPEN con credencial de sesión + JWT)
 @baseUrl = http://localhost:4000
 
@@ -13,12 +26,12 @@ Content-Type: application/json
 ### PERFIL — modalidad JWT: `authenticate` valida el token y REVALIDA en la BD
 ### que el usuario sigue activo (desactivarlo invalida sus tokens al instante).
 GET {{baseUrl}}/api/sesion/perfil
-Authorization: Bearer {{loginSeller.response.body.$.access_token}}
+Authorization: Bearer {{accessToken}}
 
 ### MIS PERMISOS — modalidad JWT: misma consulta RBAC que usa `authorize`
-### (seller -> 26 permisos; admin -> 92). Es la herramienta para depurar el RBAC.
+### (seller -> 26 permisos; admin -> 102). Es la herramienta para depurar el RBAC.
 GET {{baseUrl}}/api/permisos
-Authorization: Bearer {{loginSeller.response.body.$.access_token}}
+Authorization: Bearer {{accessToken}}
 
 ### Sin token -> 401 (no autenticado)
 GET {{baseUrl}}/api/sesion/perfil

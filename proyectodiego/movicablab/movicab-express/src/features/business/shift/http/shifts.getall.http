@@ -1,0 +1,25 @@
+### Ejecuta authLogin una vez en este archivo para obtener un token sin copiarlo.
+@accessToken = {{authLogin.response.body.$.access_token}}
+
+# @name authLogin
+POST {{apiUrl}}/api/sesion/login
+Content-Type: application/json
+
+{
+  "identifier": "{{authUsername}}",
+  "password": "{{authPassword}}"
+}
+
+### Obtener un driver activo
+# @name GetDriver
+GET http://localhost:4000/api/conductores
+Authorization: Bearer {{accessToken}}
+Content-Type: application/json
+
+### Listar turnos activos
+GET http://localhost:4000/api/turnos
+Authorization: Bearer {{accessToken}}
+
+### Obtener turno por id
+GET http://localhost:4000/api/turnos/1
+Authorization: Bearer {{accessToken}}

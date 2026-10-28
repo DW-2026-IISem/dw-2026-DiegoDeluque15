@@ -1,15 +1,19 @@
-### Feature Roles — CRUD (modalidad JWT + RBAC)
-### El NOMBRE del rol no autoriza nada: la autorización son las filas de `resource_roles`.
-@baseUrl = http://localhost:4000
+### Envía authLogin primero; las solicitudes siguientes reutilizan su token.
+# El perfil seleccionado (admin, despacho o custom) determina la cuenta.
+@token = {{authLogin.response.body.$.access_token}}
 
-# @name loginAdmin
-POST {{baseUrl}}/api/sesion/login
+# @name authLogin
+POST {{apiUrl}}/api/sesion/login
 Content-Type: application/json
 
 {
-  "identifier": "admin",
-  "password": "Admin123!"
+  "identifier": "{{authUsername}}",
+  "password": "{{authPassword}}"
 }
+
+### Feature Roles — CRUD (modalidad JWT + RBAC)
+### El NOMBRE del rol no autoriza nada: la autorización son las filas de `resource_roles`.
+@baseUrl = http://localhost:4000
 
 # @name loginSeller
 POST {{baseUrl}}/api/sesion/login
@@ -20,7 +24,11 @@ Content-Type: application/json
   "password": "Seller123!"
 }
 
-@token = {{loginAdmin.response.body.$.access_token}}
+###
+
+@sellerToken = {{loginSeller.response.body.$.access_token}}
+
+###
 
 ### getAll — recurso `GET /api/roles` (ADMIN y SELLER)
 GET {{baseUrl}}/api/roles
@@ -69,4 +77,4 @@ Authorization: Bearer {{token}}
 
 ### 403 — SELLER no tiene concedido `GET /api/roles`
 GET {{baseUrl}}/api/roles
-Authorization: Bearer {{loginSeller.response.body.$.access_token}}
+Authorization: Bearer {{sellerToken}}

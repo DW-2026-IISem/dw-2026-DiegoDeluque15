@@ -1,0 +1,36 @@
+### Ejecuta authLogin una vez en este archivo para obtener un token sin copiarlo.
+@accessToken = {{authLogin.response.body.$.access_token}}
+
+# @name authLogin
+POST {{apiUrl}}/api/sesion/login
+Content-Type: application/json
+
+{
+  "identifier": "diego deluque",
+  "password": "Contrasena123#"
+}
+
+### Crear empresa
+POST http://localhost:4000/api/empresas HTTP/1.1
+Authorization: Bearer {{accessToken}}
+Content-Type: application/json
+
+{
+  "tax_id": "900123454-1",
+  "legal_name": "TransMovil S.A.S",
+  "primary_contact": "Juan Perez",
+  "status": "active"
+}
+
+###
+
+### Crear empresa con tax_id duplicado (409)
+POST http://localhost:4000/api/empresas HTTP/1.1
+Authorization: Bearer {{accessToken}}
+Content-Type: application/json
+
+{
+  "tax_id": "900123456-1",
+  "legal_name": "Otra Empresa Ltda",
+  "status": "active"
+}

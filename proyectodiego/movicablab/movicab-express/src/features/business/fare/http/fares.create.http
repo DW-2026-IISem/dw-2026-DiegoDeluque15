@@ -1,0 +1,53 @@
+### Ejecuta authLogin una vez en este archivo para obtener un token sin copiarlo.
+@accessToken = {{authLogin.response.body.$.access_token}}
+
+# @name authLogin
+POST {{apiUrl}}/api/sesion/login
+Content-Type: application/json
+
+{
+  "identifier": "{{authUsername}}",
+  "password": "{{authPassword}}"
+}
+
+### Crear Tarifa Valida
+POST http://localhost:4000/api/tarifas
+Authorization: Bearer {{accessToken}}
+Content-Type: application/json
+
+{
+  "name": "Tarifa Valida Test",
+  "calculation_rule": "Base",
+  "base_value": 100,
+  "valid_from": "2030-01-01T00:00:00Z",
+  "valid_until": "2030-12-31T23:59:59Z",
+  "status": "active"
+}
+
+### 400 - base_value <= 0
+POST http://localhost:4000/api/tarifas
+Authorization: Bearer {{accessToken}}
+Content-Type: application/json
+
+{
+  "name": "Tarifa Cero",
+  "calculation_rule": "Base",
+  "base_value": 0,
+  "valid_from": "2031-01-01T00:00:00Z",
+  "valid_until": "2031-12-31T23:59:59Z",
+  "status": "active"
+}
+
+### 409 - Solape de vigencias
+POST http://localhost:4000/api/tarifas
+Authorization: Bearer {{accessToken}}
+Content-Type: application/json
+
+{
+  "name": "Tarifa Solape",
+  "calculation_rule": "Base",
+  "base_value": 100,
+  "valid_from": "2030-06-01T00:00:00Z",
+  "valid_until": "2031-06-01T00:00:00Z",
+  "status": "active"
+}

@@ -3,25 +3,27 @@ import express, { Application } from "express";
 import morgan from "morgan";
 var cors = require("cors");
 import { sequelize, getDatabaseInfo, testConnection } from "../database/db";
-import "../features/business/pasajero/pasajero.model";
-import "../features/business/tipo-vehiculo/tipo-vehiculo.model";
-import "../features/business/empresa/empresa.model";
-import "../features/business/conductor/conductor.model";
-import "../features/business/vehiculo/vehiculo.model";
-import "../features/business/turno/turno.model";
-import "../features/business/tarifa/tarifa.model";
-import "../features/business/carrera/carrera.model";
-import "../features/business/pago/pago.model";
-import "../features/business/calificacion/calificacion.model";
-import "../features/business/liquidacion/liquidacion.model";
-import { Routes } from "../routes/index";
-import { setupSwagger } from "../swagger/index";
-import { setupConductorAssociations } from "../features/business/conductor/conductor.associations";
-import { setupVehiculoAssociations } from "../features/business/vehiculo/vehiculo.associations";
-import { setupTurnoAssociations } from "../features/business/turno/turno.associations";
-import { setupCarreraAssociations } from "../features/business/carrera/carrera.associations";
-import { setupCalificacionAssociations } from "../features/business/calificacion/calificacion.associations";
-import { setupLiquidacionAssociations } from "../features/business/liquidacion/liquidacion.associations";
+
+// Business Models
+import "../features/business/passenger/passenger.model";
+import "../features/business/vehicle-type/vehicle-type.model";
+import "../features/business/company/company.model";
+import "../features/business/driver/driver.model";
+import "../features/business/vehicle/vehicle.model";
+import "../features/business/shift/shift.model";
+import "../features/business/fare/fare.model";
+import "../features/business/trip/trip.model";
+import "../features/business/payment/payment.model";
+import "../features/business/rating/rating.model";
+import "../features/business/settlement/settlement.model";
+
+// Business Associations
+import { setupDriverAssociations } from "../features/business/driver/driver.associations";
+import { setupVehicleAssociations } from "../features/business/vehicle/vehicle.associations";
+import { setupShiftAssociations } from "../features/business/shift/shift.associations";
+import { setupTripAssociations } from "../features/business/trip/trip.associations";
+import { setupRatingAssociations } from "../features/business/rating/rating.associations";
+import { setupSettlementAssociations } from "../features/business/settlement/settlement.associations";
 
 // Fase II — Auth con RBAC
 import "../features/auth/users/user.model";
@@ -32,6 +34,8 @@ import "../features/auth/resource-roles/resource-role.model";
 import "../features/auth/refresh-tokens/refresh-token.model";
 import "../features/auth/rbac.associations";
 
+import { Routes } from "../routes/index";
+import { setupSwagger } from "../swagger/index";
 
 dotenv.config();
 
@@ -62,11 +66,19 @@ export class App {
   }
 
   private routes(): void {
-    this.routePrv.pasajeroRoutes.routes(this.app);
-    this.routePrv.vehiculoTypeRoutes.routes(this.app);
-    this.routePrv.empresaRoutes.routes(this.app);
-    this.routePrv.conductorRoutes.routes(this.app);
-    this.routePrv.vehiculoRoutes.routes(this.app);
+    this.routePrv.passengerRoutes.routes(this.app);
+    this.routePrv.vehicleTypeRoutes.routes(this.app);
+    this.routePrv.companyRoutes.routes(this.app);
+    this.routePrv.driverRoutes.routes(this.app);
+    this.routePrv.vehicleRoutes.routes(this.app);
+    this.routePrv.shiftRoutes.routes(this.app);
+    this.routePrv.fareRoutes.routes(this.app);
+    this.routePrv.tripRoutes.routes(this.app);
+    this.routePrv.paymentRoutes.routes(this.app);
+    this.routePrv.ratingRoutes.routes(this.app);
+    this.routePrv.settlementRoutes.routes(this.app);
+
+    // Auth & RBAC
     this.routePrv.roleUsersRoutes.routes(this.app);
     this.routePrv.resourceRolesRoutes.routes(this.app);
     this.routePrv.rolesRoutes.routes(this.app);
@@ -74,21 +86,15 @@ export class App {
     this.routePrv.usersRoutes.routes(this.app);
     this.routePrv.sessionRoutes.routes(this.app);
     this.routePrv.refreshTokensRoutes.routes(this.app);
-    this.routePrv.turnoRoutes.routes(this.app);
-    this.routePrv.tarifaRoutes.routes(this.app);
-    this.routePrv.carreraRoutes.routes(this.app);
-    this.routePrv.pagoRoutes.routes(this.app);
-    this.routePrv.calificacionRoutes.routes(this.app);
-    this.routePrv.liquidacionRoutes.routes(this.app);
   }
 
   private associations(): void {
-    setupConductorAssociations();
-    setupVehiculoAssociations();
-    setupTurnoAssociations();
-    setupCarreraAssociations();
-    setupCalificacionAssociations();
-    setupLiquidacionAssociations();
+    setupDriverAssociations();
+    setupVehicleAssociations();
+    setupShiftAssociations();
+    setupTripAssociations();
+    setupRatingAssociations();
+    setupSettlementAssociations();
   }
 
   private errorHandling(): void {

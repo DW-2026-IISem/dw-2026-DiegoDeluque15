@@ -1,3 +1,16 @@
+### Ejecuta authLogin una vez en este archivo para obtener un token sin copiarlo.
+# Selecciona admin, despacho o custom en el entorno de REST Client.
+@accessToken = {{authLogin.response.body.$.access_token}}
+
+# @name authLogin
+POST {{apiUrl}}/api/sesion/login
+Content-Type: application/json
+
+{
+  "identifier": "{{authUsername}}",
+  "password": "{{authPassword}}"
+}
+
 ### Feature Users — CREATE / UPDATE / DELETE (modalidad JWT + RBAC)
 @baseUrl = http://localhost:4000
 
@@ -10,7 +23,7 @@ Content-Type: application/json
   "password": "Admin123!"
 }
 
-@token = {{loginAdmin.response.body.$.access_token}}
+@token = {{authLogin.response.body.$.access_token}}
 @id = 2
 
 ### CREATE — recurso `POST /api/usuarios`. El `password` se hashea (bcrypt, 12 rondas).
@@ -19,9 +32,9 @@ Authorization: Bearer {{token}}
 Content-Type: application/json
 
 {
-  "username": "nuevo.usuario",
-  "email": "nuevo.usuario@storelab.local",
-  "password": "Password123!",
+  "username": "diego deluque",
+  "email": "diegodeluque@uniguajira.com",
+  "password": "Contraseña123#",
   "avatar": null
 }
 

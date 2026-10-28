@@ -1,0 +1,28 @@
+### Ejecuta authLogin una vez en este archivo para obtener un token sin copiarlo.
+# Selecciona admin, despacho o custom en el entorno de REST Client.
+@accessToken = {{authLogin.response.body.$.access_token}}
+
+# @name authLogin
+POST {{apiUrl}}/api/sesion/login
+Content-Type: application/json
+
+{
+  "identifier": "diego deluque",
+  "password": "Contrasena123#"
+}
+
+### Listar todas las empresas activas
+GET http://localhost:4000/api/empresas HTTP/1.1
+Authorization: Bearer {{accessToken}}
+
+###
+
+### Obtener empresa por id
+GET http://localhost:4000/api/empresas/1 HTTP/1.1
+Authorization: Bearer {{accessToken}}
+
+###
+
+### Obtener empresa inexistente (404)
+GET http://localhost:4000/api/empresas/999 HTTP/1.1
+Authorization: Bearer {{accessToken}}

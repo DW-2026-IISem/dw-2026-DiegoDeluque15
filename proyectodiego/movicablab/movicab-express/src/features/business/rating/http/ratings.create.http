@@ -1,0 +1,89 @@
+### Ejecuta authLogin una vez en este archivo para obtener un token sin copiarlo.
+# Selecciona admin, despacho o custom en el entorno de REST Client.
+@accessToken = {{authLogin.response.body.$.access_token}}
+
+# @name authLogin
+POST {{apiUrl}}/api/sesion/login
+Content-Type: application/json
+
+{
+  "identifier": "{{authUsername}}",
+  "password": "{{authPassword}}"
+}
+
+### 1. Crear una nueva carrera para pruebas de Calificacion
+# @name CreateTripRating
+POST http://localhost:4000/api/carreras
+Authorization: Bearer {{accessToken}}
+Content-Type: application/json
+
+{
+  "passenger_id": 2,
+  "shift_id": 2,
+  "fare_id": 1
+}
+
+###
+@newTripRatingId = {{CreateTripRating.response.body.$.trip.id}}
+
+### 2. POST 409 intentar calificar la carrera NO CERRADA
+POST http://localhost:4000/api/calificaciones
+Authorization: Bearer {{accessToken}}
+Content-Type: application/json
+
+{
+  "trip_id": {{newTripRatingId}},
+  "score": 5
+}
+
+### 3. Avanzar carrera a cerrada
+PATCH http://localhost:4000/api/carreras/{{newTripRatingId}}/estado
+Authorization: Bearer {{accessToken}}
+Content-Type: application/json
+
+{ "status": "aceptada" }
+
+###
+PATCH http://localhost:4000/api/carreras/{{newTripRatingId}}/estado
+Authorization: Bearer {{accessToken}}
+Content-Type: application/json
+
+{ "status": "en_curso" }
+
+###
+PATCH http://localhost:4000/api/carreras/{{newTripRatingId}}/estado
+Authorization: Bearer {{accessToken}}
+Content-Type: application/json
+
+{ "status": "cerrada" }
+
+### 4. POST 400 score invalido (6)
+POST http://localhost:4000/api/calificaciones
+Authorization: Bearer {{accessToken}}
+Content-Type: application/json
+
+{
+  "trip_id": {{newTripRatingId}},
+  "score": 6
+}
+
+### 5. POST válido
+POST http://localhost:4000/api/calificaciones
+Authorization: Bearer {{accessToken}}
+Content-Type: application/json
+
+{
+  "trip_id": {{newTripRatingId}},
+  "score": 4,
+  "comment": "Excelente"
+}
+
+### 6. POST 409 intentar calificar la misma carrera DE NUEVO
+POST http://localhost:4000/api/calificaciones
+Authorization: Bearer {{accessToken}}
+Content-Type: application/json
+
+{
+  "trip_id": {{newTripRatingId}},
+  "score": 3
+}
