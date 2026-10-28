@@ -1,5 +1,10 @@
-<main class="min-h-dvh bg-slate-50 p-6 text-slate-900">
-  <div class="mx-auto w-full max-w-4xl">
-    <app-ejemplo />
+<div class="flex flex-col min-h-screen">
+  <app-header />
+  <div class="flex flex-1">
+    <app-aside />
+    <main class="flex-1 p-6">
+      <router-outlet />
+    </main>
   </div>
-</main>
+  <app-footer />
+</div>

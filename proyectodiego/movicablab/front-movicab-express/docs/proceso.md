@@ -160,3 +160,73 @@ Validación de compilación limpia y pruebas unitarias (`ng build` y `npm test -
    - **Solución:** Se ajustó en `angular.json` el `maximumWarning` a `750kB` (Paso 1.7), logrando compilación limpia con código 0 y sin advertencias.
 
 ---
+
+---
+
+## ISS-01A — Esqueleto Header, Aside, contenido y Footer
+
+**Rama:** ront-movicab-express | **Fecha:** 2026-10-27
+
+---
+
+#### Paso A.1 — Generar los componentes de layout
+Se generaron los tres componentes standalone en src/app/layout/ usando Angular CLI.
+
+- **Comandos:**
+
+`bash
+ng generate component layout/header --inline-style=false
+ng generate component layout/aside --inline-style=false
+ng generate component layout/footer --inline-style=false
+`
+
+- **Estado:** Completado
+
+![ng generate de los 3 componentes](evidencias/ISS-01A_A.1_ng-generate.png)
+
+---
+
+#### Paso A.2 — Editar header.ts con propiedad title
+Se anadio 	itle = 'MoviCab' a la clase Header para interpolarlo en el template.
+
+- **Archivo:** src/app/layout/header/header.ts
+- **Estado:** Completado
+
+![header.ts](evidencias/ISS-01A_A.2_header.png)
+---
+
+#### Paso A.3 — Plantillas HTML de los 3 componentes
+Plantillas minimas con Tailwind: header oscuro con titulo, aside lateral con label menu, footer con copyright.
+
+- **Estado:** Completado
+
+---
+
+#### Paso A.4 — Actualizar app.html
+Layout flex de 4 regiones: header, aside, router-outlet y footer. Se elimino app-ejemplo.
+
+- **Archivo:** src/app/app.html
+- **Estado:** Completado
+
+![app.html](evidencias/ISS-01A_A.3_app.png)
+---
+
+#### Paso A.5 — Actualizar app.ts
+Se importaron Header, Aside, Footer y RouterOutlet en el decorador de App.
+
+- **Archivo:** src/app/app.ts
+- **Estado:** Completado
+
+![app.ts](evidencias/ISS-01A_A.5_app.png)
+---
+
+#### Verificacion ISS-01A
+Servidor en http://localhost:4200 mostrando las 4 regiones. Sin peticiones a /api en Network.
+
+- **Estado:** Completado
+
+![Esqueleto con Header, Aside, contenido y Footer](evidencias/ISS-01A_A.1_esqueleto.png)
+
+![Network sin peticiones a /api](evidencias/ISS-01A_A.2_network-sin-api.png)
+
+---
