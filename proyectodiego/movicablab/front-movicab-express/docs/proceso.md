@@ -459,3 +459,37 @@ Componente standalone con formulario reactivo usando FormsModule y [(ngModel)] s
 1. **Rutas mal estructuradas (pp.routes.ts):** La ruta /construir estaba definida fuera del Shell, por lo que el layout nunca envolvía el contenido. Se movió como ruta hija del Shell y se añadió redirect desde '' a construir.
 2. **Error NG8002 en p-message:** PrimeNG v19 usa el componente standalone Message (no MessageModule) y el texto va proyectado como contenido, no como propiedad [text]. Se corrigió el import y el template.
 
+
+## ISS-03 — CRUD de Pasajeros (Fase 1: Listado)
+
+- **Fecha:** 2026-10-28
+- **Rama:** \ront-movicab-express\
+- **Estado:** 🟡 En progreso (Listado completado)
+- **Objetivo:** Conectar el frontend con el endpoint protegido \/api/pasajeros\, asegurando la inyección del token JWT mediante el interceptor y renderizando la lista de pasajeros con PrimeNG \p-table\, paginación, etiquetas de estado y botones de acción.
+
+---
+
+### Sub-ítems y Evidencias:
+
+#### C.1 — Enrutamiento del módulo de Pasajeros
+Se configuró la ruta hija diferida (\loadComponent\) en \src/app/app.routes.ts\ apuntando a \PassengerList\, ajustando la redirección por defecto de la aplicación hacia \/passengers\.
+
+- **Archivo modificado:** \src/app/app.routes.ts\
+- **Estado:** ✅ Completado
+
+---
+
+#### C.2 — Página de Listado de Pasajeros (PassengerList)
+Implementación del componente \PassengerList\ utilizando signals reactivos de Angular, inyección de \PassengerApi\, feedback de estado con \PageHeader\, \EmptyState\ y tabla responsiva \p-table\ de PrimeNG v19.
+
+- **Archivos:** \src/app/features/passengers/passenger-list.ts\ y \passenger-list.html\
+- **Estado:** ✅ Completado
+
+![Listado de pasajeros con PrimeNG](evidencias/ISS-03-C2-passenger-list.png)
+
+---
+
+### Correcciones y alineación con el Backend en ISS-03 / Auth:
+1. **Endpoint y payload de autenticación:** Se alineó el endpoint a \/api/sesion/login\, el campo de entrada a \identifier\ (soporta usuario o correo) y la lectura del token JWT a \ccess_token\.
+2. **Métodos de \PassengerApi\:** Se corrigieron los llamados del componente para usar \	his.api.list()\ y \	his.api.remove(id)\.
+3. **Sintaxis de plantillas PrimeNG v19:** Se actualizaron los templates de \p-table\ utilizando la directiva moderna \#header\ y \#body\, y se corrigió la propiedad de estado a \p.status === 'active'\.

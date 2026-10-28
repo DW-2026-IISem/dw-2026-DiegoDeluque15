@@ -26,8 +26,8 @@ export class Login {
         this.loading.set(true);
         this.error.set('');
 
-        this.auth.login({ email: this.email(), password: this.password() }).subscribe({
-            next: () => this.router.navigate(['/']),
+        this.auth.login({ identifier: this.email(), password: this.password() }).subscribe({
+            next: () => this.router.navigate(['/passengers']),
             error: (err) => {
                 this.error.set(err?.error?.message ?? 'Credenciales incorrectas');
                 this.loading.set(false);

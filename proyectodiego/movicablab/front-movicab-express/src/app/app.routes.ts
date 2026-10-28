@@ -9,11 +9,16 @@ export const routes: Routes = [
     path: '',
     loadComponent: () => import('./layout/shell/shell').then((m) => m.Shell),
     children: [
-      { path: '', pathMatch: 'full', redirectTo: 'construir' },
+      { path: '', pathMatch: 'full', redirectTo: 'passengers' },
       {
         path: 'construir',
         loadComponent: () =>
           import('./features/construir/construir').then((m) => m.Construir),
+      },
+      {
+        path: 'passengers',
+        loadComponent: () =>
+          import('./features/passengers/passenger-list').then((m) => m.PassengerList),
       },
     ],
   },

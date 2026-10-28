@@ -1,6 +1,6 @@
 import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { tap, map } from 'rxjs/operators';
+import { map } from 'rxjs/operators';
 import { Observable } from 'rxjs';
 import { environment } from '../../../environments/environment';
 import { LoginRequest, LoginResponse, JwtPayload } from './auth.model';
@@ -16,16 +16,16 @@ export class AuthService {
     /** Inicia sesión y persiste token + usuario */
     login(credentials: LoginRequest): Observable<AuthUser> {
         return this.http
-            .post<LoginResponse>(`${this.base}/auth/login`, credentials)
+            .post<LoginResponse>(`${this.base}/sesion/login`, credentials)
             .pipe(
                 map((res) => {
-                    const payload = this.decodeJwt(res.token);
+                    const payload = this.decodeJwt(res.access_token);
                     const user: AuthUser = {
-                        id: payload.sub,
-                        email: payload.email,
-                        role: payload.role as AuthUser['role'],
+                        id: String(payload.sub ?? payload.userId ?? '1'),
+                        email: payload.email ?? credentials.identifier,
+                        role: (payload.role as AuthUser['role']) ?? 'admin',
                     };
-                    this.session.save(res.token, user);
+                    this.session.save(res.access_token, user);
                     return user;
                 }),
             );
@@ -38,7 +38,11 @@ export class AuthService {
 
     /** Decodifica el payload del JWT sin verificar firma */
     private decodeJwt(token: string): JwtPayload {
-        const base64 = token.split('.')[1].replace(/-/g, '+').replace(/_/g, '/');
-        return JSON.parse(atob(base64)) as JwtPayload;
+        try {
+            const base64 = token.split('.')[1].replace(/-/g, '+').replace(/_/g, '/');
+            return JSON.parse(atob(base64)) as JwtPayload;
+        } catch {
+            return {};
+        }
     }
 }
