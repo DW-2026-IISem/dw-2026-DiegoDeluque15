@@ -20,6 +20,16 @@ export const routes: Routes = [
         loadComponent: () =>
           import('./features/passengers/passenger-list').then((m) => m.PassengerList),
       },
+      {
+        path: 'passengers/new',
+        loadComponent: () =>
+          import('./features/passengers/passenger-form').then((m) => m.PassengerForm),
+      },
+      {
+        path: 'passengers/:id/edit',
+        loadComponent: () =>
+          import('./features/passengers/passenger-form').then((m) => m.PassengerForm),
+      },
     ],
   },
   { path: '**', redirectTo: '' },

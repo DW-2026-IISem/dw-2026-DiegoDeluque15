@@ -493,3 +493,38 @@ Implementación del componente \PassengerList\ utilizando signals reactivos de A
 1. **Endpoint y payload de autenticación:** Se alineó el endpoint a \/api/sesion/login\, el campo de entrada a \identifier\ (soporta usuario o correo) y la lectura del token JWT a \ccess_token\.
 2. **Métodos de \PassengerApi\:** Se corrigieron los llamados del componente para usar \	his.api.list()\ y \	his.api.remove(id)\.
 3. **Sintaxis de plantillas PrimeNG v19:** Se actualizaron los templates de \p-table\ utilizando la directiva moderna \#header\ y \#body\, y se corrigió la propiedad de estado a \p.status === 'active'\.
+
+---
+
+#### C.3 — Formulario de Pasajero (Creación y Edición)
+Implementación del componente \PassengerForm\ para dar soporte a las operaciones de creación (\/passengers/new\) y edición (\/passengers/:id/edit\) de pasajeros. 
+- Utiliza **Reactive Forms** (\FormGroup\, \Validators\) con validación de obligatoriedad, formato de correo y formato de teléfono.
+- En modo edición, detecta el parámetro \:id\ de la URL, consulta al backend mediante \PassengerApi.get(id)\ y precarga los campos mediante \patchValue\.
+- Soporte para cambio reactivo de estado con PrimeNG \p-selectbutton\.
+- Redirección con feedback de notificación (\NotificationService\) hacia el listado principal tras guardar cambios exitosamente.
+
+- **Archivos:** \src/app/features/passengers/passenger-form.ts\, \passenger-form.html\ y \src/app/app.routes.ts\
+- **Estado:** ✅ Completado
+
+![Formulario reactivo de pasajeros](evidencias/ISS-03-C3-passenger-form.png)
+
+---
+
+#### C.4 — Confirmación Modal y Eliminación de Pasajero
+Integración del flujo de eliminación con diálogo de confirmación PrimeNG (`ConfirmationService` y `p-confirmdialog` global provisto en el Shell):
+- Al pulsar el botón de eliminación, se despliega un diálogo emergente solicitando la confirmación del operador para prevenir borrados accidentales.
+- Al aceptar, se consume el método `PassengerApi.remove(id)` (`DELETE /api/pasajeros/:id`).
+- **Manejo de integridad referencial:** Si el pasajero cuenta con registros dependientes en la tabla `trips`, la base de datos bloquea el borrado por clave foránea (`SequelizeForeignKeyConstraintError`); el frontend captura este error y presenta una notificación informativa al operador en lugar de un fallo silencioso.
+- Para registros sin dependencias activas, el borrado físico se ejecuta con código 200/204 y refresca reactivamente la tabla de pasajeros.
+
+- **Archivos:** `src/app/features/passengers/passenger-list.ts` y `passenger-list.html`
+- **Estado:** ✅ Completado
+
+![Diálogo de confirmación para eliminar pasajero](evidencias/ISS-03-C4-passenger-delete.png)
+
+---
+
+### Ajustes de Dominio y Validaciones en ISS-03:
+1. **Requisito de contraseña en creación:** El contrato del backend (`POST /api/pasajeros`) exige el campo `password` para crear un pasajero. Se incorporó el control `p-password` en el formulario como campo obligatorio al crear y opcional al editar.
+2. **Paginación reactiva:** La tabla gestiona correctamente múltiples páginas (`[rows]="10"`), permitiendo navegar hacia registros nuevos en páginas subsiguientes.
+3. **Manejo de expiración de sesión (401):** Se fortaleció el `authInterceptor` para capturar respuestas 401 (token JWT expirado tras 15 minutos), limpiando automáticamente el `SessionStore` y redirigiendo al operador hacia `/login`.
