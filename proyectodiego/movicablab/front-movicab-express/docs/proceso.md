@@ -230,3 +230,91 @@ Servidor en http://localhost:4200 mostrando las 4 regiones. Sin peticiones a /ap
 ![Network sin peticiones a /api](evidencias/ISS-01A_A.2_network-sin-api.png)
 
 ---
+
+## ISS-01B — Menú de navegación lateral responsivo con Drawer
+
+- **Fecha:** 2026-10-27
+- **Rama:** `front-movicab-express`
+- **Estado:** ✅ Completado
+- **Objetivo:** Implementar la navegación lateral con PrimeNG (`p-panelmenu` y `p-drawer`) adaptativa a responsive design, integrando enrutamiento con rutas hijas y lazy loading, además de sincronización de eventos entre Header, Aside y App.
+
+---
+
+### Sub-ítems y Evidencias:
+
+#### Paso B.1 — Utilidad reactiva para Media Query
+Se creó el helper reactivo `watchMediaQuery` basado en Signals de Angular y la API nativa `window.matchMedia`, permitiendo escuchar cambios de resolución de pantalla y limpiar listeners al destruir el contexto.
+
+- **Archivo:** `src/app/core/utils/media-query.ts`
+- **Estado:** ✅ Completado
+
+![Utilidad watchMediaQuery](evidencias/ISS-01B_B.1_media-query.png)
+
+---
+
+#### Paso B.2 — Configuración de rutas y componente placeholder
+Configuración de rutas principales en `app.routes.ts` con carga diferida (`loadComponent`) para la ruta `/construir` y redirección inicial por defecto hacia `/construir`.
+
+- **Archivos:** `src/app/app.routes.ts`, `src/app/features/construir/construir.ts`
+- **Estado:** ✅ Completado
+
+![Configuración de rutas app.routes.ts](evidencias/ISS-01B_B.3_routes.png)
+
+---
+
+#### Paso B.3 — Menú lateral interactivo con PanelMenu en Aside
+Configuración del componente `Aside` con `PanelMenu` de PrimeNG. Estructura jerárquica con menú "Operación" y submenú "Construir" con íconos de PrimeIcons, emitiendo el evento `navigated` al hacer clic para cerrar el drawer en móviles.
+
+- **Archivos:** `src/app/layout/aside/aside.ts` y `src/app/layout/aside/aside.html`
+- **Estado:** ✅ Completado
+
+![Aside TypeScript](evidencias/ISS-01B_B.4_aside-ts.png)
+
+![Aside Template HTML](evidencias/ISS-01B_B.5_aside-html.png)
+
+---
+
+#### Paso B.4 — Botón hamburguesa en Header
+Incorporación de botón interactivo PrimeNG (`p-button`) con ícono de hamburguesa (`pi-bars`) configurado con la clase `md:hidden` para mostrarse únicamente en resoluciones móviles (< 768px), emitiendo el evento `menuRequested`.
+
+- **Archivos:** `src/app/layout/header/header.ts` y `src/app/layout/header/header.html`
+- **Estado:** ✅ Completado
+
+![Header TypeScript](evidencias/ISS-01B_B.6_header-ts.png)
+
+![Header Template HTML](evidencias/ISS-01B_B.7_header-html.png)
+
+---
+
+#### Paso B.5 — Coordinación de Drawer y layout principal en App
+Integración del componente `p-drawer` en `App` con un Signal reactivo `drawerOpen`. En escritorio (>= 768px) el `Aside` permanece fijo en el layout; en pantallas móviles (< 768px), el botón hamburguesa abre el `p-drawer`, y al seleccionar una opción o navegar, el drawer se cierra automáticamente mediante `closeDrawer()`.
+
+- **Archivos:** `src/app/app.ts` y `src/app/app.html`
+- **Estado:** ✅ Completado
+
+![App TypeScript](evidencias/ISS-01B_B.8_app-ts.png)
+
+![App Template HTML](evidencias/ISS-01B_B.9_app-html.png)
+
+---
+
+#### Verificación en navegador y Responsive Design
+
+1. **Menú en escritorio (1280px):** El `Aside` se renderiza de forma estática en la barra lateral con el `p-panelmenu` colapsable/desplegable.
+2. **Drawer en móvil (390px):** El aside lateral se oculta, se muestra el botón ☰ en el header y, al hacer clic, se abre el `p-drawer` con la navegación completa.
+
+- **Estado:** ✅ Completado y Verificado
+
+![Menú desplegado en escritorio](evidencias/ISS-01B_B.1_menu-escritorio.png)
+
+![Drawer abierto en vista móvil](evidencias/ISS-01B_B.2_drawer-movil.png)
+
+---
+
+### Problemas y soluciones encontrados durante ISS-01B:
+1. **Error de compilación en template de Aside (`NG8001: 'p-panelMenu' is not a known element`):**
+   - **Causa:** En la versión actual de PrimeNG, el selector del componente es `p-panelmenu` (completamente en minúsculas) y no `p-panelMenu`.
+   - **Solución:** Se corrigió la etiqueta en `aside.html` a `<p-panelmenu [model]="items" styleClass="border-none bg-transparent" (click)="onNavigate()" />`.
+2. **Advertencias de Angular Compiler (`NG8113: RouterLink / RouterLinkActive is not used within the template`):**
+   - **Causa:** PrimeNG maneja internamente la navegación y los enlaces de router a través de las propiedades de cada objeto `MenuItem` (`routerLink: '/construir'`), haciendo redundante la importación directa de las directivas en el componente `Aside`.
+   - **Solución:** Se removieron los imports innecesarios de `RouterLink` y `RouterLinkActive` en `aside.ts`, logrando una compilación totalmente limpia.

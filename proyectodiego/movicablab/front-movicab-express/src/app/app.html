@@ -1,7 +1,18 @@
 <div class="flex flex-col min-h-screen">
-  <app-header />
+  <!-- Header: botón hamburguesa solo en móvil -->
+  <app-header (menuRequested)="openDrawer()" />
   <div class="flex flex-1">
-    <app-aside />
+    <!-- Aside: visible solo en md+ -->
+    <div class="hidden md:block">
+      <app-aside />
+    </div>
+    <!-- Drawer: menú lateral en móvil -->
+    <p-drawer [(visible)]="drawerOpen" position="left" styleClass="!w-56 !p-0 bg-slate-700">
+      <ng-template #header>
+        <span class="text-white font-bold">MoviCab</span>
+      </ng-template>
+      <app-aside (navigated)="closeDrawer()" />
+    </p-drawer>
     <main class="flex-1 p-6">
       <router-outlet />
     </main>
