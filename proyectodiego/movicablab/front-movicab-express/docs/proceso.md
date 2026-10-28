@@ -318,3 +318,79 @@ Integración del componente `p-drawer` en `App` con un Signal reactivo `drawerOp
 2. **Advertencias de Angular Compiler (`NG8113: RouterLink / RouterLinkActive is not used within the template`):**
    - **Causa:** PrimeNG maneja internamente la navegación y los enlaces de router a través de las propiedades de cada objeto `MenuItem` (`routerLink: '/construir'`), haciendo redundante la importación directa de las directivas en el componente `Aside`.
    - **Solución:** Se removieron los imports innecesarios de `RouterLink` y `RouterLinkActive` en `aside.ts`, logrando una compilación totalmente limpia.
+
+
+## ISS-02 — Núcleo: environment, modelos, servicios y shell
+
+- **Fecha:** 2026-10-28
+- **Rama:** `front-movicab-express`
+- **Estado:** ✅ Completado
+- **Objetivo:** Establecer la infraestructura transversal del frontend antes de crear pantallas de negocio: configuración de environments con URL del backend sin barra final, contratos y modelos de dominio en TypeScript, servicios HTTP con envolturas de respuesta de Express, componentes compartidos reutilizables, utilidades de error/notificación y layout Shell persistente con lazy loading.
+
+---
+
+### Sub-ítems y Evidencias:
+
+#### Paso 2.1 — Configuración de Environment
+Se fijó `apiUrl: 'http://localhost:4000/api'` en `environment.development.ts` y `environment.ts` asegurando que no tenga barra final para evitar rutas con doble barra (`//`) que generan errores 404 en Express.
+
+- **Archivos:** `src/environments/environment.ts` y `src/environments/environment.development.ts`
+- **Estado:** ✅ Completado
+
+---
+
+#### Paso 2.2 — Modelos de Dominio
+Creación de 12 interfaces y tipos en `src/app/core/models/` reflejando el contrato exacto de base de datos y negocio del backend (`api.model.ts`, `passenger.model.ts`, `vehicle-type.model.ts`, `company.model.ts`, `driver.model.ts`, `vehicle.model.ts`, `shift.model.ts`, `fare.model.ts`, `trip.model.ts`, `payment.model.ts`, `rating.model.ts`, `settlement.model.ts`).
+
+- **Directorio:** `src/app/core/models/`
+- **Estado:** ✅ Completado
+
+![Modelos de dominio generados](evidencias/ISS-02_2.2_modelos.png)
+
+---
+
+#### Paso 2.3 — Servicios HTTP por Feature
+Implementación de los 11 servicios HTTP (`PassengerApi`, `VehicleTypeApi`, `CompanyApi`, `DriverApi`, `VehicleApi`, `ShiftApi`, `FareApi`, `TripApi`, `PaymentApi`, `RatingApi`, `SettlementApi`) desenvolviendo las respuestas envoltura del backend (`passengers`, `vehicles`, `fares`, etc.) y suite de pruebas unitarias en `passenger-api.spec.ts` con `HttpTestingController`.
+
+- **Directorio:** `src/app/features/`
+- **Estado:** ✅ Completado
+
+![Servicios HTTP por feature](evidencias/ISS-02_2.3_servicios.png)
+
+---
+
+#### Paso 2.4 y 2.5 — Utilidades transversales y Componentes compartidos
+- **Utilidad `toApiMessage` (`src/app/core/utils/api-error.ts`):** Manejo robusto de errores de red (`status === 0`), mensajes de validación y fallos de backend.
+- **Servicio `NotificationService` (`src/app/core/services/notification.ts`):** Capa sobre PrimeNG `MessageService` para estandarizar severidades y duraciones.
+- **Componentes compartidos (`src/app/shared/ui/`):**
+  - `PageHeader`: Cabecera con título obligatorio y slot para botones de acción.
+  - `EmptyState`: Estado vacío visual con icono y mensaje configurable.
+  - `StatusTag`: Etiqueta PrimeNG reactiva con `computed` para estados `active` / `inactive`.
+
+- **Estado:** ✅ Completado
+
+---
+
+#### Paso 2.6 y 2.7 — Shell Layout persistente y provisión de HttpClient
+- Creación de `Shell` (`src/app/layout/shell/`) que conserva Header, Aside, Drawer, Toast y ConfirmDialog sin remontarlos al navegar.
+- `app.routes.ts` actualizado para cargar `Shell` de forma diferida (`loadComponent`), logrando un chunk `shell` independiente.
+- `app.config.ts` actualizado con `provideHttpClient()`.
+
+- **Estado:** ✅ Completado
+
+---
+
+#### Paso 2.8 — Verificación y Comprobación de Contrato
+
+1. **Build y Pruebas Unitarias:**
+   - `ng build`: Código 0 con chunks lazy independientes (`shell` y `construir`).
+   - `ng test --watch=false`: **12 de 12 pruebas unitarias aprobadas en 9 archivos**.
+
+![Build exitoso y pruebas aprobadas](evidencias/ISS-02_2.8_build-test.png)
+
+2. **Comprobación de Contrato con Backend:**
+   - Verificación de envolturas singulares (`passenger`, `vehicle_type`, `fare`, `trip`, etc.) contra el backend Express en `http://localhost:4000/api`.
+
+![Comprobación de contrato contra backend](evidencias/ISS-02_2.8_contrato-backend.png)
+
+---

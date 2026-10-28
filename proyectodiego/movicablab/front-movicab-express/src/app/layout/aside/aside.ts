@@ -1,6 +1,7 @@
-import { Component, output } from '@angular/core';
+import { Component, input, output } from '@angular/core';
 import { PanelMenu } from 'primeng/panelmenu';
 import type { MenuItem } from 'primeng/api';
+
 @Component({
   selector: 'app-aside',
   imports: [PanelMenu],
@@ -8,8 +9,7 @@ import type { MenuItem } from 'primeng/api';
   templateUrl: './aside.html',
 })
 export class Aside {
-  navigated = output<void>();
-  items: MenuItem[] = [
+  readonly items = input<MenuItem[]>([
     {
       label: 'Operación',
       icon: 'pi pi-fw pi-car',
@@ -17,7 +17,9 @@ export class Aside {
         { label: 'Construir', icon: 'pi pi-fw pi-wrench', routerLink: '/construir' },
       ],
     },
-  ];
+  ]);
+  navigated = output<void>();
+
   onNavigate() {
     this.navigated.emit();
   }
