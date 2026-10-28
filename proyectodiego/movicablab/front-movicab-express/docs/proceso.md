@@ -136,7 +136,7 @@ Ajuste de presupuesto de bundle en `angular.json` a `maximumWarning: 750kB` y `m
 #### Paso 1.8 — Primera ejecución y prueba interactiva
 Ejecución del servidor de desarrollo con `npm start` y comprobación de interacción con Signals (+1000 al precio).
 
-- **Estado:** ⏳ Listo para ejecutar
+- **Estado:** ✅ Completado
 
 ![Prueba interactiva de Signals](evidencias/ISS-01_1.8_ejemplo-interaccion.png)
 
@@ -145,7 +145,7 @@ Ejecución del servidor de desarrollo con `npm start` y comprobación de interac
 #### Verificación final del ISS-01
 Validación de compilación limpia y pruebas unitarias (`ng build` y `npm test -- --watch=false`).
 
-- **Estado:** ⏳ Pendiente tras capturas en navegador
+- **Estado:** ✅ Completado
 
 ![Build exitoso y pruebas aprobadas](evidencias/ISS-01_verificacion_build-test.png)
 
@@ -394,3 +394,68 @@ Implementación de los 11 servicios HTTP (`PassengerApi`, `VehicleTypeApi`, `Com
 ![Comprobación de contrato contra backend](evidencias/ISS-02_2.8_contrato-backend.png)
 
 ---
+## ISS-08 — Bloque A: Sesión mínima (Auth)
+
+- **Fecha:** 2026-10-28
+- **Rama:** ront-movicab-express
+- **Estado:** ✅ Completado
+- **Objetivo:** Implementar la capa de autenticación mínima para que el frontend pueda iniciar sesión, almacenar el token JWT y enviarlo automáticamente en cada petición HTTP al backend, previniendo errores 401 Unauthorized en las rutas de negocio.
+
+---
+
+### Sub-ítems y Evidencias:
+
+#### A.1 — Modelos de Autenticación y Usuario
+Definición de los contratos TypeScript para el flujo de autenticación: LoginRequest (credenciales que envía el cliente), LoginResponse (token y expiración que devuelve el backend), JwtPayload (claims decodificados del JWT), UserRole (roles del sistema) y AuthUser (usuario en sesión).
+
+- **Archivos:** src/app/core/auth/auth.model.ts y src/app/core/auth/user.model.ts
+- **Estado:** ✅ Completado
+
+![Modelos de autenticación](evidencias/ISS-08-A1-auth-models.png)
+
+---
+
+#### A.2 — SessionStore
+Servicio singleton (providedIn: 'root') que persiste el token JWT y el usuario autenticado en localStorage. Expone señales reactivas de solo lectura (	oken, user, isLoggedIn) para que cualquier componente pueda reaccionar al estado de sesión sin suscripciones manuales.
+
+- **Archivo:** src/app/core/auth/session.store.ts
+- **Estado:** ✅ Completado
+
+![SessionStore](evidencias/ISS-08-A2-session-store.png)
+
+---
+
+#### A.3 — AuthService
+Servicio que realiza la petición POST /auth/login al backend, decodifica el payload del JWT con tob() (sin librería externa) y delega el almacenamiento al SessionStore. También expone logout() para limpiar la sesión.
+
+- **Archivo:** src/app/core/auth/auth.service.ts
+- **Estado:** ✅ Completado
+
+![AuthService](evidencias/ISS-08-A3-auth-service.png)
+
+---
+
+#### A.4 — authInterceptor y registro en app.config.ts
+Interceptor funcional (HttpInterceptorFn) que inyecta el SessionStore y clona cada petición HTTP saliente agregando el header Authorization: Bearer <token> cuando hay sesión activa. Registrado en pp.config.ts con provideHttpClient(withInterceptors([authInterceptor])).
+
+- **Archivos:** src/app/core/auth/auth.interceptor.ts y src/app/app.config.ts
+- **Estado:** ✅ Completado
+
+![authInterceptor y app.config.ts](evidencias/ISS-08-A4-auth-interceptor.png)
+
+---
+
+#### A.5 — Pantalla de Login
+Componente standalone con formulario reactivo usando FormsModule y [(ngModel)] sobre signals. Diseño oscuro con tarjeta centrada. Muestra mensaje de error de PrimeNG cuando el backend responde con credenciales incorrectas. Al autenticarse, redirige a /. Ruta /login registrada como ruta independiente fuera del Shell.
+
+- **Archivos:** src/app/features/login/login.ts, login.html, login.css y src/app/app.routes.ts
+- **Estado:** ✅ Completado
+
+![Pantalla de Login](evidencias/ISS-08-A5-login-screen.png)
+
+---
+
+### Correcciones aplicadas durante ISS-08:
+1. **Rutas mal estructuradas (pp.routes.ts):** La ruta /construir estaba definida fuera del Shell, por lo que el layout nunca envolvía el contenido. Se movió como ruta hija del Shell y se añadió redirect desde '' a construir.
+2. **Error NG8002 en p-message:** PrimeNG v19 usa el componente standalone Message (no MessageModule) y el texto va proyectado como contenido, no como propiedad [text]. Se corrigió el import y el template.
+
