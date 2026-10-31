@@ -30,7 +30,23 @@ export const routes: Routes = [
         loadComponent: () =>
           import('./features/passengers/passenger-form').then((m) => m.PassengerForm),
       },
+      {
+        path: 'vehicles',
+        loadComponent: () =>
+          import('./features/vehicles/vehicle-list').then((m) => m.VehicleList),
+      },
+      {
+        path: 'vehicles/new',
+        loadComponent: () =>
+          import('./features/vehicles/vehicle-form').then((m) => m.VehicleForm),
+      },
+      {
+        path: 'vehicles/:id/edit',
+        loadComponent: () =>
+          import('./features/vehicles/vehicle-form').then((m) => m.VehicleForm),
+      },
     ],
+
   },
   { path: '**', redirectTo: '' },
 ];

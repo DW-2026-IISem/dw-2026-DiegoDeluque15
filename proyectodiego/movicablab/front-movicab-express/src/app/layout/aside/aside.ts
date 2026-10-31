@@ -12,9 +12,12 @@ export class Aside {
   readonly items = input<MenuItem[]>([
     {
       label: 'Operación',
-      icon: 'pi pi-fw pi-car',
+      icon: 'pi pi-fw pi-compass',
+      expanded: true,
       items: [
-        { label: 'Construir', icon: 'pi pi-fw pi-wrench', routerLink: '/construir' },
+        { label: 'Pasajeros', icon: 'pi pi-fw pi-users', routerLink: '/passengers' },
+        { label: 'Vehículos', icon: 'pi pi-fw pi-car', routerLink: '/vehicles' },
+        { label: 'Prototipo', icon: 'pi pi-fw pi-wrench', routerLink: '/construir' },
       ],
     },
   ]);

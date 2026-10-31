@@ -528,3 +528,61 @@ Integración del flujo de eliminación con diálogo de confirmación PrimeNG (`C
 1. **Requisito de contraseña en creación:** El contrato del backend (`POST /api/pasajeros`) exige el campo `password` para crear un pasajero. Se incorporó el control `p-password` en el formulario como campo obligatorio al crear y opcional al editar.
 2. **Paginación reactiva:** La tabla gestiona correctamente múltiples páginas (`[rows]="10"`), permitiendo navegar hacia registros nuevos en páginas subsiguientes.
 3. **Manejo de expiración de sesión (401):** Se fortaleció el `authInterceptor` para capturar respuestas 401 (token JWT expirado tras 15 minutos), limpiando automáticamente el `SessionStore` y redirigiendo al operador hacia `/login`.
+
+---
+
+## ISS-04 — CRUD de Vehículos y Tipos de Vehículo
+
+- **Fecha:** 2026-10-31
+- **Rama:** `front-movicab-express`
+- **Estado:** ✅ Completado
+- **Objetivo:** Implementar la gestión completa de vehículos (`/vehicles`), integrando la navegación lateral (`Aside`), listado con relaciones foráneas (empresa y tipo de vehículo) mediante PrimeNG `p-table`, formulario reactivo con catálogos foráneos (`forkJoin`) y diálogo modal de confirmación para eliminación.
+
+---
+
+### Sub-ítems y Evidencias:
+
+#### D.1 — Enrutamiento del módulo y navegación lateral en Aside
+Configuración de rutas principales con carga diferida (`loadComponent`) para `/vehicles`, `/vehicles/new` y `/vehicles/:id/edit` en `app.routes.ts`. Actualización de `Aside` (`src/app/layout/aside/aside.ts`) con el enlace "Vehículos" (ícono `pi pi-car`) y menú desplegado por defecto.
+
+- **Archivos:** `src/app/app.routes.ts` y `src/app/layout/aside/aside.ts`
+- **Estado:** ✅ Completado
+
+---
+
+#### D.2 — Listado de Vehículos con relaciones (VehicleList)
+Componente `VehicleList` que consume `VehicleApi.list()` (`GET /api/vehiculos`). Muestra la lista de vehículos con columnas de ID, Nombre/Modelo, Descripción/Placa, Empresa afiliada (`company.legal_name`), Tipo (`vehicle_type.name`), estado coloreado con `p-tag` y botones de acción (editar y eliminar). Maneja estados de carga (`loading`) y estado vacío (`EmptyState`).
+
+- **Archivos:** `src/app/features/vehicles/vehicle-list.ts` y `vehicle-list.html`
+- **Estado:** ✅ Completado
+
+![Listado de vehículos con relaciones](evidencias/ISS-04-D2-vehicle-list.png)
+
+---
+
+#### D.3 — Formulario de Vehículo con catálogos foráneos (VehicleForm)
+Implementación de `VehicleForm` con `ReactiveFormsModule` (`FormGroup`, `Validators`). En modo creación o edición:
+- Carga concurrente de catálogos mediante `forkJoin({ companies: CompanyApi.list(), types: VehicleTypeApi.list() })`.
+- Selectores PrimeNG `p-select` para seleccionar la Empresa obligatoria y el Tipo de Vehículo opcional.
+- Detección de parámetro `:id` para precarga automática de datos en modo edición (`api.get(id)` + `patchValue`).
+- Control de estado con PrimeNG `p-selectbutton` (Activo / Inactivo).
+
+- **Archivos:** `src/app/features/vehicles/vehicle-form.ts` y `vehicle-form.html`
+- **Estado:** ✅ Completado
+
+![Formulario reactivo de vehículos](evidencias/ISS-04-D3-vehicle-form.png)
+
+---
+
+#### D.4 — Confirmación Modal y Eliminación de Vehículo
+Flujo de eliminación conectado con el servicio global `ConfirmationService` de PrimeNG:
+- Despliegue de diálogo modal solicitando confirmación con el nombre del vehículo a eliminar.
+- Invocación de `VehicleApi.remove(id)` (`DELETE /api/vehiculos/:id`).
+- Manejo de restricciones de integridad referencial: captura de errores de clave foránea y presentación de mensaje descriptivo mediante `NotificationService`.
+- Refresco reactivo automático del listado tras la eliminación.
+
+- **Archivos:** `src/app/features/vehicles/vehicle-list.ts` y `vehicle-list.html`
+- **Estado:** ✅ Completado
+
+![Confirmación modal para eliminar vehículo](evidencias/ISS-04-D4-vehicle-delete.png)
+
