@@ -13,6 +13,7 @@ import { NotificationService } from '../../core/services/notification';
 import { PageHeader } from '../../shared/ui/page-header/page-header';
 import { EmptyState } from '../../shared/ui/empty-state/empty-state';
 import { Trip, TripStatus, TRIP_TRANSITIONS, TRIP_STATUS_LABEL } from '../../core/models/trip.model';
+import { HasPermissionDirective } from '../../core/directives/has-permission.directive';
 
 @Component({
   selector: 'app-trip-list',
@@ -29,6 +30,7 @@ import { Trip, TripStatus, TRIP_TRANSITIONS, TRIP_STATUS_LABEL } from '../../cor
     SharedModule,
     DecimalPipe,
     DatePipe,
+    HasPermissionDirective,
   ],
   templateUrl: './trip-list.html',
 })

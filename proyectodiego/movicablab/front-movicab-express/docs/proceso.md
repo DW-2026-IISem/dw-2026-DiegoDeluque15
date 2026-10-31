@@ -983,3 +983,63 @@ Nuevo componente en la ruta `/profile` que expone la identidad del usuario y su 
 ![Perfil de usuario y tabla de permisos RBAC efectivos](evidencias/ISS-08-O1-profile-permissions.png)
 
 ![Header con identidad de sesión activa — usuario y botones Mi Perfil / Salir](evidencias/ISS-08-O2-header-session.png)
+
+---
+
+## ISS-09 — Guards, Directiva `*appHasPermission` y Menú Filtrado por RBAC
+
+**Objetivo:** Proteger todas las rutas de la shell con un `AuthGuard` funcional, implementar la directiva estructural `*appHasPermission` que muestra u oculta elementos del DOM según los permisos efectivos del usuario autenticado, y hacer que el menú lateral sea reactivo a la matriz RBAC, mostrando únicamente los ítems para los cuales el rol activo tiene al menos un permiso `GET`.
+
+---
+
+### Sub-ítems implementados
+
+#### P.1 — Guard de Autenticación (`auth.guard.ts`)
+Guard funcional `authGuard` que protege el grupo de rutas de la shell:
+- Inyecta `SessionStore` y comprueba la señal `isLoggedIn()` en tiempo de navegación.
+- Si no hay token activo, retorna `router.createUrlTree(['/login'])` redirigiendo sin disparar la carga del componente.
+- Registrado con `canActivate: [authGuard]` en la ruta raíz de la shell en `app.routes.ts`.
+- **Verificación:** acceder a `http://localhost:4200` sin sesión redirige automáticamente a `/login`.
+
+- **Archivos:** `src/app/core/auth/auth.guard.ts`, `src/app/app.routes.ts`
+- **Estado:** ✅ Completado
+
+![Guard redirige automáticamente a /login al acceder sin sesión activa](evidencias/ISS-09-P1-guard-redirect.png)
+
+#### P.2 — Función utilitaria `hasPermission`
+Función pura `hasPermission(permissions, method, path)` en `core/utils/has-permission.ts`:
+- Recibe la lista de `EffectivePermission[]` del store, el método HTTP y la ruta del recurso.
+- Realiza coincidencia exacta o de prefijo de segmento para cubrir rutas parametrizadas (`/api/pasajeros` cubre `/api/pasajeros/:id`).
+- Utilizada tanto por la directiva estructural como por el `Aside` para mantener una única fuente de verdad.
+
+- **Archivo:** `src/app/core/utils/has-permission.ts`
+- **Estado:** ✅ Completado
+
+#### P.3 — Directiva Estructural `*appHasPermission`
+Directiva `HasPermissionDirective` en `core/directives/has-permission.directive.ts`:
+- Acepta un `input.required<string>()` con formato `"MÉTODO /ruta"` (p. ej. `'POST /api/carreras'`, `'DELETE /api/carreras'`).
+- Usa un `effect()` reactivo sobre `SessionStore.permissions()`: agrega o elimina la vista embebida del DOM cuando los permisos cambian (p. ej. al cambiar de sesión sin recargar la página).
+- Aplicada en `trip-list.html`:
+  - `*appHasPermission="'POST /api/carreras'"` → botón **"Nueva carrera"** visible solo con permiso de escritura.
+  - `*appHasPermission="'DELETE /api/carreras'"` → botón **🗑 Eliminar** visible solo con permiso de borrado.
+- Con rol **DESPACHO** (`seller`): el botón "Eliminar" desaparece del DOM; el botón "Nueva carrera" permanece (tiene `POST /api/carreras` — 26 permisos totales).
+
+- **Archivos:** `src/app/core/directives/has-permission.directive.ts`, `src/app/core/directives/index.ts`
+- **Estado:** ✅ Completado
+
+#### P.4 — Menú Lateral Reactivo por Permisos RBAC (`aside.ts`)
+Refactorización del componente `Aside` para filtrar ítems de navegación según la matriz RBAC activa:
+- Catálogo `ALL_ITEMS` con la propiedad `requiredPermission?: string` por ítem (p. ej. `'GET /api/conductores'`).
+- Señal `filteredItems` de tipo `computed<MenuItem[]>()` que reacciona a `SessionStore.permissions()` y reconstruye el árbol del `PanelMenu` en cada cambio de sesión.
+- Ítems sin `requiredPermission` (Dashboard, Prototipo) se muestran siempre.
+- Con rol **ADMIN**: todos los 12 ítems son visibles (102 permisos efectivos).
+- Con rol **DESPACHO**: todos los ítems de negocio se muestran porque el rol tiene `GET` sobre todos los recursos (26 permisos efectivos, todos de lectura y escritura de carreras).
+
+- **Archivos:** `src/app/layout/aside/aside.ts`, `src/app/layout/aside/aside.html`
+- **Estado:** ✅ Completado
+
+![Dashboard con menú completo — sesión admin (102 permisos ADMIN)](evidencias/ISS-09-P2-menu-admin.png)
+
+![Perfil y permisos del rol DESPACHO — seller con 26 permisos efectivos](evidencias/ISS-09-P3-menu-seller.png)
+
+![Lista de carreras con seller — botón "Nueva carrera" visible, botón Eliminar oculto por *appHasPermission](evidencias/ISS-09-P4-has-permission-trips.png)

@@ -1,6 +1,32 @@
-import { Component, input, output } from '@angular/core';
+import { Component, computed, inject, input, output } from '@angular/core';
 import { PanelMenu } from 'primeng/panelmenu';
 import type { MenuItem } from 'primeng/api';
+import { SessionStore } from '../../core/auth/session.store';
+import { hasPermission } from '../../core/utils/has-permission';
+
+/** Mapa entre un ítem del menú y el permiso mínimo que lo habilita. */
+interface NavItem extends MenuItem {
+  /** Permiso requerido: "MÉTODO /ruta". Si está ausente el ítem siempre se muestra. */
+  requiredPermission?: string;
+  items?: NavItem[];
+}
+
+/** Catálogo completo de ítems con sus permisos asociados. */
+const ALL_ITEMS: NavItem[] = [
+  { label: 'Dashboard',        icon: 'pi pi-fw pi-th-large',    routerLink: '/dashboard' },
+  { label: 'Pasajeros',        icon: 'pi pi-fw pi-users',        routerLink: '/passengers',    requiredPermission: 'GET /api/pasajeros' },
+  { label: 'Vehículos',        icon: 'pi pi-fw pi-car',          routerLink: '/vehicles',      requiredPermission: 'GET /api/vehiculos' },
+  { label: 'Empresas',         icon: 'pi pi-fw pi-building',     routerLink: '/companies',     requiredPermission: 'GET /api/empresas' },
+  { label: 'Tipos de Vehículo',icon: 'pi pi-fw pi-tags',         routerLink: '/vehicle-types', requiredPermission: 'GET /api/tipos-vehiculo' },
+  { label: 'Conductores',      icon: 'pi pi-fw pi-id-card',      routerLink: '/drivers',       requiredPermission: 'GET /api/conductores' },
+  { label: 'Turnos',           icon: 'pi pi-fw pi-clock',        routerLink: '/shifts',        requiredPermission: 'GET /api/turnos' },
+  { label: 'Tarifas',          icon: 'pi pi-fw pi-dollar',       routerLink: '/fares',         requiredPermission: 'GET /api/tarifas' },
+  { label: 'Carreras',         icon: 'pi pi-fw pi-compass',      routerLink: '/trips',         requiredPermission: 'GET /api/carreras' },
+  { label: 'Pagos',            icon: 'pi pi-fw pi-wallet',       routerLink: '/payments',      requiredPermission: 'GET /api/pagos' },
+  { label: 'Calificaciones',   icon: 'pi pi-fw pi-star',         routerLink: '/ratings',       requiredPermission: 'GET /api/calificaciones' },
+  { label: 'Liquidaciones',    icon: 'pi pi-fw pi-calculator',   routerLink: '/settlements',   requiredPermission: 'GET /api/liquidaciones' },
+  { label: 'Prototipo',        icon: 'pi pi-fw pi-wrench',       routerLink: '/construir' },
+];
 
 @Component({
   selector: 'app-aside',
@@ -9,29 +35,30 @@ import type { MenuItem } from 'primeng/api';
   templateUrl: './aside.html',
 })
 export class Aside {
-  readonly items = input<MenuItem[]>([
-    {
-      label: 'Operación',
-      icon: 'pi pi-fw pi-compass',
-      expanded: true,
-      items: [
-        { label: 'Dashboard', icon: 'pi pi-fw pi-th-large', routerLink: '/dashboard' },
-        { label: 'Pasajeros', icon: 'pi pi-fw pi-users', routerLink: '/passengers' },
-        { label: 'Vehículos', icon: 'pi pi-fw pi-car', routerLink: '/vehicles' },
-        { label: 'Empresas', icon: 'pi pi-fw pi-building', routerLink: '/companies' },
-        { label: 'Tipos de Vehículo', icon: 'pi pi-fw pi-tags', routerLink: '/vehicle-types' },
-        { label: 'Conductores', icon: 'pi pi-fw pi-id-card', routerLink: '/drivers' },
-        { label: 'Turnos', icon: 'pi pi-fw pi-clock', routerLink: '/shifts' },
-        { label: 'Tarifas', icon: 'pi pi-fw pi-dollar', routerLink: '/fares' },
-        { label: 'Carreras', icon: 'pi pi-fw pi-compass', routerLink: '/trips' },
-        { label: 'Pagos', icon: 'pi pi-fw pi-wallet', routerLink: '/payments' },
-        { label: 'Calificaciones', icon: 'pi pi-fw pi-star', routerLink: '/ratings' },
-        { label: 'Liquidaciones', icon: 'pi pi-fw pi-calculator', routerLink: '/settlements' },
-        { label: 'Prototipo', icon: 'pi pi-fw pi-wrench', routerLink: '/construir' },
-      ],
-    },
-  ]);
+  private readonly session = inject(SessionStore);
+
+  readonly items = input<MenuItem[]>([]);
   navigated = output<void>();
+
+  /** Ítems del menú filtrados según los permisos efectivos del usuario. */
+  readonly filteredItems = computed<MenuItem[]>(() => {
+    const permissions = this.session.permissions();
+
+    const allowed = ALL_ITEMS.filter((item) => {
+      if (!item.requiredPermission) return true;
+      const [method, ...pathParts] = item.requiredPermission.split(' ');
+      return hasPermission(permissions, method, pathParts.join(' '));
+    });
+
+    return [
+      {
+        label: 'Operación',
+        icon: 'pi pi-fw pi-compass',
+        expanded: true,
+        items: allowed,
+      },
+    ];
+  });
 
   onNavigate() {
     this.navigated.emit();

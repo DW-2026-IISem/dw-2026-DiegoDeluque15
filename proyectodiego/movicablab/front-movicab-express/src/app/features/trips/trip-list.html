@@ -1,5 +1,5 @@
 <app-page-header title="Carreras (Viajes)" subtitle="Seguimiento y gestión de estados de las carreras">
-  <p-button label="Nueva carrera" icon="pi pi-plus" routerLink="/trips/new" />
+  <p-button *appHasPermission="'POST /api/carreras'" label="Nueva carrera" icon="pi pi-plus" routerLink="/trips/new" />
 </app-page-header>
 
 @if (loading()) {
@@ -67,6 +67,7 @@
         />
         <p-button
           icon="pi pi-trash"
+          *appHasPermission="'DELETE /api/carreras'"
           [text]="true"
           severity="danger"
           size="small"
