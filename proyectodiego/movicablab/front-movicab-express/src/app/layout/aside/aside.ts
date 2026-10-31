@@ -11,8 +11,8 @@ interface NavItem extends MenuItem {
   items?: NavItem[];
 }
 
-/** Catálogo completo de ítems con sus permisos asociados. */
-const ALL_ITEMS: NavItem[] = [
+/** Catálogo de ítems de operación con sus permisos asociados. */
+const OPERATION_ITEMS: NavItem[] = [
   { label: 'Dashboard',        icon: 'pi pi-fw pi-th-large',    routerLink: '/dashboard' },
   { label: 'Pasajeros',        icon: 'pi pi-fw pi-users',        routerLink: '/passengers',    requiredPermission: 'GET /api/pasajeros' },
   { label: 'Vehículos',        icon: 'pi pi-fw pi-car',          routerLink: '/vehicles',      requiredPermission: 'GET /api/vehiculos' },
@@ -26,6 +26,11 @@ const ALL_ITEMS: NavItem[] = [
   { label: 'Calificaciones',   icon: 'pi pi-fw pi-star',         routerLink: '/ratings',       requiredPermission: 'GET /api/calificaciones' },
   { label: 'Liquidaciones',    icon: 'pi pi-fw pi-calculator',   routerLink: '/settlements',   requiredPermission: 'GET /api/liquidaciones' },
   { label: 'Prototipo',        icon: 'pi pi-fw pi-wrench',       routerLink: '/construir' },
+];
+
+/** Catálogo de administración del sistema y control de acceso. */
+const ADMIN_ITEMS: NavItem[] = [
+  { label: 'Seguridad y RBAC', icon: 'pi pi-fw pi-shield', routerLink: '/admin/rbac', requiredPermission: 'GET /api/usuarios' },
 ];
 
 @Component({
@@ -44,20 +49,37 @@ export class Aside {
   readonly filteredItems = computed<MenuItem[]>(() => {
     const permissions = this.session.permissions();
 
-    const allowed = ALL_ITEMS.filter((item) => {
+    const allowedOperation = OPERATION_ITEMS.filter((item) => {
       if (!item.requiredPermission) return true;
       const [method, ...pathParts] = item.requiredPermission.split(' ');
       return hasPermission(permissions, method, pathParts.join(' '));
     });
 
-    return [
+    const allowedAdmin = ADMIN_ITEMS.filter((item) => {
+      if (!item.requiredPermission) return true;
+      const [method, ...pathParts] = item.requiredPermission.split(' ');
+      return hasPermission(permissions, method, pathParts.join(' '));
+    });
+
+    const menu: MenuItem[] = [
       {
         label: 'Operación',
         icon: 'pi pi-fw pi-compass',
         expanded: true,
-        items: allowed,
+        items: allowedOperation,
       },
     ];
+
+    if (allowedAdmin.length > 0) {
+      menu.push({
+        label: 'Administración',
+        icon: 'pi pi-fw pi-cog',
+        expanded: true,
+        items: allowedAdmin,
+      });
+    }
+
+    return menu;
   });
 
   onNavigate() {

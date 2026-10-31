@@ -184,6 +184,12 @@ export const routes: Routes = [
         loadComponent: () =>
           import('./features/settlements/settlement-form').then((m) => m.SettlementForm),
       },
+      // ISS-10 — Administración RBAC
+      {
+        path: 'admin/rbac',
+        loadComponent: () =>
+          import('./features/admin/rbac-admin').then((m) => m.RbacAdmin),
+      },
     ],
 
   },

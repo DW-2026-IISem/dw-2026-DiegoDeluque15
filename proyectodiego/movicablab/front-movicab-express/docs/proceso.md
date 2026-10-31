@@ -1043,3 +1043,63 @@ Refactorización del componente `Aside` para filtrar ítems de navegación segú
 ![Perfil y permisos del rol DESPACHO — seller con 26 permisos efectivos](evidencias/ISS-09-P3-menu-seller.png)
 
 ![Lista de carreras con seller — botón "Nueva carrera" visible, botón Eliminar oculto por *appHasPermission](evidencias/ISS-09-P4-has-permission-trips.png)
+
+---
+
+## ISS-10 — Administración RBAC: Usuarios, Roles, Recursos, Asignaciones y Concesiones
+
+**Objetivo:** Implementar la interfaz administrativa de gestión integral para la seguridad y el modelo de control de acceso basado en roles (RBAC). Proporcionar la administración de identidades (usuarios), catálogo de roles, inventario de recursos protegibles de la API, asignación de roles a usuarios y concesión granular de permisos rol-recurso, integrando la visibilidad del módulo al menú lateral según permisos del backend.
+
+---
+
+### Sub-ítems implementados
+
+#### Q.1 — Modelado de Datos y Contratos RBAC (`rbac.model.ts`)
+Definición de las entidades y payloads de transferencia para las 5 estructuras de autorización:
+- **`User` / `UserPayload`:** Identidad en la base de datos con `username`, `email`, `password`, `avatar` y `status`.
+- **`Role` / `RolePayload`:** Agrupador funcional de responsabilidades con `name` (normalizado en mayúsculas), `description` y `status`.
+- **`Resource` / `ResourcePayload`:** Punto de acceso protegible definido por el par `(method, path)` con descripción y estado.
+- **`RoleUser` / `RoleUserPayload`:** Primer eslabón de la cadena RBAC (relación N:M usuario-rol) con referencias anidadas al usuario y al rol.
+- **`ResourceRole` / `ResourceRolePayload`:** Concesión de permiso granular que asocia un recurso a un rol con efecto inmediato.
+
+- **Archivo:** `src/app/core/models/rbac.model.ts`
+- **Estado:** ✅ Completado
+
+#### Q.2 — Servicio de Administración de Seguridad (`rbac-api.service.ts`)
+Servicio inyectable que interactúa con todos los endpoints de seguridad y autorización del backend Express:
+- **Usuarios:** `listUsers()`, `getUser()`, `createUser()`, `updateUser()`, `deactivateUser()`.
+- **Roles:** `listRoles()`, `getRole()`, `createRole()`, `updateRole()`, `deactivateRole()`.
+- **Recursos API:** `listResources()`, `getResource()`, `createResource()`, `updateResource()`, `deactivateResource()`.
+- **Asignaciones de Rol:** `listAssignments()`, `assignRole()`, `deactivateAssignment()` (revocación lógica), `reactivateAssignment()`.
+- **Concesiones RBAC:** `listGrants()` (soporta filtros `?role_id=` y `?resource_id=`), `grantResource()`, `deactivateGrant()`, `reactivateGrant()`.
+
+- **Archivo:** `src/app/features/admin/rbac-api.service.ts`
+- **Estado:** ✅ Completado
+
+#### Q.3 — Componente Centralizado de Administración RBAC (`rbac-admin.ts` / `rbac-admin.html`)
+Implementación de la interfaz de usuario organizada por pestañas de control de acceso:
+- **Pestaña Identidades / Usuarios:** Muestra las cuentas registradas (`admin`, `seller`), avatar con iniciales, estado en badge `p-tag`, modal reactivo para creación de nuevos usuarios con validación de fortaleza de clave y botón de acción para desactivar/activar identidades.
+- **Pestaña Roles:** Catálogo de roles del sistema (`ADMIN`, `DESPACHO`) con sus descripciones funcionales y diálogo de alta de nuevos roles.
+- **Pestaña Recursos API:** Inventario de los 102 endpoints protegidos con badges coloreados por método HTTP (`GET` en verde, `POST` en azul, `PUT`/`PATCH` en naranja, `DELETE` en rojo) y rutas normalizadas por patrón.
+- **Pestaña Asignaciones:** Visualización de la vinculación Usuario ↔ Rol con acciones de revocación y reactivación instantánea sin borrado físico.
+- **Pestaña Concesiones RBAC:** Matriz completa de 128 permisos concedidos entre roles y recursos, diálogo para otorgar nuevas concesiones y botones para revocar/reactivar permisos en caliente.
+
+- **Archivos:** `src/app/features/admin/rbac-admin.ts`, `rbac-admin.html`
+- **Estado:** ✅ Completado
+
+#### Q.4 — Integración en Rutas y Menú RBAC Reactivo
+- **Ruta Protegida:** Se registró `/admin/rbac` en `app.routes.ts` bajo la shell autenticada con `canActivate: [authGuard]`.
+- **Menú Condicional por RBAC:** En `aside.ts` se configuró la sección **Administración** con la opción **Seguridad y RBAC**, exigiendo el permiso `GET /api/usuarios`. Al iniciar sesión con `admin`, la categoría y el enlace aparecen dinámicamente; al iniciar sesión con `seller` (rol `DESPACHO` sin permisos sobre `/api/usuarios`), la categoría completa permanece oculta.
+
+- **Archivos:** `src/app/app.routes.ts`, `src/app/layout/aside/aside.ts`
+- **Estado:** ✅ Completado
+
+![Administración RBAC — Pestaña Usuarios e Identidades del Sistema](evidencias/ISS-10-Q1-admin-users.png)
+
+![Administración RBAC — Pestaña Catálogo de Roles funcionales](evidencias/ISS-10-Q2-admin-roles.png)
+
+![Administración RBAC — Pestaña Catálogo de Recursos protegidos de la API](evidencias/ISS-10-Q3-admin-resources.png)
+
+![Administración RBAC — Pestaña Asignaciones de Roles a Usuarios](evidencias/ISS-10-Q4-admin-assignments.png)
+
+![Administración RBAC — Pestaña Concesiones de Permisos RBAC (Rol a Recurso)](evidencias/ISS-10-Q5-admin-grants.png)
