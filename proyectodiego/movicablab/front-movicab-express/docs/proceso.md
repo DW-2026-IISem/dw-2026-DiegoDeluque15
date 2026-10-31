@@ -912,3 +912,74 @@ Implementación de la ruta parametrizada `/trips/:id` en `TripDetail` que coordi
 - **Estado:** ✅ Completado
 
 ![Detalle completo de carrera con pago y calificación](evidencias/ISS-07-N2-trip-detail.png)
+
+---
+
+## ISS-08 — JWT Completo: Refresh Token, Perfil y Permisos RBAC
+
+**Objetivo:** Implementar el ciclo de vida completo de autenticación JWT con rotación automática de refresh tokens, visualización del perfil del usuario autenticado y exposición del catálogo granular de permisos efectivos RBAC. Actualizar el header para mostrar la identidad de sesión activa.
+
+---
+
+### Sub-ítems implementados
+
+#### O.1 — Modelo de Autenticación Ampliado (`auth.model.ts`)
+Extensión del modelo de autenticación con tipos dedicados para la sesión completa:
+- **`SessionTokens`:** Contrato del par de tokens (`access_token`, `refresh_token`, `expires_in`, `refresh_expires_in`, `token_type`).
+- **`ProfileUser`:** Identidad del usuario autenticado obtenida de `GET /api/sesion/perfil` (`id`, `username`, `email`, `avatar`, `status`).
+- **`EffectivePermission`:** Permiso granular otorgado por la matriz RBAC (`method`, `path`, `role_name`, `description`).
+- **`JwtPayload`:** Estructura del payload decodificado del JWT para inspección client-side.
+
+- **Archivo:** `src/app/core/auth/auth.model.ts`
+- **Estado:** ✅ Completado
+
+#### O.2 — Store de Sesión Reactivo (`session.store.ts`)
+Reescritura del `SessionStore` como servicio `@Injectable` basado en Signals de Angular:
+- Almacena `access_token`, `refresh_token`, `ProfileUser` y `EffectivePermission[]` en `localStorage` con claves prefijadas (`mvc_*`).
+- Señales reactivas: `token()`, `refreshToken()`, `user()`, `permissions()`, `isLoggedIn()` (computed).
+- Métodos: `saveSession()`, `updateTokens()`, `updateProfile()`, `updatePermissions()`, `clear()`.
+- Hidratación desde `localStorage` en la instanciación para mantener sesión entre recargas.
+
+- **Archivo:** `src/app/core/auth/session.store.ts`
+- **Estado:** ✅ Completado
+
+#### O.3 — Servicio de Autenticación Completo (`auth.service.ts`)
+Implementación del flujo OAuth2-like con:
+- **`login()`:** Llama a `POST /api/sesion/login`, guarda temporalmente el `access_token` en el store y ejecuta `forkJoin({profile, permissions})` para obtener datos de sesión de forma concurrente, finalizando con `saveSession()`.
+- **`refresh()`:** Solicita un nuevo par de tokens con `POST /api/sesion/refresh` y actualiza el store con `updateTokens()`.
+- **`logout()`:** Revoca tokens en el backend con `POST /api/sesion/logout`, limpia el store y redirige a `/login`. Si el endpoint falla, el cliente se limpia igualmente.
+
+- **Archivo:** `src/app/core/auth/auth.service.ts`
+- **Estado:** ✅ Completado
+
+#### O.4 — Interceptor HTTP con Refresh Automático (`auth.interceptor.ts`)
+Interceptor funcional que gestiona el ciclo de vida de los tokens en cada petición HTTP:
+- Inyecta el header `Authorization: Bearer <token>` en todas las solicitudes excepto los endpoints públicos (`/sesion/login`, `/sesion/refresh`, `/sesion/logout`).
+- Captura errores `401 Unauthorized`; intenta renovar el token con `AuthService.refresh()` y reintenta la solicitud original con los nuevos tokens.
+- Si la renovación falla, invoca `AuthService.logout()` y redirige a `/login`, garantizando que no queden sesiones corruptas.
+
+- **Archivo:** `src/app/core/auth/auth.interceptor.ts`
+- **Estado:** ✅ Completado
+
+#### O.5 — Header con Identidad de Sesión (`header.ts` / `header.html`)
+Actualización del componente de cabecera para mostrar la sesión activa:
+- Muestra el `username` y `email` del usuario autenticado obtenidos de `SessionStore.user()`.
+- Botón **"Mi Perfil"** con icono que navega a `/profile`.
+- Botón **"Salir"** que invoca `AuthService.logout()` para cerrar sesión de forma segura.
+
+- **Archivos:** `src/app/layout/header/header.ts`, `header.html`
+- **Estado:** ✅ Completado
+
+#### O.6 — Vista de Perfil y Permisos Efectivos (`profile.ts` / `profile.html`)
+Nuevo componente en la ruta `/profile` que expone la identidad del usuario y su matriz de autorización RBAC:
+- **Tarjeta de identidad:** Avatar con inicial generada, `username`, ID, estado de cuenta, correo electrónico y badge de estado JWT con rotación automática.
+- **Tabla de permisos:** `p-table` paginada con los `EffectivePermission[]` del store, con badges de color por método HTTP (`GET`→verde, `POST`→azul, `PUT`→naranja, `PATCH`→amarillo, `DELETE`→rojo).
+- **Buscador reactivo:** Filtro en tiempo real sobre ruta de recurso y rol otorgante.
+- Registra un total de **102 operaciones autorizadas** para el rol `ADMIN`.
+
+- **Archivos:** `src/app/features/profile/profile.ts`, `profile.html`; ruta registrada en `src/app/app.routes.ts`
+- **Estado:** ✅ Completado
+
+![Perfil de usuario y tabla de permisos RBAC efectivos](evidencias/ISS-08-O1-profile-permissions.png)
+
+![Header con identidad de sesión activa — usuario y botones Mi Perfil / Salir](evidencias/ISS-08-O2-header-session.png)

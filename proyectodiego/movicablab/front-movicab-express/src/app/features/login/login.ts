@@ -8,30 +8,30 @@ import { Message } from 'primeng/message';
 import { AuthService } from '../../core/auth/auth.service';
 
 @Component({
-    selector: 'app-login',
-    imports: [FormsModule, ButtonModule, InputTextModule, PasswordModule, Message],
-    templateUrl: './login.html',
-    styleUrl: './login.css',
+  selector: 'app-login',
+  imports: [FormsModule, ButtonModule, InputTextModule, PasswordModule, Message],
+  templateUrl: './login.html',
+  styleUrl: './login.css',
 })
 export class Login {
-    private readonly auth = inject(AuthService);
-    private readonly router = inject(Router);
+  private readonly auth = inject(AuthService);
+  private readonly router = inject(Router);
 
-    email = signal('');
-    password = signal('');
-    loading = signal(false);
-    error = signal('');
+  email = signal('');
+  password = signal('');
+  loading = signal(false);
+  error = signal('');
 
-    onSubmit(): void {
-        this.loading.set(true);
-        this.error.set('');
+  onSubmit(): void {
+    this.loading.set(true);
+    this.error.set('');
 
-        this.auth.login({ identifier: this.email(), password: this.password() }).subscribe({
-            next: () => this.router.navigate(['/passengers']),
-            error: (err) => {
-                this.error.set(err?.error?.message ?? 'Credenciales incorrectas');
-                this.loading.set(false);
-            },
-        });
-    }
+    this.auth.login({ identifier: this.email(), password: this.password() }).subscribe({
+      next: () => this.router.navigate(['/dashboard']),
+      error: (err) => {
+        this.error.set(err?.error?.detail ?? err?.error?.error ?? err?.error?.message ?? 'Credenciales incorrectas');
+        this.loading.set(false);
+      },
+    });
+  }
 }
