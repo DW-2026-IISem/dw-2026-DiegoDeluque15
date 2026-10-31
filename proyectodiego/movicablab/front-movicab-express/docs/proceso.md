@@ -586,3 +586,45 @@ Flujo de eliminación conectado con el servicio global `ConfirmationService` de 
 
 ![Confirmación modal para eliminar vehículo](evidencias/ISS-04-D4-vehicle-delete.png)
 
+---
+
+## ISS-04B — CRUD de Empresas (Company)
+
+- **Fecha:** 2026-10-31
+- **Rama:** `front-movicab-express`
+- **Estado:** ✅ Completado
+- **Objetivo:** Implementar la gestión completa de empresas afiliadas (`/companies`), integrando la navegación lateral (`Aside`), tabla de empresas con paginación mediante PrimeNG `p-table`, formulario reactivo (`ReactiveFormsModule`) para alta y edición con validación de Razón Social y NIT/identificación fiscal, y modal de confirmación para eliminación.
+
+---
+
+### Sub-ítems y Evidencias:
+
+#### E.1 — Enrutamiento y Listado de Empresas (CompanyList)
+Configuración de rutas `/companies`, `/companies/new` y `/companies/:id/edit` en `app.routes.ts` y enlace "Empresas" (`pi pi-building`) en `Aside`. Implementación del componente `CompanyList` que consume `CompanyApi.list()` (`GET /api/empresas`), visualizando Razón Social, NIT / Identificación, Contacto Principal y Estado con `p-tag`.
+
+- **Archivos:** `src/app/app.routes.ts`, `src/app/layout/aside/aside.ts`, `src/app/features/companies/company-list.ts` y `company-list.html`
+- **Estado:** ✅ Completado
+
+![Listado de empresas](evidencias/ISS-04-E1-company-list.png)
+
+---
+
+#### E.2 — Formulario de Empresa (CompanyForm)
+Componente reactivo para creación y edición de empresas con validaciones (`Validators.required`, `Validators.minLength`). En modo edición precarga los datos con `patchValue`. Permite definir el estado reactivo con `p-selectbutton`.
+
+- **Archivos:** `src/app/features/companies/company-form.ts` y `company-form.html`
+- **Estado:** ✅ Completado
+
+![Formulario reactivo de empresas](evidencias/ISS-04-E2-company-form.png)
+
+---
+
+#### E.3 — Confirmación Modal y Eliminación de Empresa
+Flujo de eliminación con diálogo de confirmación PrimeNG (`ConfirmationService`). Consume `CompanyApi.remove(id)` (`DELETE /api/empresas/:id`). Maneja restricciones de clave foránea cuando la empresa tiene vehículos asociados y actualiza la lista en caso de éxito.
+
+- **Archivos:** `src/app/features/companies/company-list.ts` y `company-list.html`
+- **Estado:** ✅ Completado
+
+![Confirmación modal para eliminar empresa](evidencias/ISS-04-E3-company-delete.png)
+
+
