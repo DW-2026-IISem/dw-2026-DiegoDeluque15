@@ -123,6 +123,50 @@ export const routes: Routes = [
         loadComponent: () =>
           import('./features/fares/fare-form').then((m) => m.FareForm),
       },
+      // ISS-06 — Carreras (Trips)
+      {
+        path: 'trips',
+        loadComponent: () =>
+          import('./features/trips/trip-list').then((m) => m.TripList),
+      },
+      {
+        path: 'trips/new',
+        loadComponent: () =>
+          import('./features/trips/trip-form').then((m) => m.TripForm),
+      },
+      // ISS-06 — Pagos (Payments)
+      {
+        path: 'payments',
+        loadComponent: () =>
+          import('./features/payments/payment-list').then((m) => m.PaymentList),
+      },
+      {
+        path: 'payments/new',
+        loadComponent: () =>
+          import('./features/payments/payment-form').then((m) => m.PaymentForm),
+      },
+      // ISS-06 — Calificaciones (Ratings)
+      {
+        path: 'ratings',
+        loadComponent: () =>
+          import('./features/ratings/rating-list').then((m) => m.RatingList),
+      },
+      {
+        path: 'ratings/new',
+        loadComponent: () =>
+          import('./features/ratings/rating-form').then((m) => m.RatingForm),
+      },
+      // ISS-06 — Liquidaciones (Settlements)
+      {
+        path: 'settlements',
+        loadComponent: () =>
+          import('./features/settlements/settlement-list').then((m) => m.SettlementList),
+      },
+      {
+        path: 'settlements/new',
+        loadComponent: () =>
+          import('./features/settlements/settlement-form').then((m) => m.SettlementForm),
+      },
     ],
 
   },

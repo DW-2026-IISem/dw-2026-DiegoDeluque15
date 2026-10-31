@@ -770,3 +770,104 @@ Flujo de eliminación con diálogo PrimeNG `ConfirmationService`. Consume `FareA
 - **Estado:** ✅ Completado
 
 ![Confirmación modal para eliminar tarifa](evidencias/ISS-05-I3-fare-delete.png)
+
+---
+
+## ISS-06 — Carreras (Trip), Pagos (Payment), Calificaciones (Rating) y Liquidaciones (Settlement)
+
+- **Fecha:** 2026-10-31
+- **Rama:** `front-movicab-express`
+- **Estado:** ✅ Completado
+- **Objetivo:** Implementar los flujos operacionales y transaccionales del núcleo de negocio: gestión de carreras con máquina de estados (`solicitada` &rarr; `aceptada` &rarr; `en_curso` &rarr; `cerrada` / `cancelada`), registro de pagos inmutables con validación de carrera cerrada, sistema de calificaciones con estrellas interactivas (`p-rating`) y liquidación periódica consolidada por conductor.
+
+---
+
+### Sub-ítems y Evidencias:
+
+#### J.1 — Enrutamiento y Listado de Carreras (TripList)
+Configuración de rutas `/trips` y `/trips/new` en `app.routes.ts` y acceso lateral "Carreras" (`pi pi-compass`) en `Aside`. Implementación de `TripList` que consume `TripApi.list()` (`GET /api/carreras`), mostrando ID, Pasajero asociado, Turno activo, Tarifa contratada, Total liquidado con `DecimalPipe` y Estado operativo con distintivos de severidad PrimeNG (`p-tag`).
+
+- **Archivos:** `src/app/app.routes.ts`, `src/app/layout/aside/aside.ts`, `src/app/features/trips/trip-list.ts` y `trip-list.html`
+- **Estado:** ✅ Completado
+
+![Listado de carreras](evidencias/ISS-06-J1-trip-list.png)
+
+---
+
+#### J.2 — Formulario de Solicitud de Carrera (TripForm)
+Componente reactivo para creación de carreras. Utiliza `forkJoin` para poblar de forma concurrente los catálogos de pasajeros (`PassengerApi`), turnos activos (`ShiftApi`) y tarifas vigentes (`FareApi`). Preselecciona automáticamente la tarifa activa disponible e inicializa la carrera en estado `solicitada`.
+
+- **Archivos:** `src/app/features/trips/trip-form.ts` y `trip-form.html`
+- **Estado:** ✅ Completado
+
+![Formulario de nueva carrera](evidencias/ISS-06-J2-trip-form.png)
+
+---
+
+#### J.3 — Máquina de Estados Operativos (Transiciones de Carrera)
+Diálogo modal PrimeNG (`p-dialog`) integrado en el listado para avanzar el ciclo de vida del servicio. Lee las transiciones válidas dictadas por `TRIP_TRANSITIONS` según el estado actual del viaje (`solicitada` &rarr; `aceptada` &rarr; `en_curso` &rarr; `cerrada`), invocando `PATCH /api/carreras/:id/estado`. Al transicionar a `cerrada`, el backend calcula y congela automáticamente el valor total.
+
+- **Archivos:** `src/app/features/trips/trip-list.ts` y `trip-list.html`
+- **Estado:** ✅ Completado
+
+![Modal de cambio de estado de carrera](evidencias/ISS-06-J3-trip-status.png)
+
+---
+
+#### K.1 — Listado de Pagos Recibidos (PaymentList)
+Configuración de rutas `/payments` y `/payments/new` en `app.routes.ts` y acceso "Pagos" (`pi pi-wallet`) en el menú lateral. `PaymentList` consume `PaymentApi.list()` (`GET /api/pagos`), desplegando referencia de servicio, método de pago formateado en mayúsculas (`UpperCasePipe`), monto cobrado y fecha de pago.
+
+- **Archivos:** `src/app/app.routes.ts`, `src/app/layout/aside/aside.ts`, `src/app/features/payments/payment-list.ts` y `payment-list.html`
+- **Estado:** ✅ Completado
+
+![Listado de pagos](evidencias/ISS-06-K1-payment-list.png)
+
+---
+
+#### K.2 — Formulario de Registro de Cobro (PaymentForm)
+Formulario inmutable para registro de cobros. Consulta las carreras existentes para seleccionar el viaje a pagar, precargando de manera reactiva el total correspondiente. Incluye selector de métodos de pago (`efectivo`, `tarjeta`, `transferencia`) y control de monto con `p-inputnumber`, respetando la regla del backend que exige que la carrera se encuentre en estado `cerrada`.
+
+- **Archivos:** `src/app/features/payments/payment-form.ts` y `payment-form.html`
+- **Estado:** ✅ Completado
+
+![Formulario de registro de pago](evidencias/ISS-06-K2-payment-form.png)
+
+---
+
+#### L.1 — Listado de Calificaciones (RatingList)
+Configuración de rutas `/ratings` y `/ratings/new` en `app.routes.ts` y acceso "Calificaciones" (`pi pi-star`) en navegación. Implementación de tabla reactiva que consume `RatingApi.list()` (`GET /api/calificaciones`), renderizando la puntuación del viaje mediante componentes de estrellas en modo solo lectura (`p-rating`), junto con el comentario del usuario y fecha de registro.
+
+- **Archivos:** `src/app/app.routes.ts`, `src/app/layout/aside/aside.ts`, `src/app/features/ratings/rating-list.ts` y `rating-list.html`
+- **Estado:** ✅ Completado
+
+![Listado de calificaciones](evidencias/ISS-06-L1-rating-list.png)
+
+---
+
+#### L.2 — Formulario de Calificación de Carrera (RatingForm)
+Componente reactivo para emisión de valoraciones del servicio de transporte. Permite seleccionar la carrera a evaluar, asignar puntuación de 1 a 5 estrellas mediante `p-rating` y registrar observaciones cualitativas sobre la calidad del viaje.
+
+- **Archivos:** `src/app/features/ratings/rating-form.ts` y `rating-form.html`
+- **Estado:** ✅ Completado
+
+![Formulario de calificación](evidencias/ISS-06-L2-rating-form.png)
+
+---
+
+#### M.1 — Listado de Liquidaciones por Conductor (SettlementList)
+Configuración de rutas `/settlements` y `/settlements/new` en `app.routes.ts` y acceso "Liquidaciones" (`pi pi-calculator`) en menú lateral. Consume `SettlementApi.list()` (`GET /api/liquidaciones`) y resuelve el nombre del conductor consultando `DriverApi.list()`, presentando el rango de fechas liquidado, fecha de generación y monto total acumulado.
+
+- **Archivos:** `src/app/app.routes.ts`, `src/app/layout/aside/aside.ts`, `src/app/features/settlements/settlement-list.ts` y `settlement-list.html`
+- **Estado:** ✅ Completado
+
+![Listado de liquidaciones](evidencias/ISS-06-M1-settlement-list.png)
+
+---
+
+#### M.2 — Formulario para Generar Liquidación (SettlementForm)
+Formulario reactivo que agrupa las carreras de un conductor en un periodo determinado. Incluye selector de conductores con filtro de búsqueda (`p-select`) y selectores de fecha con calendario PrimeNG (`p-datepicker`) para definir `date_from` y `date_to`. El backend calcula de manera consolidada la suma de los servicios cerrados en el intervalo.
+
+- **Archivos:** `src/app/features/settlements/settlement-form.ts` y `settlement-form.html`
+- **Estado:** ✅ Completado
+
+![Formulario para generar liquidación](evidencias/ISS-06-M2-settlement-form.png)
