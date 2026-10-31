@@ -1103,3 +1103,57 @@ Implementación de la interfaz de usuario organizada por pestañas de control de
 ![Administración RBAC — Pestaña Asignaciones de Roles a Usuarios](evidencias/ISS-10-Q4-admin-assignments.png)
 
 ![Administración RBAC — Pestaña Concesiones de Permisos RBAC (Rol a Recurso)](evidencias/ISS-10-Q5-admin-grants.png)
+
+---
+
+## ISS-11 — Build, Calidad y Cierre de Proyecto
+
+**Objetivo:** Verificar la estabilidad, calidad técnica y preparación para despliegue en producción de la aplicación Angular 22. Validar el cumplimiento de los presupuestos de tamaño de bundle (`budgets`), la ejecución exitosa de la suite de pruebas automatizadas y consolidar la finalización integral de la plataforma MoviCab Express (Fase I y Fase II).
+
+---
+
+### Sub-ítems implementados
+
+#### R.1 — Compilación de Producción y Control de Presupuestos (`angular.json`)
+Ejecución del proceso de empaquetado para distribución productiva:
+- **Presupuestos configurados:** En `angular.json` (`build → configurations → production → budgets`), umbral de advertencia en `750kB` y de error en `1MB`.
+- **Resultado de compilación:**
+  - `Initial total`: **568.50 kB** (transferencia estimada: 137.54 kB), situándose significativamente por debajo del umbral de advertencia.
+  - `Styles`: **32.71 kB** con Tailwind CSS v4 y tema Aura de PrimeNG v22.
+  - `Lazy chunk files`: Más de 50 chunks diferidos optimizados para carga bajo demanda (`shell`, `login`, `trip-detail`, `rbac-admin`, entre otros).
+  - Directorio de salida generado en `dist/front-movicab-express`.
+- **Comando:** `ng build` ejecutado con código de salida 0.
+
+- **Archivo:** `angular.json`
+- **Estado:** ✅ Completado
+
+![Compilación de producción exitosa cumpliendo los presupuestos de tamaño](evidencias/ISS-11-R1-build-production.png)
+
+#### R.2 — Calidad y Resolución de Pruebas Unitarias (`*.spec.ts`)
+Validación del conjunto de pruebas del framework y componentes:
+- **Diagnóstico y solución:** En `src/app/layout/header/header.spec.ts` se diagnosticó la falta de proveedores de contexto tras la integración de la sesión activa (`RouterLink` y `AuthService.logout()`). Se suministraron `provideRouter([])` y `provideHttpClient()`, resolviendo el error `NG0201: No provider found for ActivatedRoute`.
+- **Ejecución automatizada:** `npm test -- --watch=false` ejecutando las pruebas unitarias sin observadores continuos para integración continua.
+
+- **Archivos:** `src/app/layout/header/header.spec.ts`
+- **Estado:** ✅ Completado
+
+---
+
+### Resumen Consolidado del Proyecto (ISS-00 a ISS-11)
+
+| ISS | Módulo / Funcionalidad | Estado | Evidencias Clave |
+|---|---|---|---|
+| **ISS-00** | Requisitos previos, Node 24, backend puerto 4000 | ✅ Completado | `ISS-00_0.1_versiones.png`, `ISS-00_0.2_backend-4000.png` |
+| **ISS-01** | Bootstrap Angular 22, Tailwind CSS 4, PrimeNG 22 Aura | ✅ Completado | `ISS-01_1.1_ng-new.png` a `ISS-01_1.8` |
+| **ISS-01A** | Esqueleto Header, Aside, Main y Footer | ✅ Completado | `ISS-01A_1.5_esqueleto.png` |
+| **ISS-01B** | Menú PrimeNG responsive y Drawer móvil | ✅ Completado | `ISS-01B_menu-escritorio.png`, `ISS-01B_drawer-movil.png` |
+| **ISS-02** | Núcleo: environment, modelos base, servicios y Shell | ✅ Completado | `ISS-02_2.2_modelos.png`, `ISS-02_2.3_servicios.png` |
+| **ISS-03** | CRUD Completo: Pasajeros (`Passenger`) | ✅ Completado | `ISS-03-C1` a `ISS-03-C4` |
+| **ISS-04** | CRUD Completo: Tipos de Vehículo y Empresas | ✅ Completado | `ISS-04-E1` a `ISS-04-F2` |
+| **ISS-05** | CRUD Completo: Vehículos, Conductores, Turnos y Tarifas | ✅ Completado | `ISS-05-G1` a `ISS-05-I3` |
+| **ISS-06** | Operación: Carreras (Máquina de Estados), Pagos, Ratings, Liquidaciones | ✅ Completado | `ISS-06-J1` a `ISS-06-M2` |
+| **ISS-07** | Detalle de Carrera, Dashboard Operativo/Financiero y Cierre Fase I | ✅ Completado | `ISS-07-N1-dashboard.png`, `ISS-07-N2-trip-detail.png` |
+| **ISS-08** | JWT Completo: Refresh Token, Perfil y Permisos Efectivos RBAC | ✅ Completado | `ISS-08-O1-profile-permissions.png`, `ISS-08-O2-header-session.png` |
+| **ISS-09** | Guard funcional `authGuard`, directiva `*appHasPermission` y Menú RBAC | ✅ Completado | `ISS-09-P1` a `ISS-09-P4-has-permission-trips.png` |
+| **ISS-10** | Administración RBAC: Usuarios, Roles, Recursos, Asignaciones y Concesiones | ✅ Completado | `ISS-10-Q1` a `ISS-10-Q5-admin-grants.png` |
+| **ISS-11** | Build de producción, resolución de problemas y calidad final | ✅ Completado | `ISS-11-R1-build-production.png` |
