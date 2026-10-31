@@ -669,3 +669,104 @@ Flujo de eliminación con diálogo de confirmación PrimeNG (`ConfirmationServic
 - **Estado:** ✅ Completado
 
 ![Confirmación modal para eliminar tipo de vehículo](evidencias/ISS-04-F3-vehicle-types-delete.png)
+
+---
+
+## ISS-05 — CRUD de Conductores, Turnos y Tarifas
+
+- **Fecha:** 2026-10-31
+- **Rama:** `front-movicab-express`
+- **Estado:** ✅ Completado
+- **Objetivo:** Implementar los módulos de gestión operativa para Conductores (`/drivers`), Turnos (`/shifts`) y Tarifas (`/fares`), completando la navegación lateral con PrimeNG `PanelMenu`, formularios reactivos con carga concurrente de catálogos foráneos (`forkJoin`), componentes especializados (`p-select`, `p-datepicker`, `p-inputnumber`) y diálogo modal de confirmación para eliminación con manejo de restricciones de integridad referencial.
+
+---
+
+### Sub-ítems y Evidencias:
+
+#### G.1 — Enrutamiento y Listado de Conductores (DriverList)
+Configuración de rutas `/drivers`, `/drivers/new` y `/drivers/:id/edit` en `app.routes.ts` y enlace "Conductores" (`pi pi-id-card`) en `Aside`. Implementación del componente `DriverList` que consume `DriverApi.list()` (`GET /api/conductores`), visualizando Nombre, Empresa afiliada (`driver.company?.legal_name`) y Estado con `p-tag`.
+
+- **Archivos:** `src/app/app.routes.ts`, `src/app/layout/aside/aside.ts`, `src/app/features/drivers/driver-list.ts` y `driver-list.html`
+- **Estado:** ✅ Completado
+
+![Listado de conductores](evidencias/ISS-05-G1-driver-list.png)
+
+---
+
+#### G.2 — Formulario de Conductor (DriverForm)
+Componente reactivo para alta y edición de conductores. Carga el catálogo de empresas mediante `CompanyApi.list()` para alimentar el selector `p-select`. En modo edición precarga los datos con `patchValue`. Permite configurar el estado con `p-selectbutton`.
+
+- **Archivos:** `src/app/features/drivers/driver-form.ts` y `driver-form.html`
+- **Estado:** ✅ Completado
+
+![Formulario de conductor](evidencias/ISS-05-G2-driver-form.png)
+
+---
+
+#### G.3 — Confirmación Modal y Eliminación de Conductor
+Flujo de eliminación conectado con `ConfirmationService`. Invoca `DriverApi.remove(id)` (`DELETE /api/conductores/:id`). Maneja restricciones de clave foránea si el conductor tiene turnos o carreras asignadas y notifica mediante `NotificationService`.
+
+- **Archivos:** `src/app/features/drivers/driver-list.ts` y `driver-list.html`
+- **Estado:** ✅ Completado
+
+![Confirmación modal para eliminar conductor](evidencias/ISS-05-G3-driver-delete.png)
+
+---
+
+#### H.1 — Enrutamiento y Listado de Turnos (ShiftList)
+Configuración de rutas `/shifts`, `/shifts/new` y `/shifts/:id/edit` en `app.routes.ts` y enlace "Turnos" (`pi pi-clock`) en `Aside`. Implementación del componente `ShiftList` que consume `ShiftApi.list()` (`GET /api/turnos`), mostrando Nombre del turno, Conductor asignado (`shift.driver?.name`), Vehículo asociado (`shift.vehicle?.name`) y Estado.
+
+- **Archivos:** `src/app/app.routes.ts`, `src/app/layout/aside/aside.ts`, `src/app/features/shifts/shift-list.ts` y `shift-list.html`
+- **Estado:** ✅ Completado
+
+![Listado de turnos](evidencias/ISS-05-H1-shift-list.png)
+
+---
+
+#### H.2 — Formulario de Turno con catálogos concurrentes (ShiftForm)
+Componente reactivo para asignación de turnos. Utiliza `forkJoin({ drivers: DriverApi.list(), vehicles: VehicleApi.list() })` para poblar los selectores `p-select` de conductor y vehículo de manera concurrente. En modo edición precarga la asignación actual y permite conmutar el estado.
+
+- **Archivos:** `src/app/features/shifts/shift-form.ts` y `shift-form.html`
+- **Estado:** ✅ Completado
+
+![Formulario reactivo de turno](evidencias/ISS-05-H2-shift-form.png)
+
+---
+
+#### H.3 — Confirmación Modal y Eliminación de Turno
+Flujo de eliminación de turno con confirmación modal. Consume `ShiftApi.remove(id)` (`DELETE /api/turnos/:id`), valida restricciones de integridad referencial si el turno tiene carreras vinculadas y refresca el listado.
+
+- **Archivos:** `src/app/features/shifts/shift-list.ts` y `shift-list.html`
+- **Estado:** ✅ Completado
+
+![Confirmación modal para eliminar turno](evidencias/ISS-05-H3-shift-delete.png)
+
+---
+
+#### I.1 — Enrutamiento y Listado de Tarifas (FareList)
+Configuración de rutas `/fares`, `/fares/new` y `/fares/:id/edit` en `app.routes.ts` y enlace "Tarifas" (`pi pi-dollar`) en `Aside`. Implementación de `FareList` que consume `FareApi.list()` (`GET /api/tarifas`), formateando el Valor Base mediante `DecimalPipe` y los periodos de vigencia (`valid_from`, `valid_until`) con `DatePipe`.
+
+- **Archivos:** `src/app/app.routes.ts`, `src/app/layout/aside/aside.ts`, `src/app/features/fares/fare-list.ts` y `fare-list.html`
+- **Estado:** ✅ Completado
+
+![Listado de tarifas](evidencias/ISS-05-I1-fare-list.png)
+
+---
+
+#### I.2 — Formulario de Tarifa con controles especializados (FareForm)
+Componente reactivo para creación y ajuste de esquemas tarifarios. Incorpora `p-inputnumber` con formato decimal de 2 dígitos para el valor base y `p-datepicker` para selección de rangos de vigencia. Transforma las fechas a formato ISO YYYY-MM-DD y aplica tipado estricto `FarePayload`.
+
+- **Archivos:** `src/app/features/fares/fare-form.ts` y `fare-form.html`
+- **Estado:** ✅ Completado
+
+![Formulario reactivo de tarifa](evidencias/ISS-05-I2-fare-form.png)
+
+---
+
+#### I.3 — Confirmación Modal y Eliminación de Tarifa
+Flujo de eliminación con diálogo PrimeNG `ConfirmationService`. Consume `FareApi.remove(id)` (`DELETE /api/tarifas/:id`), captura restricciones y actualiza reactivamente la tabla de tarifas.
+
+- **Archivos:** `src/app/features/fares/fare-list.ts` y `fare-list.html`
+- **Estado:** ✅ Completado
+
+![Confirmación modal para eliminar tarifa](evidencias/ISS-05-I3-fare-delete.png)

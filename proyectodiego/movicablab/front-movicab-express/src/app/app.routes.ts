@@ -75,6 +75,54 @@ export const routes: Routes = [
         loadComponent: () =>
           import('./features/vehicle-types/vehicle-type-form').then((m) => m.VehicleTypeForm),
       },
+      // ISS-05 — Conductores
+      {
+        path: 'drivers',
+        loadComponent: () =>
+          import('./features/drivers/driver-list').then((m) => m.DriverList),
+      },
+      {
+        path: 'drivers/new',
+        loadComponent: () =>
+          import('./features/drivers/driver-form').then((m) => m.DriverForm),
+      },
+      {
+        path: 'drivers/:id/edit',
+        loadComponent: () =>
+          import('./features/drivers/driver-form').then((m) => m.DriverForm),
+      },
+      // ISS-05 — Turnos
+      {
+        path: 'shifts',
+        loadComponent: () =>
+          import('./features/shifts/shift-list').then((m) => m.ShiftList),
+      },
+      {
+        path: 'shifts/new',
+        loadComponent: () =>
+          import('./features/shifts/shift-form').then((m) => m.ShiftForm),
+      },
+      {
+        path: 'shifts/:id/edit',
+        loadComponent: () =>
+          import('./features/shifts/shift-form').then((m) => m.ShiftForm),
+      },
+      // ISS-05 — Tarifas
+      {
+        path: 'fares',
+        loadComponent: () =>
+          import('./features/fares/fare-list').then((m) => m.FareList),
+      },
+      {
+        path: 'fares/new',
+        loadComponent: () =>
+          import('./features/fares/fare-form').then((m) => m.FareForm),
+      },
+      {
+        path: 'fares/:id/edit',
+        loadComponent: () =>
+          import('./features/fares/fare-form').then((m) => m.FareForm),
+      },
     ],
 
   },
