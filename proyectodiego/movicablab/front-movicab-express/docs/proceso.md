@@ -628,3 +628,44 @@ Flujo de eliminación con diálogo de confirmación PrimeNG (`ConfirmationServic
 ![Confirmación modal para eliminar empresa](evidencias/ISS-04-E3-company-delete.png)
 
 
+
+---
+
+## ISS-04C — CRUD de Tipos de Vehículo (VehicleType)
+
+- **Fecha:** 2026-10-31
+- **Rama:** `front-movicab-express`
+- **Estado:** ✅ Completado
+- **Objetivo:** Implementar la gestión completa del catálogo de tipos de vehículo (`/vehicle-types`), incluyendo navegación lateral (`Aside`), tabla con paginación PrimeNG `p-table`, formulario reactivo para alta y edición, y modal de confirmación para eliminación.
+
+---
+
+### Sub-ítems y Evidencias:
+
+#### F.1 — Enrutamiento y Listado de Tipos de Vehículo (VehicleTypeList)
+Configuración de rutas `/vehicle-types`, `/vehicle-types/new` y `/vehicle-types/:id/edit` en `app.routes.ts` y enlace "Tipos de Vehículo" (`pi pi-tags`) en `Aside`. Implementación del componente `VehicleTypeList` que consume `VehicleTypeApi.list()` (`GET /api/tipos-vehiculo`), visualizando Nombre y Descripción en tabla paginada.
+
+- **Archivos:** `src/app/app.routes.ts`, `src/app/layout/aside/aside.ts`, `src/app/features/vehicle-types/vehicle-type-list.ts` y `vehicle-type-list.html`
+- **Estado:** ✅ Completado
+
+![Listado de tipos de vehículo](evidencias/ISS-04-F1-vehicle-types-list.png)
+
+---
+
+#### F.2 — Formulario de Tipo de Vehículo (VehicleTypeForm)
+Componente reactivo para creación y edición de tipos de vehículo con validaciones (`Validators.required`). En modo edición precarga los datos mediante `patchValue`. Campos: Nombre (requerido) y Descripción (opcional).
+
+- **Archivos:** `src/app/features/vehicle-types/vehicle-type-form.ts` y `vehicle-type-form.html`
+- **Estado:** ✅ Completado
+
+![Formulario reactivo de tipos de vehículo](evidencias/ISS-04-F2-vehicle-types-form.png)
+
+---
+
+#### F.3 — Confirmación Modal y Eliminación de Tipo de Vehículo
+Flujo de eliminación con diálogo de confirmación PrimeNG (`ConfirmationService`). Consume `VehicleTypeApi.remove(id)` (`DELETE /api/tipos-vehiculo/:id`). Maneja restricciones de clave foránea cuando el tipo tiene vehículos asociados y refresca la lista en caso de éxito.
+
+- **Archivos:** `src/app/features/vehicle-types/vehicle-type-list.ts` y `vehicle-type-list.html`
+- **Estado:** ✅ Completado
+
+![Confirmación modal para eliminar tipo de vehículo](evidencias/ISS-04-F3-vehicle-types-delete.png)

@@ -18,6 +18,7 @@ export class Aside {
         { label: 'Pasajeros', icon: 'pi pi-fw pi-users', routerLink: '/passengers' },
         { label: 'Vehículos', icon: 'pi pi-fw pi-car', routerLink: '/vehicles' },
         { label: 'Empresas', icon: 'pi pi-fw pi-building', routerLink: '/companies' },
+        { label: 'Tipos de Vehículo', icon: 'pi pi-fw pi-tags', routerLink: '/vehicle-types' },
         { label: 'Prototipo', icon: 'pi pi-fw pi-wrench', routerLink: '/construir' },
       ],
     },

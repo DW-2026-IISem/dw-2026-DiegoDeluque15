@@ -60,6 +60,21 @@ export const routes: Routes = [
         loadComponent: () =>
           import('./features/companies/company-form').then((m) => m.CompanyForm),
       },
+      {
+        path: 'vehicle-types',
+        loadComponent: () =>
+          import('./features/vehicle-types/vehicle-type-list').then((m) => m.VehicleTypeList),
+      },
+      {
+        path: 'vehicle-types/new',
+        loadComponent: () =>
+          import('./features/vehicle-types/vehicle-type-form').then((m) => m.VehicleTypeForm),
+      },
+      {
+        path: 'vehicle-types/:id/edit',
+        loadComponent: () =>
+          import('./features/vehicle-types/vehicle-type-form').then((m) => m.VehicleTypeForm),
+      },
     ],
 
   },
