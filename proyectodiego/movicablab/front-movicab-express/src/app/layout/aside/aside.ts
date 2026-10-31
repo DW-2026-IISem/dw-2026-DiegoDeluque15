@@ -15,6 +15,7 @@ export class Aside {
       icon: 'pi pi-fw pi-compass',
       expanded: true,
       items: [
+        { label: 'Dashboard', icon: 'pi pi-fw pi-th-large', routerLink: '/dashboard' },
         { label: 'Pasajeros', icon: 'pi pi-fw pi-users', routerLink: '/passengers' },
         { label: 'Vehículos', icon: 'pi pi-fw pi-car', routerLink: '/vehicles' },
         { label: 'Empresas', icon: 'pi pi-fw pi-building', routerLink: '/companies' },

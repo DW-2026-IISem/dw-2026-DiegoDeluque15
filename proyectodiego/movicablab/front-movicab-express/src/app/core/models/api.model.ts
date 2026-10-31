@@ -9,6 +9,8 @@ export interface ApiError {
 export interface Timestamps {
   createdAt?: string;
   updatedAt?: string;
+  created_at?: string;
+  updated_at?: string;
 }
 
 /** DECIMAL llega como string ("50.00"): se normaliza en un solo lugar. */

@@ -9,7 +9,12 @@ export const routes: Routes = [
     path: '',
     loadComponent: () => import('./layout/shell/shell').then((m) => m.Shell),
     children: [
-      { path: '', pathMatch: 'full', redirectTo: 'passengers' },
+      { path: '', pathMatch: 'full', redirectTo: 'dashboard' },
+      {
+        path: 'dashboard',
+        loadComponent: () =>
+          import('./features/dashboard/dashboard').then((m) => m.Dashboard),
+      },
       {
         path: 'construir',
         loadComponent: () =>
@@ -133,6 +138,11 @@ export const routes: Routes = [
         path: 'trips/new',
         loadComponent: () =>
           import('./features/trips/trip-form').then((m) => m.TripForm),
+      },
+      {
+        path: 'trips/:id',
+        loadComponent: () =>
+          import('./features/trips/trip-detail').then((m) => m.TripDetail),
       },
       // ISS-06 — Pagos (Payments)
       {

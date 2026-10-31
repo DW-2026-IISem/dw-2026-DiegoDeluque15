@@ -871,3 +871,44 @@ Formulario reactivo que agrupa las carreras de un conductor en un periodo determ
 - **Estado:** ✅ Completado
 
 ![Formulario para generar liquidación](evidencias/ISS-06-M2-settlement-form.png)
+
+---
+
+## ISS-07 — Detalle de Carrera, Dashboard y Cierre de Fase I
+
+- **Fecha:** 2026-10-31
+- **Rama:** `front-movicab-express`
+- **Estado:** ✅ Completado
+- **Objetivo:** Culminar la Fase I del frontend mediante la construcción del Dashboard ejecutivo y la vista de detalle integrada de carreras. Incluye tarjetas de métricas en tiempo real (volumen de carreras, ingresos recaudados, satisfacción promedio de pasajeros y flota operativa), tablas de actividad reciente con navegación directa, vista unificada de carrera con sus entidades polimórficas asociadas (`Payment` y `Rating`) y redirección de la ruta raíz hacia el Dashboard.
+
+---
+
+### Sub-ítems y Evidencias:
+
+#### N.1 — Dashboard Operativo y Redirección Principal (Dashboard)
+Creación del modelo `DashboardStats` en `src/app/core/models/dashboard.model.ts` e implementación de la pantalla `Dashboard` que ejecuta consultas concurrentes mediante `forkJoin` para consolidar indicadores de negocio:
+- **Total Carreras:** Desglose interactivo de carreras cerradas vs en curso o solicitadas.
+- **Recaudo Pagado:** Suma total de los montos efectivamente cobrados a través de pagos registrados.
+- **Satisfacción Pasajeros:** Cálculo del puntaje medio de satisfacción basado en opiniones reales de usuarios con estrellas visuales.
+- **Flota Operativa:** Cuantificación de vehículos y conductores activos disponibles en el sistema.
+- **Tablas de Actividad:** Tablas con las últimas carreras registradas y los pagos más recientes, con accesos directos al detalle y formularios de alta.
+- **Enrutamiento:** Redirección automática de la ruta raíz `/` hacia `/dashboard` y fijación del enlace principal en el menú `Aside` (`pi pi-th-large`).
+
+- **Archivos:** `src/app/core/models/dashboard.model.ts`, `src/app/features/dashboard/dashboard.ts`, `dashboard.html`, `src/app/app.routes.ts` y `src/app/layout/aside/aside.ts`
+- **Estado:** ✅ Completado
+
+![Dashboard operativo y financiero](evidencias/ISS-07-N1-dashboard.png)
+
+---
+
+#### N.2 — Vista de Detalle Integral de Carrera (TripDetail)
+Implementación de la ruta parametrizada `/trips/:id` en `TripDetail` que coordina la recuperación del viaje y sus entidades asociadas:
+- **Servicio de Transporte:** Datos completos del viaje, pasajero, turno asignado, tarifa contratada, estado operativo con `p-tag`, valor total y notas de origen/destino.
+- **Gestión de Cobro:** Tarjeta contextual que identifica el registro de pago asociado (`Payment`), detallando comprobante, método de cobro (`efectivo`, `tarjeta`, `transferencia`), monto y fecha, o bien proporcionando el botón de acción para registrar el cobro si el viaje se encuentra cerrado.
+- **Calificación del Pasajero:** Tarjeta de valoración que despliega las estrellas (`p-rating`) otorgadas por el cliente, su comentario cualitativo y fecha de registro.
+- **Navegación:** Botón de retorno al listado de carreras y modal de cambio de estado operativo sincronizado con `TRIP_TRANSITIONS`.
+
+- **Archivos:** `src/app/features/trips/trip-detail.ts`, `trip-detail.html` y `src/app/app.routes.ts`
+- **Estado:** ✅ Completado
+
+![Detalle completo de carrera con pago y calificación](evidencias/ISS-07-N2-trip-detail.png)
