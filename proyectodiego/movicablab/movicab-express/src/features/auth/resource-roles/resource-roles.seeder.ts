@@ -7,7 +7,7 @@ import { ResourceRolesService } from "./resource-roles.service";
  * **Es el que construye la matriz de permisos real de MoviCab.**
  *
  * Reparto de referencia:
- *  - ADMIN    → los **92** recursos (administración total).
+ *  - ADMIN    → los **102** recursos (administración total).
  *  - DESPACHO → subconjunto de recursos de operación (ver regla abajo).
  *
  * Regla DESPACHO (programática, no hardcodeada):
@@ -16,7 +16,7 @@ import { ResourceRolesService } from "./resource-roles.service";
  *  - Todas las demás entidades de negocio (incluidas pagos y liquidaciones) en solo lectura.
  *  - POST + PATCH de carreras (puede crear, modificar observaciones y cambiar
  *    estado de una carrera, incluyendo PATCH /:id/estado), pero NO DELETE.
- *  - NO acceso a /api/usuarios, /api/roles, /api/recursos (auth management).
+ *  - NO acceso a usuarios, roles, recursos ni a la administración RBAC.
  *
  * `reconcileRole` es determinista: volver a ejecutar el seeder reconcilia el
  * catálogo en vez de duplicar filas.
@@ -34,11 +34,17 @@ export async function seedResourceRoles(): Promise<number> {
   const adminIds = resources.map((r) => r.id);
 
   // ── Recursos para DESPACHO: regla programática ────────────────────────
-  const AUTH_PREFIXES = ["/api/usuarios", "/api/roles", "/api/recursos"];
+  const AUTH_PREFIXES = [
+    "/api/usuarios",
+    "/api/roles",
+    "/api/recursos",
+    "/api/asignaciones-rol",
+    "/api/concesiones-rol",
+  ];
 
   const despachoIds = resources
     .filter((r) => {
-      // Excluir gestión de auth/admin (usuarios, roles, recursos)
+      // Excluir gestión de auth/admin (usuarios, roles, recursos y RBAC)
       if (AUTH_PREFIXES.some((prefix) => r.path.startsWith(prefix))) return false;
 
       // Carreras: todos los métodos excepto DELETE (GET, POST, PATCH incluido /estado)

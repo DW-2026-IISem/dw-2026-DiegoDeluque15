@@ -1,3 +1,16 @@
+### Ejecuta authLogin una vez en este archivo para obtener un token sin copiarlo.
+# Selecciona admin, despacho o custom en el entorno de REST Client.
+@accessToken = {{authLogin.response.body.$.access_token}}
+
+# @name authLogin
+POST {{apiUrl}}/api/sesion/login
+Content-Type: application/json
+
+{
+  "identifier": "{{authUsername}}",
+  "password": "{{authPassword}}"
+}
+
 ### Feature Resources — catálogo de puntos de acceso (modalidad JWT + RBAC)
 ### Un recurso es el par (method, path) con la ruta EN PATRÓN: /api/productos/:id
 ### GET y POST sobre la misma ruta son DOS recursos distintos.
@@ -12,9 +25,9 @@ Content-Type: application/json
   "password": "Admin123!"
 }
 
-@token = {{loginAdmin.response.body.$.access_token}}
+@token = {{authLogin.response.body.$.access_token}}
 
-### getAll — el catálogo completo (58 recursos sembrados)
+### getAll — el catálogo completo (102 recursos sembrados)
 GET {{baseUrl}}/api/recursos
 Authorization: Bearer {{token}}
 

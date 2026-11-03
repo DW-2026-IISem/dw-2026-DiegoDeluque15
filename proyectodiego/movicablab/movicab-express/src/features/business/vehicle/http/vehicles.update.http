@@ -1,0 +1,35 @@
+### Ejecuta authLogin una vez en este archivo para obtener un token sin copiarlo.
+@accessToken = {{authLogin.response.body.$.access_token}}
+
+# @name authLogin
+POST {{apiUrl}}/api/sesion/login
+Content-Type: application/json
+
+{
+  "identifier": "{{authUsername}}",
+  "password": "{{authPassword}}"
+}
+
+### Actualizar vehiculo (PUT)
+PUT http://localhost:4000/api/vehiculos/1 HTTP/1.1
+Authorization: Bearer {{accessToken}}
+Content-Type: application/json
+
+{
+  "name": "Toyota Fortuner 2024",
+  "description": "Actualizado",
+  "company_id": 1,
+  "vehicle_type_id": 1,
+  "status": "active"
+}
+
+###
+
+### Actualizar vehiculo parcial (PATCH)
+PATCH http://localhost:4000/api/vehiculos/1 HTTP/1.1
+Authorization: Bearer {{accessToken}}
+Content-Type: application/json
+
+{
+  "description": "Nueva description parcial"
+}

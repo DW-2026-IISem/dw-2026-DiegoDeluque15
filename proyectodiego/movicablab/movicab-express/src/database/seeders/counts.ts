@@ -1,20 +1,20 @@
 /**
  * Cantidad de registros por feature/entidad.
- * Prioridad: CLI (--pasajeros=N) > env (SEED_PASAJEROS) > default de este archivo.
+ * Prioridad: CLI (--passengers=N) > env (SEED_PASSENGERS) > default de este archivo.
  *
  * Cuando agregues features, suma aquí la clave y léela en el runner.
  */
 export type SeedCounts = {
-  pasajeros: number;
-  tipos_vehiculo: number;
-  empresas: number;
-  conductores: number;
-  vehiculos: number;
-  turnos: number;
-  tarifas: number;
-  carreras: number;
-  pagos: number;
-  calificaciones: number;
+  passengers: number;
+  vehicle_types: number;
+  companies: number;
+  drivers: number;
+  vehicles: number;
+  shifts: number;
+  fares: number;
+  trips: number;
+  payments: number;
+  ratings: number;
   users: number;
   roles: number;
   role_users: number;
@@ -23,16 +23,16 @@ export type SeedCounts = {
 };
 
 export const DEFAULT_SEED_COUNTS: SeedCounts = {
-  pasajeros: 10,
-  tipos_vehiculo: 25,
-  empresas: 15,
-  conductores: 20,
-  vehiculos: 20,
-  turnos: 20,
-  tarifas: 5,
-  carreras: 10,
-  pagos: 0, // seeder determina la cantidad por carreras cerradas
-  calificaciones: 0,
+  passengers: 10,
+  vehicle_types: 25,
+  companies: 15,
+  drivers: 20,
+  vehicles: 20,
+  shifts: 20,
+  fares: 5,
+  trips: 10,
+  payments: 0, // seeder determina la cantidad por trips cerradas
+  ratings: 0,
   users: 2,
   roles: 2,
   role_users: 2,
@@ -43,44 +43,44 @@ export const DEFAULT_SEED_COUNTS: SeedCounts = {
 export function resolveSeedCounts(argv: string[] = process.argv.slice(2)): SeedCounts {
   const counts: SeedCounts = { ...DEFAULT_SEED_COUNTS };
 
-  const envPasajeros = process.env.SEED_PASAJEROS;
-  if (envPasajeros !== undefined && envPasajeros !== "") {
-    counts.pasajeros = Number(envPasajeros);
+  const envPassengers = process.env.SEED_PASSENGERS;
+  if (envPassengers !== undefined && envPassengers !== "") {
+    counts.passengers = Number(envPassengers);
   }
 
-  const envEmpresas = process.env.SEED_EMPRESAS;
-  if (envEmpresas !== undefined && envEmpresas !== "") {
-    counts.empresas = Number(envEmpresas);
+  const envCompanies = process.env.SEED_COMPANIES;
+  if (envCompanies !== undefined && envCompanies !== "") {
+    counts.companies = Number(envCompanies);
   }
 
-  const envCarreras = process.env.SEED_CARRERAS;
-  if (envCarreras !== undefined && envCarreras !== "") {
-    counts.carreras = Number(envCarreras);
+  const envTrips = process.env.SEED_TRIPS;
+  if (envTrips !== undefined && envTrips !== "") {
+    counts.trips = Number(envTrips);
   }
 
-  const envTarifas = process.env.SEED_TARIFAS;
-  if (envTarifas !== undefined && envTarifas !== "") {
-    counts.tarifas = Number(envTarifas);
+  const envFares = process.env.SEED_FARES;
+  if (envFares !== undefined && envFares !== "") {
+    counts.fares = Number(envFares);
   }
 
-  const envTurnos = process.env.SEED_TURNOS;
-  if (envTurnos !== undefined && envTurnos !== "") {
-    counts.turnos = Number(envTurnos);
+  const envShifts = process.env.SEED_SHIFTS;
+  if (envShifts !== undefined && envShifts !== "") {
+    counts.shifts = Number(envShifts);
   }
 
-  const envVehiculos = process.env.SEED_VEHICULOS;
-  if (envVehiculos !== undefined && envVehiculos !== "") {
-    counts.vehiculos = Number(envVehiculos);
+  const envVehicles = process.env.SEED_VEHICLES;
+  if (envVehicles !== undefined && envVehicles !== "") {
+    counts.vehicles = Number(envVehicles);
   }
 
-  const envConductores = process.env.SEED_CONDUCTORES;
-  if (envConductores !== undefined && envConductores !== "") {
-    counts.conductores = Number(envConductores);
+  const envDrivers = process.env.SEED_DRIVERS;
+  if (envDrivers !== undefined && envDrivers !== "") {
+    counts.drivers = Number(envDrivers);
   }
 
-  const envTiposVehiculo = process.env.SEED_TIPOS_VEHICULO;
-  if (envTiposVehiculo !== undefined && envTiposVehiculo !== "") {
-    counts.tipos_vehiculo = Number(envTiposVehiculo);
+  const envVehicleTypes = process.env.SEED_VEHICLE_TYPES;
+  if (envVehicleTypes !== undefined && envVehicleTypes !== "") {
+    counts.vehicle_types = Number(envVehicleTypes);
   }
 
   for (const arg of argv) {

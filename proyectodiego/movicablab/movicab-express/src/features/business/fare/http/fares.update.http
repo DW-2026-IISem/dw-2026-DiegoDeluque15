@@ -1,0 +1,34 @@
+### Ejecuta authLogin una vez en este archivo para obtener un token sin copiarlo.
+@accessToken = {{authLogin.response.body.$.access_token}}
+
+# @name authLogin
+POST {{apiUrl}}/api/sesion/login
+Content-Type: application/json
+
+{
+  "identifier": "{{authUsername}}",
+  "password": "{{authPassword}}"
+}
+
+### Actualizar tarifa completa (PUT)
+PUT http://localhost:4000/api/tarifas/1
+Authorization: Bearer {{accessToken}}
+Content-Type: application/json
+
+{
+  "name": "Tarifa Actualizada PUT",
+  "calculation_rule": "Base",
+  "base_value": 200,
+  "valid_from": "2033-01-01T00:00:00Z",
+  "valid_until": "2033-12-31T23:59:59Z",
+  "status": "active"
+}
+
+### Actualizar tarifa parcial (PATCH)
+PATCH http://localhost:4000/api/tarifas/1
+Authorization: Bearer {{accessToken}}
+Content-Type: application/json
+
+{
+  "base_value": 250
+}

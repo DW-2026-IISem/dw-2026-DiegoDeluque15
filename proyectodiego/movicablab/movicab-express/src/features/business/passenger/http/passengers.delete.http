@@ -1,0 +1,21 @@
+### Ejecuta authLogin una vez en este archivo para obtener un token sin copiarlo.
+@accessToken = {{authLogin.response.body.$.access_token}}
+
+# @name authLogin
+POST {{apiUrl}}/api/sesion/login
+Content-Type: application/json
+
+{
+  "identifier": "{{authUsername}}",
+  "password": "{{authPassword}}"
+}
+
+### Delete logico (deactivate)
+PATCH http://localhost:4000/api/pasajeros/1/deactivate HTTP/1.1
+Authorization: Bearer {{accessToken}}
+
+###
+
+### Delete fisico
+DELETE http://localhost:4000/api/pasajeros/1 HTTP/1.1
+Authorization: Bearer {{accessToken}}

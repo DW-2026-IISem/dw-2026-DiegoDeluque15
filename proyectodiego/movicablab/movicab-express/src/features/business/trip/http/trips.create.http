@@ -1,0 +1,65 @@
+### Ejecuta authLogin una vez en este archivo para obtener un token sin copiarlo.
+# Selecciona admin, despacho o custom en el entorno de REST Client.
+@accessToken = {{authLogin.response.body.$.access_token}}
+
+# @name authLogin
+POST {{apiUrl}}/api/sesion/login
+Content-Type: application/json
+
+{
+  "identifier": "{{authUsername}}",
+  "password": "{{authPassword}}"
+}
+
+### 1. Obtener datos necesarios
+# @name GetPassenger
+GET http://localhost:4000/api/pasajeros
+Authorization: Bearer {{accessToken}}
+
+###
+# @name GetShift
+GET http://localhost:4000/api/turnos
+Authorization: Bearer {{accessToken}}
+
+###
+# @name GetFare
+GET http://localhost:4000/api/tarifas
+Authorization: Bearer {{accessToken}}
+
+### Variables
+@passengerId = {{GetPassenger.response.body.$.passengers[0].id}}
+@shiftId = {{GetShift.response.body.$.shifts[0].id}}
+@fareId = {{GetFare.response.body.$.fares[0].id}}
+
+### 2. Crear Carrera (siempre inicia en solicitada)
+# @name CreateTrip
+POST http://localhost:4000/api/carreras
+Authorization: Bearer {{accessToken}}
+Content-Type: application/json
+
+{
+  "passenger_id": {{passengerId}},
+  "shift_id": {{shiftId}},
+  "fare_id": {{fareId}},
+  "notes": "Carrera de prueba REST client"
+}
+
+### 3. Error 400 — Faltan FKs
+POST http://localhost:4000/api/carreras
+Authorization: Bearer {{accessToken}}
+Content-Type: application/json
+
+{
+  "passenger_id": {{passengerId}}
+}
+
+### 4. Error 404 — Pasajero inexistente
+POST http://localhost:4000/api/carreras
+Authorization: Bearer {{accessToken}}
+Content-Type: application/json
+
+{
+  "passenger_id": 99999,
+  "shift_id": {{shiftId}},
+  "fare_id": {{fareId}}
+}

@@ -1,0 +1,54 @@
+### Ejecuta authLogin una vez en este archivo para obtener un token sin copiarlo.
+@accessToken = {{authLogin.response.body.$.access_token}}
+
+# @name authLogin
+POST {{apiUrl}}/api/sesion/login
+Content-Type: application/json
+
+{
+  "identifier": "{{authUsername}}",
+  "password": "{{authPassword}}"
+}
+
+### Obtener un driver activo
+# @name GetDriver
+GET http://localhost:4000/api/conductores
+Authorization: Bearer {{accessToken}}
+Content-Type: application/json
+
+### Obtener un vehicle activo
+# @name GetVehicle
+GET http://localhost:4000/api/vehiculos
+Authorization: Bearer {{accessToken}}
+Content-Type: application/json
+
+### Variables derivadas
+@driverId1 = {{GetDriver.response.body.$.drivers[0].id}}
+@driverId2 = {{GetDriver.response.body.$.drivers[1].id}}
+@vehicleId1 = {{GetVehicle.response.body.$.vehicles[0].id}}
+@vehicleId2 = {{GetVehicle.response.body.$.vehicles[1].id}}
+
+### 1. Crear un turno (Valido)
+POST http://localhost:4000/api/turnos
+Authorization: Bearer {{accessToken}}
+Content-Type: application/json
+
+{
+  "name": "Shift Valido",
+  "description": "Shift creado desde REST Client",
+  "driver_id": {{driverId1}},
+  "vehicle_id": {{vehicleId1}},
+  "status": "active"
+}
+
+### 2. 409 Conflicto por Driver (ya en turno activo)
+POST http://localhost:4000/api/turnos
+Authorization: Bearer {{accessToken}}
+Content-Type: application/json
+
+{
+  "name": "Shift Duplicado Driver",
+  "driver_id": {{driverId1}},
+  "vehicle_id": {{vehicleId2}},
+  "status": "active"
+}

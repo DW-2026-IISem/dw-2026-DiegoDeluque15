@@ -1,0 +1,34 @@
+### Ejecuta authLogin una vez en este archivo para obtener un token sin copiarlo.
+@accessToken = {{authLogin.response.body.$.access_token}}
+
+# @name authLogin
+POST {{apiUrl}}/api/sesion/login
+Content-Type: application/json
+
+{
+  "identifier": "{{authUsername}}",
+  "password": "{{authPassword}}"
+}
+
+### Actualizar empresa (PUT)
+PUT http://localhost:4000/api/empresas/1 HTTP/1.1
+Authorization: Bearer {{accessToken}}
+Content-Type: application/json
+
+{
+  "tax_id": "900123456-1",
+  "legal_name": "TransMovil Actualizada S.A.S",
+  "primary_contact": "Maria Lopez",
+  "status": "active"
+}
+
+###
+
+### Actualizar empresa parcial (PATCH)
+PATCH http://localhost:4000/api/empresas/1 HTTP/1.1
+Authorization: Bearer {{accessToken}}
+Content-Type: application/json
+
+{
+  "primary_contact": "Carlos Gomez"
+}

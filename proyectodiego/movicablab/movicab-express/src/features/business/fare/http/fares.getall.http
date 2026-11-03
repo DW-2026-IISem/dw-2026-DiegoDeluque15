@@ -1,0 +1,19 @@
+### Ejecuta authLogin una vez en este archivo para obtener un token sin copiarlo.
+@accessToken = {{authLogin.response.body.$.access_token}}
+
+# @name authLogin
+POST {{apiUrl}}/api/sesion/login
+Content-Type: application/json
+
+{
+  "identifier": "{{authUsername}}",
+  "password": "{{authPassword}}"
+}
+
+### Listar tarifas activas
+GET http://localhost:4000/api/tarifas HTTP/1.1
+Authorization: Bearer {{accessToken}}
+
+### Obtener tarifa por id
+GET http://localhost:4000/api/tarifas/1 HTTP/1.1
+Authorization: Bearer {{accessToken}}

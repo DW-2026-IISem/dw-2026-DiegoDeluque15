@@ -1,0 +1,21 @@
+### Ejecuta authLogin una vez en este archivo para obtener un token sin copiarlo.
+@accessToken = {{authLogin.response.body.$.access_token}}
+
+# @name authLogin
+POST {{apiUrl}}/api/sesion/login
+Content-Type: application/json
+
+{
+  "identifier": "{{authUsername}}",
+  "password": "{{authPassword}}"
+}
+
+### Listar vehiculos activos
+GET http://localhost:4000/api/vehiculos HTTP/1.1
+Authorization: Bearer {{accessToken}}
+
+###
+
+### Obtener vehiculo por id
+GET http://localhost:4000/api/vehiculos/1 HTTP/1.1
+Authorization: Bearer {{accessToken}}

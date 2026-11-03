@@ -1,3 +1,16 @@
+### Ejecuta authLogin una vez en este archivo para obtener un token sin copiarlo.
+# Selecciona admin, despacho o custom en el entorno de REST Client.
+@accessToken = {{authLogin.response.body.$.access_token}}
+
+# @name authLogin
+POST {{apiUrl}}/api/sesion/login
+Content-Type: application/json
+
+{
+  "identifier": "{{authUsername}}",
+  "password": "{{authPassword}}"
+}
+
 ### Feature Session — LOGIN (modalidad OPEN)
 ### OPEN = sin identidad previa. Aquí SÍ se consulta `users` (hash) y se escribe `refresh_tokens`.
 @baseUrl = http://localhost:4000
@@ -7,12 +20,12 @@ POST {{baseUrl}}/api/sesion/login
 Content-Type: application/json
 
 {
-  "identifier": "admin",
-  "password": "Admin123!"
+  "identifier": "seller",
+  "password": "Seller123!"
 }
 
 ### Credenciales de ejemplo
-# admin  / Admin123!   -> rol ADMIN  (92 permisos)
+# admin  / Admin123!   -> rol ADMIN  (102 permisos)
 # seller / Seller123!  -> rol DESPACHO (26 permisos)
 
 ### Login por correo (mismo endpoint, `identifier` acepta username o email)
@@ -20,8 +33,8 @@ POST {{baseUrl}}/api/sesion/login
 Content-Type: application/json
 
 {
-  "identifier": "admin@storelab.local",
-  "password": "Admin123!"
+  "identifier": "seller",
+  "password": "Seller123!"
 }
 
 ### Respuesta 401 - credenciales inválidas (mismo mensaje que "usuario inexistente")

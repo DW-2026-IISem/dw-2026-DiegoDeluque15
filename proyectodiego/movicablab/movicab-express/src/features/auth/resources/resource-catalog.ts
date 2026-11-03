@@ -27,7 +27,9 @@
  * | Usuarios                                       | 9        |
  * | Roles                                          | 7        |
  * | Recursos                                       | 7        |
- * | **Total**                                        | **92**    |
+ * | Asignaciones de rol                           | 5        |
+ * | Concesiones de rol                            | 5        |
+ * | **Total**                                        | **102**   |
  *
  * Nota: las operaciones de sesión (`/api/sesion/*`) son modalidad OPEN/JWT,
  * no pasan por la matriz RBAC — no son recursos.
@@ -160,6 +162,20 @@ export const RESOURCE_CATALOG: readonly CatalogResource[] = [
   { method: "PATCH", path: "/api/recursos/:id", description: "Modificar recurso" },
   { method: "DELETE", path: "/api/recursos/:id", description: "Eliminar recurso" },
   { method: "PATCH", path: "/api/recursos/:id/deactivate", description: "Desactivar recurso" },
+
+  // ── Asignaciones de rol (5) — solo ADMIN ─────────────────
+  { method: "GET", path: "/api/asignaciones-rol", description: "Listar asignaciones de rol" },
+  { method: "GET", path: "/api/asignaciones-rol/:id", description: "Consultar asignación de rol" },
+  { method: "POST", path: "/api/asignaciones-rol", description: "Asignar rol a usuario" },
+  { method: "PATCH", path: "/api/asignaciones-rol/:id/deactivate", description: "Retirar rol a usuario" },
+  { method: "PATCH", path: "/api/asignaciones-rol/:id/reactivate", description: "Reactivar rol de usuario" },
+
+  // ── Concesiones de rol (5) — solo ADMIN ──────────────────
+  { method: "GET", path: "/api/concesiones-rol", description: "Listar permisos de roles" },
+  { method: "GET", path: "/api/concesiones-rol/:id", description: "Consultar permiso de rol" },
+  { method: "POST", path: "/api/concesiones-rol", description: "Conceder permiso a rol" },
+  { method: "PATCH", path: "/api/concesiones-rol/:id/deactivate", description: "Retirar permiso a rol" },
+  { method: "PATCH", path: "/api/concesiones-rol/:id/reactivate", description: "Reactivar permiso de rol" },
 ];
 
 /** Recursos que recibe el rol DESPACHO. Derivado del catálogo, no duplicado. */

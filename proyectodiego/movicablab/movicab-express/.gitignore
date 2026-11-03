@@ -1,3 +1,36 @@
-manual-ia-movicab-express.md
+# Dependencias
 node_modules/
+
+# Compilación y artefactos
+dist/
+build/
+
+# Entorno y credenciales
 .env
+.env.*
+!.env.example
+
+# Logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Editores e IDEs
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Archivos del sistema operativo y metadatos
+.DS_Store
+Thumbs.db
+*:Zone.Identifier
+
+# Manuales en formato markdown (.md)
+manual*.md
+manual-*.md
+manual-ia-movicab-express.md
+manual-movicab-express.md
+manual-movicab-express*.md
+docs/manual*.md

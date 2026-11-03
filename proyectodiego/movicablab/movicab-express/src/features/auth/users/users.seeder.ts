@@ -8,7 +8,7 @@ import { faker } from "@faker-js/faker";
  *
  * | username | password    | rol    | permisos |
  * |----------|-------------|--------|----------|
- * | `admin`  | `Admin123!` | ADMIN  | 58 recursos |
+ * | `admin`  | `Admin123!` | ADMIN  | todos los recursos |
  * | `seller` | `Seller123!`| SELLER | 7 recursos |
  *
  * Si `count > 2`, se añaden usuarios aleatorios (sin rol asignado): sirven para

@@ -1,16 +1,18 @@
 import { Application } from "express";
 import swaggerUi from "swagger-ui-express";
-import { pasajeroSwagger } from "../features/business/pasajero/pasajero.swagger";
-import { vehiculoTypeSwagger } from "../features/business/tipo-vehiculo/tipo-vehiculo.swagger";
-import { empresaSwagger } from "../features/business/empresa/empresa.swagger";
-import { conductorSwagger } from "../features/business/conductor/conductor.swagger";
-import { vehiculoSwagger } from "../features/business/vehiculo/vehiculo.swagger";
-import { turnoSwagger } from "../features/business/turno/turno.swagger";
-import { tarifaSwagger } from "../features/business/tarifa/tarifa.swagger";
-import { carreraSwagger } from "../features/business/carrera/carrera.swagger";
-import { pagoSwagger } from "../features/business/pago/pago.swagger";
-import { calificacionSwagger } from "../features/business/calificacion/calificacion.swagger";
-import { liquidacionSwagger } from "../features/business/liquidacion/liquidacion.swagger";
+
+import { passengerSwagger } from "../features/business/passenger/passenger.swagger";
+import { vehicleTypeSwagger } from "../features/business/vehicle-type/vehicle-type.swagger";
+import { companySwagger } from "../features/business/company/company.swagger";
+import { driverSwagger } from "../features/business/driver/driver.swagger";
+import { vehicleSwagger } from "../features/business/vehicle/vehicle.swagger";
+import { shiftSwagger } from "../features/business/shift/shift.swagger";
+import { fareSwagger } from "../features/business/fare/fare.swagger";
+import { tripSwagger } from "../features/business/trip/trip.swagger";
+import { paymentSwagger } from "../features/business/payment/payment.swagger";
+import { ratingSwagger } from "../features/business/rating/rating.swagger";
+import { settlementSwagger } from "../features/business/settlement/settlement.swagger";
+
 import { sessionSwagger } from "../features/auth/session/session.swagger";
 import { refreshTokensSwagger } from "../features/auth/refresh-tokens/refresh-tokens.swagger";
 import { usersSwagger } from "../features/auth/users/users.swagger";
@@ -18,8 +20,8 @@ import { rolesSwagger } from "../features/auth/roles/roles.swagger";
 import { resourcesSwagger } from "../features/auth/resources/resources.swagger";
 import { roleUsersSwagger } from "../features/auth/role-users/role-users.swagger";
 import { resourceRolesSwagger } from "../features/auth/resource-roles/resource-roles.swagger";
-import { bearerSecurityScheme } from "../shared/http/swagger-security";
-import { unauthorizedResponse, forbiddenResponse } from "../shared/http/swagger-security";
+
+import { bearerSecurityScheme, unauthorizedResponse, forbiddenResponse } from "../shared/http/swagger-security";
 
 export type FeatureSwaggerModule = {
   tags: unknown[];
@@ -35,17 +37,17 @@ const featureSwaggerModules: FeatureSwaggerModule[] = [
   resourcesSwagger,
   roleUsersSwagger,
   resourceRolesSwagger,
-  pasajeroSwagger,
-  vehiculoTypeSwagger,
-  empresaSwagger,
-  conductorSwagger,
-  vehiculoSwagger,
-  turnoSwagger,
-  tarifaSwagger,
-  carreraSwagger,
-  pagoSwagger,
-  calificacionSwagger,
-  liquidacionSwagger,
+  passengerSwagger,
+  vehicleTypeSwagger,
+  companySwagger,
+  driverSwagger,
+  vehicleSwagger,
+  shiftSwagger,
+  fareSwagger,
+  tripSwagger,
+  paymentSwagger,
+  ratingSwagger,
+  settlementSwagger,
 ];
 
 export function buildOpenApiDocument() {
@@ -101,5 +103,5 @@ export function setupSwagger(app: Application): void {
   app.get("/api/docs.json", (_req, res) => {
     res.json(document);
   });
-  console.log("?? Swagger UI: /api/docs  |  OpenAPI JSON: /api/docs.json");
+  console.log("📄 Swagger UI: /api/docs  |  OpenAPI JSON: /api/docs.json");
 }

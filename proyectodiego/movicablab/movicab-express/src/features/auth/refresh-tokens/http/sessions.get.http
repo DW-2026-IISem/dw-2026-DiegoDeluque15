@@ -1,3 +1,16 @@
+### Ejecuta authLogin una vez en este archivo para obtener un token sin copiarlo.
+# Selecciona admin, despacho o custom en el entorno de REST Client.
+@accessToken = {{authLogin.response.body.$.access_token}}
+
+# @name authLogin
+POST {{apiUrl}}/api/sesion/login
+Content-Type: application/json
+
+{
+  "identifier": "{{authUsername}}",
+  "password": "{{authPassword}}"
+}
+
 ### Feature RefreshTokens — SESIONES PROPIAS (modalidad JWT, sin RBAC)
 ### Ver y revocar las propias sesiones deriva de estar autenticado, no de un permiso.
 ### Un id de sesión ajeno responde 404 (no se filtra su existencia).
@@ -13,7 +26,7 @@ Content-Type: application/json
   "password": "Seller123!"
 }
 
-@token = {{loginSeller.response.body.$.access_token}}
+@token = {{authLogin.response.body.$.access_token}}
 
 ### Listar mis sesiones activas (nunca expone `token_hash`)
 GET {{baseUrl}}/api/sesiones

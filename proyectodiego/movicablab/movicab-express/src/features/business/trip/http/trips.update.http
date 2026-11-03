@@ -1,0 +1,21 @@
+### Ejecuta authLogin una vez en este archivo para obtener un token sin copiarlo.
+# Selecciona admin, despacho o custom en el entorno de REST Client.
+@accessToken = {{authLogin.response.body.$.access_token}}
+
+# @name authLogin
+POST {{apiUrl}}/api/sesion/login
+Content-Type: application/json
+
+{
+  "identifier": "{{authUsername}}",
+  "password": "{{authPassword}}"
+}
+
+### Actualizar notas/observaciones (unico campo editable via PATCH)
+PATCH http://localhost:4000/api/carreras/1
+Authorization: Bearer {{accessToken}}
+Content-Type: application/json
+
+{
+  "notes": "Observacion actualizada"
+}

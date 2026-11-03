@@ -1,33 +1,42 @@
 import dotenv from "dotenv";
 import { sequelize, testConnection } from "../db";
-import "../../features/business/pasajero/pasajero.model";
-import "../../features/business/tipo-vehiculo/tipo-vehiculo.model";
-import "../../features/business/empresa/empresa.model";
-import "../../features/business/conductor/conductor.model";
-import "../../features/business/vehiculo/vehiculo.model";
-import "../../features/business/turno/turno.model";
-import "../../features/business/tarifa/tarifa.model";
-import "../../features/business/carrera/carrera.model";
-import "../../features/business/pago/pago.model";
-import "../../features/business/calificacion/calificacion.model";
-import "../../features/business/liquidacion/liquidacion.model";
+
+// Business Models
+import "../../features/business/passenger/passenger.model";
+import "../../features/business/vehicle-type/vehicle-type.model";
+import "../../features/business/company/company.model";
+import "../../features/business/driver/driver.model";
+import "../../features/business/vehicle/vehicle.model";
+import "../../features/business/shift/shift.model";
+import "../../features/business/fare/fare.model";
+import "../../features/business/trip/trip.model";
+import "../../features/business/payment/payment.model";
+import "../../features/business/rating/rating.model";
+import "../../features/business/settlement/settlement.model";
+
+// Auth Models
 import "../../features/auth/role-users/role-user.model";
 import "../../features/auth/resource-roles/resource-role.model";
+
+// Auth Seeders
 import { seedRoleUsers } from "../../features/auth/role-users/role-users.seeder";
 import { seedResourceRoles } from "../../features/auth/resource-roles/resource-roles.seeder";
 import { seedRoles } from "../../features/auth/roles/roles.seeder";
 import { seedResources } from "../../features/auth/resources/resources.seeder";
 import { seedUsers } from "../../features/auth/users/users.seeder";
-import { seedPasajeros } from "../../features/business/pasajero/pasajero.seeder";
-import { seedTipoVehiculos } from "../../features/business/tipo-vehiculo/tipo-vehiculo.seeder";
-import { seedEmpresas } from "../../features/business/empresa/empresa.seeder";
-import { seedConductores } from "../../features/business/conductor/conductor.seeder";
-import { seedVehiculos } from "../../features/business/vehiculo/vehiculo.seeder";
-import { seedTurnos } from "../../features/business/turno/turno.seeder";
-import { seedTarifas } from "../../features/business/tarifa/tarifa.seeder";
-import { seedCarreras } from "../../features/business/carrera/carrera.seeder";
-import { seedPagos } from "../../features/business/pago/pago.seeder";
-import { seedCalificaciones } from "../../features/business/calificacion/calificacion.seeder";
+
+// Business Seeders
+import { seedPassengers } from "../../features/business/passenger/passenger.seeder";
+import { seedVehicleTypes } from "../../features/business/vehicle-type/vehicle-type.seeder";
+import { seedCompanies } from "../../features/business/company/company.seeder";
+import { seedDrivers } from "../../features/business/driver/driver.seeder";
+import { seedVehicles } from "../../features/business/vehicle/vehicle.seeder";
+import { seedShifts } from "../../features/business/shift/shift.seeder";
+import { seedFares } from "../../features/business/fare/fare.seeder";
+import { seedTrips } from "../../features/business/trip/trip.seeder";
+import { seedPayments } from "../../features/business/payment/payment.seeder";
+import { seedRatings } from "../../features/business/rating/rating.seeder";
+
 import { resolveSeedCounts } from "./counts";
 
 dotenv.config();
@@ -36,12 +45,12 @@ dotenv.config();
  * SeedersRunner — ejecuta TODOS los seeders de features.
  *
  * Ubicación: `src/database/seeders/` (orquestación fuera de cada feature).
- * Cada feature exporta su seeder (ej. `features/business/pasajero/pasajero.seeder.ts`).
+ * Cada feature exporta su seeder.
  *
  * Uso:
  *   npm run db:seed
- *   npm run db:seed -- --pasajeros=20
- *   SEED_PASAJEROS=5 npm run db:seed
+ *   npm run db:seed -- --passengers=20
+ *   SEED_PASSENGERS=5 npm run db:seed
  */
 export async function runAllSeeders(): Promise<void> {
   const counts = resolveSeedCounts();
@@ -53,7 +62,6 @@ export async function runAllSeeders(): Promise<void> {
     throw new Error("No hay conexión a la base de datos");
   }
 
-  
   const isMysql = sequelize.getDialect() === "mysql" || sequelize.getDialect() === "mariadb";
   if (isMysql) {
     await sequelize.query("SET FOREIGN_KEY_CHECKS = 0");
@@ -66,24 +74,23 @@ export async function runAllSeeders(): Promise<void> {
     }
   }
 
-
   await seedRoles();
-    await seedResources();
-    await seedUsers(counts.users);
-    await seedRoleUsers();
-    await seedResourceRoles();
+  await seedResources();
+  await seedUsers(counts.users);
+  await seedRoleUsers();
+  await seedResourceRoles();
 
   // Orden: business (padres -> hijos)
-  await seedPasajeros(counts.pasajeros);
-  await seedTipoVehiculos(counts.tipos_vehiculo);
-  await seedEmpresas(counts.empresas);
-  await seedConductores(counts.conductores);
-  await seedVehiculos(counts.vehiculos);
-  await seedTurnos(counts.turnos);
-  await seedTarifas(counts.tarifas);
-  await seedCarreras(counts.carreras);
-  await seedPagos();
-  await seedCalificaciones();
+  await seedPassengers(counts.passengers);
+  await seedVehicleTypes(counts.vehicle_types);
+  await seedCompanies(counts.companies);
+  await seedDrivers(counts.drivers);
+  await seedVehicles(counts.vehicles);
+  await seedShifts(counts.shifts);
+  await seedFares(counts.fares);
+  await seedTrips(counts.trips);
+  await seedPayments();
+  await seedRatings();
 
   console.log("🌱 SeedersRunner finalizado");
 }

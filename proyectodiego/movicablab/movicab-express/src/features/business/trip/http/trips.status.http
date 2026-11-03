@@ -1,0 +1,59 @@
+### Ejecuta authLogin una vez en este archivo para obtener un token sin copiarlo.
+# Selecciona admin, despacho o custom en el entorno de REST Client.
+@accessToken = {{authLogin.response.body.$.access_token}}
+
+# @name authLogin
+POST {{apiUrl}}/api/sesion/login
+Content-Type: application/json
+
+{
+  "identifier": "{{authUsername}}",
+  "password": "{{authPassword}}"
+}
+
+@tripId = {{CreateTrip.response.body.$.trip.id}}
+
+### A. Transición INVÁLIDA: solicitada → cerrada (409)
+PATCH http://localhost:4000/api/carreras/{{tripId}}/estado
+Authorization: Bearer {{accessToken}}
+Content-Type: application/json
+
+{
+  "status": "cerrada"
+}
+
+### B. Transición válida: solicitada → aceptada
+PATCH http://localhost:4000/api/carreras/{{tripId}}/estado
+Authorization: Bearer {{accessToken}}
+Content-Type: application/json
+
+{
+  "status": "aceptada"
+}
+
+### C. Transición válida: aceptada → en_curso
+PATCH http://localhost:4000/api/carreras/{{tripId}}/estado
+Authorization: Bearer {{accessToken}}
+Content-Type: application/json
+
+{
+  "status": "en_curso"
+}
+
+### D. Transición válida: en_curso → cerrada (fija ended_at y total)
+PATCH http://localhost:4000/api/carreras/{{tripId}}/estado
+Authorization: Bearer {{accessToken}}
+Content-Type: application/json
+
+{
+  "status": "cerrada"
+}
+
+### E. Transición INVÁLIDA: cerrada → cualquier cosa (409)
+PATCH http://localhost:4000/api/carreras/{{tripId}}/estado
+Authorization: Bearer {{accessToken}}
+Content-Type: application/json
+
+{
+  "status": "cancelada"
+}
