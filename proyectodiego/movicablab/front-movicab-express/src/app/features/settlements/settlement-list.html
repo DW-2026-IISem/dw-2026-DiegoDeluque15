@@ -175,7 +175,7 @@
     [paginator]="true"
     [rows]="10"
     [rowsPerPageOptions]="[10, 25, 50]"
-    [tableStyle]="{ 'min-width': '60rem' }"
+    [tableStyle]="{ 'min-width': '68rem' }"
     styleClass="p-datatable-sm p-datatable-striped"
   >
     <ng-template #header>
@@ -185,6 +185,7 @@
         <th>Periodo (Desde / Hasta)</th>
         <th>Fecha Generación</th>
         <th>Monto Total</th>
+        <th>Notas</th>
         <th>Estado</th>
       </tr>
     </ng-template>
@@ -205,6 +206,9 @@
         <td class="font-bold text-emerald-600">
           ${{ s.total_amount | number:'1.2-2' }}
         </td>
+        <td class="max-w-xs truncate text-xs text-slate-600" [title]="s.notes || ''">
+          {{ s.notes || '—' }}
+        </td>
         <td>
           <p-tag
             [value]="s.status || 'Liquidado'"
@@ -216,7 +220,7 @@
 
     <ng-template #empty>
       <tr>
-        <td colspan="6" class="text-center py-8">
+        <td colspan="7" class="text-center py-8">
           <app-empty-state icon="pi pi-calculator" message="No hay liquidaciones registradas aún. Haz clic en 'Generar liquidación' para crear una." />
         </td>
       </tr>

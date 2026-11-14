@@ -771,6 +771,12 @@ Flujo de eliminación con diálogo PrimeNG `ConfirmationService`. Consume `FareA
 
 ![Confirmación modal para eliminar tarifa](evidencias/ISS-05-I3-fare-delete.png)
 
+##### Mantenimiento y Sincronización de Modelos en Vistas (Conductores, Turnos y Tarifas)
+- **Conductores (`driver-list.html`):** Incorporación de las columnas `ID` (`#id`) y `Descripción` (`description` con texto truncable y tooltip).
+- **Turnos (`shift-list.html`):** Incorporación de las columnas `ID` (`#id`) y `Descripción` (`description`).
+- **Tarifas (`fare-list.html`):** Incorporación de las columnas `ID` (`#id`) y `Regla de Cálculo` (`calculation_rule`).
+*(Los campos de auditoría interna `createdAt` / `updatedAt` se excluyen de la visualización tabular por criterio de usabilidad).*
+
 ---
 
 ## ISS-06 — Carreras (Trip), Pagos (Payment), Calificaciones (Rating) y Liquidaciones (Settlement)
@@ -789,6 +795,7 @@ Configuración de rutas `/trips` y `/trips/new` en `app.routes.ts` y acceso late
 
 - **Archivos:** `src/app/app.routes.ts`, `src/app/layout/aside/aside.ts`, `src/app/features/trips/trip-list.ts` y `trip-list.html`
 - **Estado:** ✅ Completado
+- **Ajuste de Visibilidad:** Se agregaron las columnas `Fin` (`ended_at | date:'dd/MM/yyyy HH:mm'`) y `Notas` (`notes`), ampliando el ancho mínimo de la tabla a `78rem`.
 
 ![Listado de carreras](evidencias/ISS-06-J1-trip-list.png)
 
@@ -874,6 +881,7 @@ Configuración de rutas `/settlements` y `/settlements/new` en `app.routes.ts` y
 
 - **Archivos:** `src/app/app.routes.ts`, `src/app/layout/aside/aside.ts`, `src/app/features/settlements/settlement-list.ts` y `settlement-list.html`
 - **Estado:** ✅ Completado
+- **Ajuste de Visibilidad:** Se agregó la columna `Notas` (`notes`) en el bloque de Historial de Liquidaciones Registradas, ajustando el ancho mínimo a `68rem`.
 
 ![Listado de liquidaciones](evidencias/ISS-06-M1-settlement-list.png)
 
@@ -933,6 +941,7 @@ Implementación de la ruta parametrizada `/trips/:id` en `TripDetail` que coordi
 
 - **Archivos:** `src/app/features/trips/trip-detail.ts`, `trip-detail.html` y `src/app/app.routes.ts`
 - **Estado:** ✅ Completado
+- **Ajuste de Visibilidad:** Se añadieron las tarjetas de `Finalización` (`ended_at`) y estado de `Liquidación` (`settlement_id`) en la sección de datos principales del servicio.
 
 ![Detalle completo de carrera con pago y calificación](evidencias/ISS-07-N2-trip-detail.png)
 

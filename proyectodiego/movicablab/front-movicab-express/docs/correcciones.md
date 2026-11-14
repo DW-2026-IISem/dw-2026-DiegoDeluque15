@@ -104,3 +104,57 @@ Al intentar formalizar una liquidación para un conductor habilitado con fechas 
 2. **Localización de mensajes de error al español:**
    - En el backend Express (`settlement.controller.ts`), se tradujeron todas las respuestas HTTP a español estándar.
    - En el frontend (`settlement-form.ts`), se implementó la función `translateError()` que intercepta cualquier código o mensaje devuelto por el servidor y asegura que la notificación toast siempre se presente en español claro, amigable y explicativo.
+
+---
+
+## 4. Sincronización y Visibilidad de Campos de Modelo en Vistas y Tablas
+
+- **Fecha:** 2026-11-14
+- **Módulos afectados:**
+  - Operación &rarr; Conductores (`/drivers`)
+  - Operación &rarr; Turnos (`/shifts`)
+  - Operación &rarr; Tarifas (`/fares`)
+  - Operación &rarr; Carreras (`/trips` y `/trips/:id`)
+  - Operación &rarr; Liquidaciones (`/settlements`)
+- **Archivos modificados:**
+  - `src/app/features/drivers/driver-list.html`
+  - `src/app/features/shifts/shift-list.html`
+  - `src/app/features/fares/fare-list.html`
+  - `src/app/features/trips/trip-list.html`
+  - `src/app/features/trips/trip-detail.html`
+  - `src/app/features/settlements/settlement-list.html`
+  - `docs/proceso.md`
+
+### Descripción del Requerimiento
+A raíz de la revisión técnica del frontend, se identificó que ciertos atributos clave definidos en los modelos TypeScript y formularios del sistema no estaban siendo proyectados en las tablas de visualización ni en las vistas de detalle:
+1. **Conductores:** Faltaban las columnas `ID` y `description` (descripción u observaciones del conductor) en el listado.
+2. **Turnos:** La tabla solo exponía `Nombre`, `Conductor`, `Vehículo` y `Estado`, omitiendo `ID` y `description`.
+3. **Tarifas:** En el listado no se mostraba el `ID` de tarifa ni su regla o fórmula de cálculo (`calculation_rule`).
+4. **Carreras:** En la tabla de viajes no se visualizaba la fecha/hora de finalización (`ended_at`) ni las `notes` (indicaciones o notas de ruta). Asimismo, en el detalle integral de la carrera (`/trips/:id`) se requería visibilidad explícita de `ended_at` y del vínculo de liquidación (`settlement_id`).
+5. **Liquidaciones:** En la tabla histórica de liquidaciones registradas se requería la visualización de las `notes` u observaciones consignadas en la formalización.
+6. **Criterio de Auditoría:** Se mantuvo la restricción explícita de no sobrecargar las interfaces de usuario con marcas temporales de auditoría interna de base de datos (`createdAt`, `updatedAt`, `created_at`, `updated_at`), reservando el espacio de pantalla para datos de negocio legibles y accionables.
+
+### Solución Implementada
+1. **Conductores (`src/app/features/drivers/driver-list.html`):**
+   - Se incorporó la columna `ID` (`#{{ driver.id }}`) al inicio de la tabla.
+   - Se añadió la columna `Descripción` (`{{ driver.description || '—' }}`) con texto truncable y tooltip.
+   - Se amplió el ancho mínimo de la tabla a `58rem` para garantizar legibilidad.
+2. **Turnos (`src/app/features/shifts/shift-list.html`):**
+   - Se incorporó la columna `ID` (`#{{ shift.id }}`).
+   - Se añadió la columna `Descripción` (`{{ shift.description || '—' }}`).
+   - Se amplió el ancho mínimo de la tabla a `62rem`.
+3. **Tarifas (`src/app/features/fares/fare-list.html`):**
+   - Se incluyó la columna `ID` (`#{{ fare.id }}`).
+   - Se agregó la columna `Regla de Cálculo` (`{{ fare.calculation_rule || '—' }}`).
+   - Se amplió el ancho mínimo de la tabla a `68rem`.
+4. **Carreras (`src/app/features/trips/trip-list.html` y `trip-detail.html`):**
+   - **Listado:** Se agregaron las columnas `Fin` (`ended_at | date:'dd/MM/yyyy HH:mm'`) indicando `"En curso"` en caso de null, y `Notas` (`trip.notes || '—'`).
+   - **Detalle de Carrera:** Se agregaron dos tarjetas de información en la sección "Servicio de Transporte":
+     - `Finalización`: Muestra la fecha y hora exacta de culminación o `"En curso / Pendiente"`.
+     - `Liquidación`: Indica el estado de conciliación mostrando `"Liquidada (ID #X)"` con badge verde o `"Pendiente por liquidar"` en ámbar.
+5. **Liquidaciones (`src/app/features/settlements/settlement-list.html`):**
+   - En el bloque "Historial de Liquidaciones Registradas", se agregó la columna `Notas` (`s.notes || '—'`).
+   - Se ajustó el `colspan` del estado vacío a 7 columnas y el `tableStyle` a `min-width: 68rem`.
+
+### Validación
+- Verificación exhaustiva con el compilador TypeScript (`node ./node_modules/typescript/bin/tsc --noEmit`), finalizando con código de salida 0 y sin advertencias ni errores de tipos o plantillas.

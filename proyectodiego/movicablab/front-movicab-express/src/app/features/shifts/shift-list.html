@@ -12,12 +12,14 @@
   [paginator]="true"
   [rows]="10"
   [rowsPerPageOptions]="[10, 25, 50]"
-  [tableStyle]="{ 'min-width': '55rem' }"
+  [tableStyle]="{ 'min-width': '62rem' }"
   styleClass="p-datatable-sm p-datatable-striped"
 >
   <ng-template #header>
     <tr>
+      <th>ID</th>
       <th>Nombre</th>
+      <th>Descripción</th>
       <th>Conductor</th>
       <th>Vehículo</th>
       <th>Estado</th>
@@ -27,7 +29,9 @@
 
   <ng-template #body let-shift>
     <tr>
-      <td>{{ shift.name }}</td>
+      <td><strong>#{{ shift.id }}</strong></td>
+      <td class="font-semibold text-slate-800">{{ shift.name }}</td>
+      <td>{{ shift.description || '—' }}</td>
       <td>{{ shift.driver?.name ?? '—' }}</td>
       <td>{{ shift.vehicle?.name ?? '—' }}</td>
       <td>

@@ -86,6 +86,32 @@
               }
             </p>
           </div>
+
+          <!-- Finalización -->
+          <div class="p-4 rounded-lg bg-slate-50 border border-slate-100">
+            <span class="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-1">Finalización</span>
+            <p class="text-base font-bold text-slate-800 flex items-center gap-2">
+              <i class="pi pi-calendar-times text-indigo-500"></i>
+              @if (trip()!.ended_at) {
+                {{ trip()!.ended_at | date:'dd/MM/yyyy HH:mm' }}
+              } @else {
+                <span class="text-sm font-normal text-slate-400 italic">En curso / Pendiente</span>
+              }
+            </p>
+          </div>
+
+          <!-- Estado de Liquidación -->
+          <div class="p-4 rounded-lg bg-slate-50 border border-slate-100">
+            <span class="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-1">Liquidación</span>
+            <p class="text-base font-bold text-slate-800 flex items-center gap-2">
+              <i class="pi pi-receipt text-indigo-500"></i>
+              @if (trip()!.settlement_id) {
+                <span class="text-emerald-700 font-semibold">Liquidada (ID #{{ trip()!.settlement_id }})</span>
+              } @else {
+                <span class="text-amber-600 font-normal">Pendiente por liquidar</span>
+              }
+            </p>
+          </div>
         </div>
 
         <!-- Notas / Indicaciones -->

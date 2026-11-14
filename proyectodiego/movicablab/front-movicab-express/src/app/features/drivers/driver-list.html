@@ -12,12 +12,14 @@
   [paginator]="true"
   [rows]="10"
   [rowsPerPageOptions]="[10, 25, 50]"
-  [tableStyle]="{ 'min-width': '50rem' }"
+  [tableStyle]="{ 'min-width': '58rem' }"
   styleClass="p-datatable-sm p-datatable-striped"
 >
   <ng-template #header>
     <tr>
+      <th>ID</th>
       <th>Nombre</th>
+      <th>Descripción</th>
       <th>Empresa</th>
       <th>Estado</th>
       <th style="width: 10rem">Acciones</th>
@@ -26,7 +28,9 @@
 
   <ng-template #body let-driver>
     <tr>
-      <td>{{ driver.name }}</td>
+      <td><strong>#{{ driver.id }}</strong></td>
+      <td class="font-semibold text-slate-800">{{ driver.name }}</td>
+      <td>{{ driver.description || '—' }}</td>
       <td>{{ driver.company?.legal_name ?? '—' }}</td>
       <td>
         <p-tag
