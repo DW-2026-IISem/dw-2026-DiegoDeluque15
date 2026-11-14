@@ -17,7 +17,7 @@ export class SettlementController {
       const settlements = await Settlement.findAll();
       res.status(200).json({ settlements });
     } catch (error) {
-      res.status(500).json({ error: "Error fetching settlements", detail: String(error) });
+      res.status(500).json({ error: "Error al consultar las liquidaciones", detail: String(error) });
     }
   }
 
@@ -26,10 +26,10 @@ export class SettlementController {
       const settlement = await Settlement.findByPk(paramId(req), {
         include: [{ association: "trips", attributes: ["id", "ended_at", "total", "status"] }]
       });
-      if (!settlement) { res.status(404).json({ error: "Settlement not found" }); return; }
+      if (!settlement) { res.status(404).json({ error: "Liquidación no encontrada" }); return; }
       res.status(200).json({ settlement });
     } catch (error) {
-      res.status(500).json({ error: "Error fetching settlement", detail: String(error) });
+      res.status(500).json({ error: "Error al consultar la liquidación", detail: String(error) });
     }
   }
 
@@ -37,7 +37,7 @@ export class SettlementController {
     const { driver_id, date_from, date_to, notes } = req.body;
 
     if (!driver_id || !date_from || !date_to) {
-      res.status(400).json({ error: "driver_id, date_from and date_to are required" });
+      res.status(400).json({ error: "El conductor y las fechas de inicio y fin son obligatorios" });
       return;
     }
 
@@ -48,8 +48,17 @@ export class SettlementController {
       const driver = await Driver.findByPk(driver_id);
       if (!driver) {
         await t.rollback();
-        res.status(404).json({ error: `Driver with id=${driver_id} not found` });
+        res.status(404).json({ error: `Conductor con id=${driver_id} no encontrado` });
         return;
+      }
+
+      // Preparar fechas considerando el día completo en la fecha final
+      const startDate = new Date(date_from);
+      const endDate = new Date(date_to);
+      if (typeof date_to === "string" && date_to.length <= 10) {
+        endDate.setUTCHours(23, 59, 59, 999);
+      } else if (endDate.getHours() === 0 && endDate.getMinutes() === 0 && endDate.getSeconds() === 0) {
+        endDate.setHours(23, 59, 59, 999);
       }
 
       // 2. Busca todas las trips cerradas, sin liquidar, en el rango, del driver
@@ -58,8 +67,8 @@ export class SettlementController {
           status: "cerrada",
           settlement_id: null,
           ended_at: {
-            [Op.gte]: new Date(date_from),
-            [Op.lte]: new Date(date_to),
+            [Op.gte]: startDate,
+            [Op.lte]: endDate,
           },
         },
         include: [
@@ -75,7 +84,7 @@ export class SettlementController {
 
       if (!trips || trips.length === 0) {
         await t.rollback();
-        res.status(400).json({ error: "Nothing to settle in that range for that driver" });
+        res.status(400).json({ error: "No hay carreras cerradas pendientes para liquidar en ese rango de fechas para este conductor" });
         return;
       }
 
@@ -86,8 +95,8 @@ export class SettlementController {
       const settlement = await Settlement.create(
         {
           driver_id,
-          date_from:    new Date(date_from),
-          date_to:      new Date(date_to),
+          date_from:    startDate,
+          date_to:      endDate,
           total_amount: valorTotal,
           status:       "generada",
           notes:        notes || null,
@@ -114,7 +123,7 @@ export class SettlementController {
 
     } catch (error) {
       await t.rollback();
-      res.status(500).json({ error: "Transaction failed", detail: String(error) });
+      res.status(500).json({ error: "Error en la transacción al procesar la liquidación", detail: String(error) });
     }
   }
 }

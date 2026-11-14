@@ -214,6 +214,11 @@ Qué se hizo: Se implementó la entidad inmutable `liquidacion`, con un endpoint
 Por qué: Es el núcleo del módulo financiero para los conductores. La atomicidad transaccional (todo o nada) es obligatoria porque no podemos permitir que se cree una liquidación si falla la vinculación de las carreras, ni dejar carreras con un ID "fantasma" si falla la creación de la liquidación.
 Qué función cumple: Emite comprobantes de pago a los conductores que aglomeran múltiples carreras de un período.
 Para qué sirve: Cierra el ciclo de ingresos, posibilitando a MoviCab tener el control total de cuánto dinero debe abonarle a cada chofer activo por los servicios prestados en un marco temporal definido.
+
+### Correcciones y Mantenimiento Backend (2026-11-11)
+- **Ajuste de Rango Horario (`date_to`):** Al enviar fechas sin hora (formato `YYYY-MM-DD`), `new Date(date_to)` evaluaba a las `00:00:00.000Z`, provocando que cualquier carrera finalizada con posterioridad a medianoche quedara fuera del filtro `ended_at <= date_to` y arrojara error 400. Se añadió la normalización automática en `SettlementController.create()` para extender `date_to` a las `23:59:59.999` cuando la fecha llega sin componente horario o a medianoche.
+- **Localización de Respuestas al Español:** Se tradujeron todas las respuestas y mensajes de error del controlador `SettlementController` (mensajes 400, 404 y 500) a español estándar para mantener coherencia en todo el sistema.
+
 Evidencia: evidencias/iss-15-liquidacion-transaccion.png
 ![Evidencia ISS-15](evidencias/iss-15-liquidacion-transaccion.png)
 
