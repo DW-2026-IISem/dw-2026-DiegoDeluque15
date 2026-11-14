@@ -2,56 +2,224 @@
   <p-button label="Generar liquidación" icon="pi pi-plus" routerLink="/settlements/new" />
 </app-page-header>
 
-<p-table
-  [value]="settlements()"
-  [loading]="loading()"
-  [paginator]="true"
-  [rows]="10"
-  [rowsPerPageOptions]="[10, 25, 50]"
-  [tableStyle]="{ 'min-width': '60rem' }"
-  styleClass="p-datatable-sm p-datatable-striped"
->
-  <ng-template #header>
-    <tr>
-      <th>ID</th>
-      <th>Conductor</th>
-      <th>Periodo (Desde / Hasta)</th>
-      <th>Fecha Generación</th>
-      <th>Monto Total</th>
-      <th>Estado</th>
-    </tr>
-  </ng-template>
+<!-- Bloque 1: Estado de Conductores para Liquidación (Primero Habilitados, luego No Habilitados) -->
+<div class="card mb-6">
+  <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-4">
+    <div>
+      <h3 class="text-base font-bold text-slate-800 flex items-center gap-2">
+        <i class="pi pi-users text-indigo-600"></i>
+        Disponibilidad de Conductores para Liquidación
+      </h3>
+      <p class="text-xs sm:text-sm text-slate-500">
+        Conductores ordenados por elegibilidad: primero los habilitados con carreras cerradas pendientes
+      </p>
+    </div>
 
-  <ng-template #body let-s>
-    <tr>
-      <td><strong>#{{ s.id }}</strong></td>
-      <td class="font-semibold text-slate-800">
-        <i class="pi pi-id-card text-xs text-slate-500 mr-1"></i>
-        {{ getDriverName(s.driver_id) }}
-      </td>
-      <td>
-        <span class="text-sm">
-          {{ s.date_from | date:'dd/MM/yyyy' }} — {{ s.date_to | date:'dd/MM/yyyy' }}
-        </span>
-      </td>
-      <td>{{ s.generated_at | date:'dd/MM/yyyy HH:mm' }}</td>
-      <td class="font-bold text-emerald-600">
-        ${{ s.total_amount | number:'1.2-2' }}
-      </td>
-      <td>
-        <p-tag
-          [value]="s.status || 'Liquidado'"
-          severity="info"
-        />
-      </td>
-    </tr>
-  </ng-template>
+    <!-- Filtros de Habilitación -->
+    <div class="flex items-center gap-1 bg-slate-100 p-1 rounded-lg self-start sm:self-auto">
+      <button
+        type="button"
+        (click)="filter.set('all')"
+        class="px-2.5 py-1 text-xs font-semibold rounded-md transition-colors"
+        [class.bg-white]="filter() === 'all'"
+        [class.shadow-sm]="filter() === 'all'"
+        [class.text-slate-900]="filter() === 'all'"
+        [class.text-slate-600]="filter() !== 'all'"
+      >
+        Todos ({{ driverStatuses().length }})
+      </button>
+      <button
+        type="button"
+        (click)="filter.set('habilitados')"
+        class="px-2.5 py-1 text-xs font-semibold rounded-md transition-colors flex items-center gap-1.5"
+        [class.bg-emerald-600]="filter() === 'habilitados'"
+        [class.text-white]="filter() === 'habilitados'"
+        [class.shadow-sm]="filter() === 'habilitados'"
+        [class.text-emerald-700]="filter() !== 'habilitados'"
+      >
+        <span class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>
+        Habilitados ({{ habilitadosCount() }})
+      </button>
+      <button
+        type="button"
+        (click)="filter.set('no-habilitados')"
+        class="px-2.5 py-1 text-xs font-semibold rounded-md transition-colors"
+        [class.bg-slate-700]="filter() === 'no-habilitados'"
+        [class.text-white]="filter() === 'no-habilitados'"
+        [class.shadow-sm]="filter() === 'no-habilitados'"
+        [class.text-slate-600]="filter() !== 'no-habilitados'"
+      >
+        No Habilitados ({{ noHabilitadosCount() }})
+      </button>
+    </div>
+  </div>
 
-  <ng-template #empty>
-    <tr>
-      <td colspan="6" class="text-center py-8">
-        <app-empty-state icon="pi pi-calculator" message="No hay liquidaciones registradas aún. Haz clic en 'Generar liquidación' para crear una." />
-      </td>
-    </tr>
-  </ng-template>
-</p-table>
+  <p-table
+    [value]="filteredDrivers()"
+    [loading]="loading()"
+    [paginator]="filteredDrivers().length > 6"
+    [rows]="6"
+    [rowsPerPageOptions]="[6, 12, 24]"
+    [tableStyle]="{ 'min-width': '55rem' }"
+    styleClass="p-datatable-sm p-datatable-striped"
+  >
+    <ng-template #header>
+      <tr>
+        <th>Conductor</th>
+        <th>Estado</th>
+        <th>Carreras Pendientes</th>
+        <th>Monto Pendiente</th>
+        <th>Rango Sugerido</th>
+        <th style="width: 8.5rem" class="text-center">Acción</th>
+      </tr>
+    </ng-template>
+
+    <ng-template #body let-item>
+      <tr [class.bg-emerald-50]="item.habilitado">
+        <td>
+          <div class="flex items-center gap-2">
+            <span
+              class="w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold shrink-0"
+              [class.bg-emerald-100]="item.habilitado"
+              [class.text-emerald-800]="item.habilitado"
+              [class.bg-slate-200]="!item.habilitado"
+              [class.text-slate-700]="!item.habilitado"
+            >
+              {{ item.driver.name.substring(0, 2).toUpperCase() }}
+            </span>
+            <div>
+              <span class="font-semibold text-slate-800 block text-sm">{{ item.driver.name }}</span>
+              <span class="text-xs text-slate-500">
+                {{ item.driver.company?.legal_name || 'Conductor independiente' }}
+              </span>
+            </div>
+          </div>
+        </td>
+        <td>
+          @if (item.habilitado) {
+            <p-tag value="Habilitado" severity="success" icon="pi pi-check-circle" />
+          } @else {
+            <p-tag value="No habilitado" severity="secondary" icon="pi pi-minus-circle" />
+          }
+          <span class="text-xs text-slate-500 block mt-0.5">{{ item.reason }}</span>
+        </td>
+        <td>
+          @if (item.pendingTripsCount > 0) {
+            <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-bold bg-indigo-50 text-indigo-700 border border-indigo-200">
+              {{ item.pendingTripsCount }} cerrada(s)
+            </span>
+          } @else {
+            <span class="text-xs text-slate-400">0 carreras</span>
+          }
+        </td>
+        <td>
+          @if (item.pendingAmount > 0) {
+            <span class="font-bold text-emerald-600 text-sm">
+              ${{ item.pendingAmount | number:'1.2-2' }}
+            </span>
+          } @else {
+            <span class="text-xs text-slate-400">$0.00</span>
+          }
+        </td>
+        <td>
+          @if (item.dateFrom && item.dateTo) {
+            <span class="text-xs text-slate-700">
+              {{ item.dateFrom | date:'dd/MM/yyyy' }} — {{ item.dateTo | date:'dd/MM/yyyy' }}
+            </span>
+          } @else {
+            <span class="text-xs text-slate-400">—</span>
+          }
+        </td>
+        <td class="text-center">
+          @if (item.habilitado) {
+            <p-button
+              label="Liquidar"
+              icon="pi pi-calculator"
+              size="small"
+              severity="success"
+              routerLink="/settlements/new"
+              [queryParams]="{ driver_id: item.driver.id, date_from: item.dateFrom, date_to: item.dateTo }"
+            />
+          } @else {
+            <span class="text-xs text-slate-400 italic">No disponible</span>
+          }
+        </td>
+      </tr>
+    </ng-template>
+
+    <ng-template #empty>
+      <tr>
+        <td colspan="6" class="text-center py-6 text-sm text-slate-500">
+          <app-empty-state icon="pi pi-users" message="No se encontraron conductores bajo el filtro seleccionado." />
+        </td>
+      </tr>
+    </ng-template>
+  </p-table>
+</div>
+
+<!-- Bloque 2: Historial de Liquidaciones Registradas -->
+<div class="card">
+  <div class="mb-4">
+    <h3 class="text-base font-bold text-slate-800 flex items-center gap-2">
+      <i class="pi pi-history text-slate-600"></i>
+      Historial de Liquidaciones Registradas
+    </h3>
+    <p class="text-xs sm:text-sm text-slate-500">
+      Consultas y montos liquidados formalmente a través del sistema
+    </p>
+  </div>
+
+  <p-table
+    [value]="settlements()"
+    [loading]="loading()"
+    [paginator]="true"
+    [rows]="10"
+    [rowsPerPageOptions]="[10, 25, 50]"
+    [tableStyle]="{ 'min-width': '60rem' }"
+    styleClass="p-datatable-sm p-datatable-striped"
+  >
+    <ng-template #header>
+      <tr>
+        <th>ID</th>
+        <th>Conductor</th>
+        <th>Periodo (Desde / Hasta)</th>
+        <th>Fecha Generación</th>
+        <th>Monto Total</th>
+        <th>Estado</th>
+      </tr>
+    </ng-template>
+
+    <ng-template #body let-s>
+      <tr>
+        <td><strong>#{{ s.id }}</strong></td>
+        <td class="font-semibold text-slate-800">
+          <i class="pi pi-id-card text-xs text-slate-500 mr-1"></i>
+          {{ getDriverName(s.driver_id) }}
+        </td>
+        <td>
+          <span class="text-sm">
+            {{ s.date_from | date:'dd/MM/yyyy' }} — {{ s.date_to | date:'dd/MM/yyyy' }}
+          </span>
+        </td>
+        <td>{{ s.generated_at | date:'dd/MM/yyyy HH:mm' }}</td>
+        <td class="font-bold text-emerald-600">
+          ${{ s.total_amount | number:'1.2-2' }}
+        </td>
+        <td>
+          <p-tag
+            [value]="s.status || 'Liquidado'"
+            severity="info"
+          />
+        </td>
+      </tr>
+    </ng-template>
+
+    <ng-template #empty>
+      <tr>
+        <td colspan="6" class="text-center py-8">
+          <app-empty-state icon="pi pi-calculator" message="No hay liquidaciones registradas aún. Haz clic en 'Generar liquidación' para crear una." />
+        </td>
+      </tr>
+    </ng-template>
+  </p-table>
+</div>

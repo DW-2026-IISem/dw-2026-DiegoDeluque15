@@ -840,6 +840,11 @@ Configuración de rutas `/ratings` y `/ratings/new` en `app.routes.ts` y acceso 
 - **Archivos:** `src/app/app.routes.ts`, `src/app/layout/aside/aside.ts`, `src/app/features/ratings/rating-list.ts` y `rating-list.html`
 - **Estado:** ✅ Completado
 
+##### Corrección y Mantenimiento — Visualización de Fecha en Calificaciones
+- **Incidencia:** En la vista de listado de calificaciones (`/ratings`), la columna "Fecha" aparecía vacía en cada fila aunque el registro existía y contaba con timestamp en la base de datos.
+- **Causa Raíz:** El backend Express (`movicab-express`) utiliza Sequelize serializando por defecto las marcas temporales en formato camelCase (`createdAt`), mientras que la plantilla HTML consumía únicamente la propiedad `rating.created_at` (snake_case). Debido a esta discrepancia de nombrado, la propiedad evaluaba a `undefined` y el `DatePipe` de Angular producía una cadena vacía.
+- **Solución:** Se actualizó la expresión del template en `rating-list.html` a `{{ ((rating.createdAt || rating.created_at) | date:'dd/MM/yyyy HH:mm') || '—' }}`, garantizando compatibilidad retroactiva tanto con atributos en formato camelCase (`createdAt`) como snake_case (`created_at`) de forma idéntica a la vista de detalle de carrera (`trip-detail.html`), incorporando además un valor de respaldo (`—`) en caso de ausencia de fecha.
+
 ![Listado de calificaciones](evidencias/ISS-06-L1-rating-list.png)
 
 ---
@@ -857,6 +862,16 @@ Componente reactivo para emisión de valoraciones del servicio de transporte. Pe
 #### M.1 — Listado de Liquidaciones por Conductor (SettlementList)
 Configuración de rutas `/settlements` y `/settlements/new` en `app.routes.ts` y acceso "Liquidaciones" (`pi pi-calculator`) en menú lateral. Consume `SettlementApi.list()` (`GET /api/liquidaciones`) y resuelve el nombre del conductor consultando `DriverApi.list()`, presentando el rango de fechas liquidado, fecha de generación y monto total acumulado.
 
+##### Mejora y Usabilidad — Priorización de Conductores Habilitados para Liquidar
+- **Necesidad operativa:** En el flujo de liquidaciones, los operadores necesitaban visualizar con claridad y de forma inmediata quiénes están habilitados para ser liquidados y quiénes no, evitando intentos fallidos de liquidación (error 400 `Nothing to settle in that range for that driver`).
+- **Implementación en SettlementList (`/settlements`):**
+  - Se estructuró un panel superior de disponibilidad de conductores previo al historial de liquidaciones registradas.
+  - Integra concurrentemente (`forkJoin`) `SettlementApi`, `DriverApi`, `TripApi` y `ShiftApi`.
+  - Un conductor se cataloga como **Habilitado** si su estado es activo (`active`) y posee carreras finalizadas (`status === 'cerrada'`) que aún no cuentan con liquidación asociada (`settlement_id === null`).
+  - **Ordenamiento con prioridad:** Se muestran **primero los conductores habilitados** (ordenados por mayor saldo acumulado) y posteriormente los **no habilitados** (indicando la causa: sin carreras pendientes o inactivo).
+  - Incluye botones de filtrado rápido con conteos interactivos (`Todos`, `Habilitados`, `No Habilitados`).
+  - Provee botón de acción directa `Liquidar` que transfiere al formulario de creación con `driver_id` y fechas sugeridas preconfiguradas.
+
 - **Archivos:** `src/app/app.routes.ts`, `src/app/layout/aside/aside.ts`, `src/app/features/settlements/settlement-list.ts` y `settlement-list.html`
 - **Estado:** ✅ Completado
 
@@ -867,8 +882,16 @@ Configuración de rutas `/settlements` y `/settlements/new` en `app.routes.ts` y
 #### M.2 — Formulario para Generar Liquidación (SettlementForm)
 Formulario reactivo que agrupa las carreras de un conductor en un periodo determinado. Incluye selector de conductores con filtro de búsqueda (`p-select`) y selectores de fecha con calendario PrimeNG (`p-datepicker`) para definir `date_from` y `date_to`. El backend calcula de manera consolidada la suma de los servicios cerrados en el intervalo.
 
-- **Archivos:** `src/app/features/settlements/settlement-form.ts` y `settlement-form.html`
+##### Mejora y Usabilidad — Selección Asistida de Conductor Habilitado
+- El selector `p-select` clasifica y ordena a los conductores mostrando primero los **Habilitados** con etiquetas visuales (`p-tag`), conteo de carreras cerradas pendientes y monto acumulado.
+- Soporta parámetros de ruta (`queryParams`) para preseleccionar automáticamente conductor y fechas provenientes de la tabla principal de liquidaciones.
+- Incorpora un banner reactivo que valida el estado del conductor seleccionado:
+  - Si es habilitado: resume carreras pendientes, total estimado y autocompleta el rango sugerido de fechas.
+  - Si no es habilitado: advierte que el conductor no posee servicios finalizados pendientes por liquidar.
+
+- **Archivos:** `src/app/features/settlements/settlement-form.ts`, `settlement-form.html` y backend Express `settlement.controller.ts`
 - **Estado:** ✅ Completado
+- **Ajuste de Rango Horario y Mensajes en Español:** Se corrigió el truncamiento de `date_to` asegurando que cubra el final del día (`23:59:59.999`) tanto en el payload como en la consulta Sequelize, y se tradujeron todas las respuestas y notificaciones toast al español.
 
 ![Formulario para generar liquidación](evidencias/ISS-06-M2-settlement-form.png)
 

@@ -1,0 +1,106 @@
+# Registro de Correcciones y Ajustes
+
+Este documento registra los ajustes puntuales, correcciones de errores (bugfixes) y mantenimientos realizados sobre el frontend de **MoviCab Express**.
+
+---
+
+## 1. Visualización de Fecha en el Módulo de Calificaciones
+
+- **Fecha:** 2026-11-11
+- **Módulo afectado:** Operación &rarr; Calificaciones (`/ratings`)
+- **Archivos modificados:**
+  - `src/app/features/ratings/rating-list.html`
+  - `docs/proceso.md`
+
+### Descripción del Problema
+Al ingresar a la vista de Calificaciones (`/ratings`), la columna "Fecha" de la tabla (`p-table`) aparecía completamente vacía para todos los registros, a pesar de que las calificaciones contaban con fecha y hora de creación registradas en el backend y la base de datos.
+
+### Diagnóstico / Causa Raíz
+1. El backend de Node.js / Express (`movicab-express`) utiliza Sequelize con la opción `timestamps: true` por defecto en el modelo `Rating` (`rating.model.ts`). Al serializar las entidades a JSON en `GET /api/calificaciones`, los campos de tiempo se exportan como `createdAt` y `updatedAt` (camelCase).
+2. En la plantilla `src/app/features/ratings/rating-list.html`, la celda de fecha estaba vinculada estrictamente a `rating.created_at`:
+   ```html
+   <td>{{ rating.created_at | date:'dd/MM/yyyy HH:mm' }}</td>
+   ```
+3. Dado que `created_at` no existía en el payload devuelto por el backend (`undefined`), el pipe `date` no procesaba ningún valor y la celda se mostraba en blanco.
+
+### Solución Implementada
+Se actualizó el enlace del template en `rating-list.html` para soportar tanto `createdAt` (camelCase de Sequelize) como `created_at` (snake_case estándar de APIs REST), agregando además un caracter de respaldo (`—`) en caso de no existir valor:
+
+```html
+<td>{{ ((rating.createdAt || rating.created_at) | date:'dd/MM/yyyy HH:mm') || '—' }}</td>
+```
+
+Este patrón mantiene total coherencia con la implementación previa en el componente de detalle de carreras (`src/app/features/trips/trip-detail.html:181`):
+```html
+<span>{{ (rating()!.createdAt || rating()!.created_at) | date:'dd/MM/yyyy HH:mm' }}</span>
+```
+
+### Validación
+- El modelo TypeScript `Rating` extiende la interfaz `Timestamps` (`src/app/core/models/api.model.ts`), la cual declara válidos tanto `createdAt?: string` como `created_at?: string`.
+- La expresión evalúa prioritariamente la propiedad presente en la respuesta del backend y formatea la fecha y hora (`dd/MM/yyyy HH:mm`) correctamente en la tabla.
+
+
+---
+
+## 2. Priorización y Visualización de Conductores Habilitados para Liquidación
+
+- **Fecha:** 2026-11-11
+- **Módulo afectado:** Operación &rarr; Liquidaciones (`/settlements` y `/settlements/new`)
+- **Archivos modificados:**
+  - `src/app/features/settlements/settlement-list.ts`
+  - `src/app/features/settlements/settlement-list.html`
+  - `src/app/features/settlements/settlement-form.ts`
+  - `src/app/features/settlements/settlement-form.html`
+  - `docs/proceso.md`
+
+### Descripción del Problema / Necesidad
+En el apartado de Liquidaciones (`/settlements`), la interfaz solo presentaba el histórico de liquidaciones formalizadas con anterioridad. Para generar una liquidación, el operador debía navegar al formulario y seleccionar un conductor de una lista desordenada sin saber previamente si el conductor tenía viajes finalizados pendientes de cobro o si estaba activo.
+Si se seleccionaba un conductor sin viajes finalizados en el rango, el backend rechazaba la transacción con error HTTP 400 (`Nothing to settle in that range for that driver`).
+
+### Criterio de Habilitación
+Un conductor se considera **Habilitado para liquidación** cuando:
+1. Su estado en el sistema es `active`.
+2. Cuenta con al menos una carrera con estado `cerrada` y sin liquidar (`settlement_id === null`), vinculada a través de sus turnos de trabajo (`shifts`).
+
+Si no cumple alguna de las condiciones, se cataloga como **No habilitado** indicando el motivo correspondiente (*"Sin carreras cerradas pendientes"* o *"Conductor inactivo"*).
+
+### Solución Implementada
+1. **Listado Principal (`settlement-list`):**
+   - Se añadió en la parte superior el panel de **Disponibilidad de Conductores para Liquidación** antes del historial de liquidaciones.
+   - Se procesan concurrentemente mediante `forkJoin` los servicios de `SettlementApi`, `DriverApi`, `TripApi` y `ShiftApi`.
+   - **Orden prioritario:** Se presentan **primero los conductores habilitados** (ordenados por mayor monto acumulado) y después los **no habilitados**.
+   - Se incluyeron filtros con contadores interactivos: `Todos`, `Habilitados` y `No Habilitados`.
+   - En cada conductor habilitado se muestra el número de carreras pendientes, el monto acumulado estimado, el rango sugerido de fechas y un botón directo **«Liquidar»**.
+2. **Formulario de Generación (`settlement-form`):**
+   - El selector `p-select` muestra a los conductores priorizados (habilitados primero con badge verde de carreras y monto).
+   - Soporte para parámetros de ruta (`queryParams: driver_id, date_from, date_to`) para transferir los datos del conductor seleccionado en un clic desde la tabla.
+   - Banner reactivo en el formulario que confirma al operador si el conductor seleccionado está habilitado (mostrando saldo y carreras) o emite una advertencia si no tiene carreras pendientes.
+
+### Validación
+- Compilación de tipos TypeScript validada con `tsc --noEmit` exitosa con código de salida 0.
+
+---
+
+## 3. Corrección de Rango de Fechas y Localización de Mensajes de Error en Liquidaciones
+
+- **Fecha:** 2026-11-11
+- **Módulo afectado:** Operación &rarr; Liquidaciones (`/settlements/new`) y Backend (`movicab-express`)
+- **Archivos modificados:**
+  - `src/app/features/settlements/settlement-form.ts`
+  - `../movicab-express/src/features/business/settlement/settlement.controller.ts`
+
+### Descripción del Problema
+Al intentar formalizar una liquidación para un conductor habilitado con fechas idénticas o de un mismo día (ej. `21/10/2026` a `21/10/2026`), aparecía un mensaje de error en inglés en la esquina superior derecha:
+`Nothing to settle in that range for that driver`
+
+### Diagnóstico / Causa Raíz
+1. **Truncamiento de hora en rango de fechas:** Al enviar únicamente `YYYY-MM-DD` (ej. `2026-10-21`), `new Date("2026-10-21")` evalúa a `2026-10-21T00:00:00.000Z`. La comparación SQL `ended_at <= date_to` excluía cualquier viaje completado después de las 00:00:00 del mismo día (por ejemplo a las 14:00 horas), arrojando cero viajes en el rango.
+2. **Mensajes no traducidos:** El backend respondía con cadenas en inglés (`Nothing to settle in that range for that driver`, `driver_id, date_from and date_to are required`), las cuales eran mostradas directamente en el toast de notificación del frontend sin traducir.
+
+### Solución Implementada
+1. **Ajuste del límite superior de fechas:**
+   - En el frontend (`settlement-form.ts`), la fecha final `date_to` se envía con extensión al final del día (`YYYY-MM-DDT23:59:59.999Z`), cubriendo todas las carreras realizadas durante dicha jornada.
+   - En el backend (`settlement.controller.ts`), se incorporó lógica preventiva para que, si `date_to` llega sin componente horario o a medianoche, se extienda automáticamente a las `23:59:59.999`.
+2. **Localización de mensajes de error al español:**
+   - En el backend Express (`settlement.controller.ts`), se tradujeron todas las respuestas HTTP a español estándar.
+   - En el frontend (`settlement-form.ts`), se implementó la función `translateError()` que intercepta cualquier código o mensaje devuelto por el servidor y asegura que la notificación toast siempre se presente en español claro, amigable y explicativo.

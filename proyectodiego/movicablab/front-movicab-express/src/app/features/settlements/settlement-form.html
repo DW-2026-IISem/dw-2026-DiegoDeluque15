@@ -1,56 +1,110 @@
-<app-page-header
-  title="Generar Liquidación"
-  subtitle="Totaliza y liquida los servicios prestados por un conductor en un rango de fechas"
-/>
+<app-page-header title="Generar Liquidación"
+  subtitle="Totaliza y liquida los servicios prestados por un conductor en un rango de fechas" />
 
 <div class="card max-w-2xl mx-auto">
   <form [formGroup]="form" (ngSubmit)="submit()" novalidate>
 
     <!-- Conductor -->
     <div class="field mb-4">
-      <label for="driver_id" class="block font-semibold mb-1">Conductor <span class="text-red-500">*</span></label>
-      <p-select
-        inputId="driver_id"
-        formControlName="driver_id"
-        [options]="drivers()"
-        optionLabel="name"
-        optionValue="id"
-        placeholder="Selecciona el conductor a liquidar"
-        class="w-full"
-        [filter]="true"
-        filterBy="name"
-      />
+      <div class="flex justify-between items-center mb-1">
+        <label for="driver_id" class="block font-semibold">
+          Conductor a Liquidar <span class="text-red-500">*</span>
+        </label>
+        <span class="text-xs text-slate-500">Ordenados con prioridad de habilitación</span>
+      </div>
+
+      <p-select inputId="driver_id" formControlName="driver_id" [options]="driverOptions()" optionLabel="name"
+        optionValue="id" [loading]="initialLoading()" placeholder="Selecciona el conductor a liquidar" class="w-full"
+        [filter]="true" filterBy="name,companyName">
+        <ng-template #selectedItem let-selectedOption>
+          @if (selectedOption) {
+          <div class="flex items-center justify-between w-full pr-2">
+            <span class="font-semibold text-slate-800">{{ selectedOption.name }}</span>
+            @if (selectedOption.habilitado) {
+            <p-tag value="Habilitado" severity="success" />
+            } @else {
+            <p-tag value="No habilitado" severity="secondary" />
+            }
+          </div>
+          }
+        </ng-template>
+
+        <ng-template #item let-opt>
+          <div class="flex items-center justify-between w-full py-1">
+            <div>
+              <div class="font-semibold text-slate-800 text-sm flex items-center gap-1.5">
+                <span class="w-2 h-2 rounded-full" [class.bg-emerald-500]="opt.habilitado"
+                  [class.bg-slate-300]="!opt.habilitado"></span>
+                {{ opt.name }}
+              </div>
+              <div class="text-xs text-slate-500">{{ opt.companyName }}</div>
+            </div>
+            <div class="text-right">
+              @if (opt.habilitado) {
+              <span class="text-xs font-bold text-emerald-600 block">
+                ${{ opt.pendingAmount | number:'1.2-2' }}
+              </span>
+              <span class="text-[11px] text-slate-500">{{ opt.pendingTripsCount }} carrera(s)</span>
+              } @else {
+              <span class="text-xs text-slate-400 italic block">{{ opt.reason }}</span>
+              }
+            </div>
+          </div>
+        </ng-template>
+      </p-select>
+
       @if (form.get('driver_id')?.invalid && form.get('driver_id')?.touched) {
-        <small class="text-red-500">Debe seleccionar un conductor.</small>
+      <small class="text-red-500 block mt-1">Debe seleccionar un conductor.</small>
       }
     </div>
 
+    <!-- Banner dinámico sobre el estado del conductor seleccionado -->
+    @if (selectedDriver(); as driver) {
+    @if (driver.habilitado) {
+    <div
+      class="p-3 mb-5 rounded-lg bg-emerald-50 border border-emerald-200 text-emerald-900 text-sm flex items-start gap-2.5">
+      <i class="pi pi-check-circle text-emerald-600 text-base mt-0.5"></i>
+      <div>
+        <p class="font-bold">Conductor habilitado para liquidación</p>
+        <p class="text-xs text-emerald-800 mt-0.5">
+          Tiene <strong>{{ driver.pendingTripsCount }} carrera(s) cerrada(s) pendiente(s)</strong> por un total estimado
+          de
+          <strong>${{ driver.pendingAmount | number:'1.2-2' }}</strong>. Las fechas sugeridas han sido cargadas
+          automáticamente.
+        </p>
+      </div>
+    </div>
+    } @else {
+    <div
+      class="p-3 mb-5 rounded-lg bg-amber-50 border border-amber-200 text-amber-900 text-sm flex items-start gap-2.5">
+      <i class="pi pi-exclamation-triangle text-amber-600 text-base mt-0.5"></i>
+      <div>
+        <p class="font-bold">Atención: Conductor no habilitado</p>
+        <p class="text-xs text-amber-800 mt-0.5">
+          {{ driver.reason }}. El backend rechazará la transacción si no existen carreras en estado "cerrada" sin
+          liquidar dentro del rango seleccionado.
+        </p>
+      </div>
+    </div>
+    }
+    }
+
     <!-- Rango de Fechas -->
-    <div class="grid grid-cols-2 gap-4 mb-4">
+    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
       <div class="field">
         <label for="date_from" class="block font-semibold mb-1">Fecha Desde <span class="text-red-500">*</span></label>
-        <p-datepicker
-          inputId="date_from"
-          formControlName="date_from"
-          dateFormat="dd/mm/yy"
-          [showIcon]="true"
-          class="w-full"
-        />
+        <p-datepicker inputId="date_from" formControlName="date_from" dateFormat="dd/mm/yy" [showIcon]="true"
+          class="w-full" />
         @if (form.get('date_from')?.invalid && form.get('date_from')?.touched) {
-          <small class="text-red-500">Fecha de inicio obligatoria.</small>
+        <small class="text-red-500 block mt-1">Fecha de inicio obligatoria.</small>
         }
       </div>
       <div class="field">
         <label for="date_to" class="block font-semibold mb-1">Fecha Hasta <span class="text-red-500">*</span></label>
-        <p-datepicker
-          inputId="date_to"
-          formControlName="date_to"
-          dateFormat="dd/mm/yy"
-          [showIcon]="true"
-          class="w-full"
-        />
+        <p-datepicker inputId="date_to" formControlName="date_to" dateFormat="dd/mm/yy" [showIcon]="true"
+          class="w-full" />
         @if (form.get('date_to')?.invalid && form.get('date_to')?.touched) {
-          <small class="text-red-500">Fecha final obligatoria.</small>
+        <small class="text-red-500 block mt-1">Fecha final obligatoria.</small>
         }
       </div>
     </div>
@@ -58,19 +112,14 @@
     <!-- Notas -->
     <div class="field mb-6">
       <label for="notes" class="block font-semibold mb-1">Notas / Observaciones</label>
-      <textarea
-        id="notes"
-        pTextarea
-        formControlName="notes"
-        rows="3"
-        class="w-full"
-        placeholder="Observaciones de la liquidación, deducciones o incentivos (opcional)"
-      ></textarea>
+      <textarea id="notes" pTextarea formControlName="notes" rows="3" class="w-full"
+        placeholder="Observaciones de la liquidación, deducciones o incentivos (opcional)"></textarea>
     </div>
 
-    <div class="p-4 mb-6 rounded-lg bg-sky-50 border border-sky-200 text-sm text-sky-800">
-      <i class="pi pi-info-circle mr-1"></i>
-      El backend calculará el valor total de las carreras cerradas asociadas a los turnos del conductor dentro del periodo indicado.
+    <div class="p-3 mb-6 rounded-lg bg-sky-50 border border-sky-200 text-xs text-sky-800 flex items-center gap-2">
+      <i class="pi pi-info-circle text-sky-600"></i>
+      <span>El backend calculará y consolidará el valor total de las carreras cerradas asociadas a los turnos del
+        conductor dentro del periodo indicado.</span>
     </div>
 
     <!-- Botones -->
@@ -81,4 +130,3 @@
 
   </form>
 </div>
-
