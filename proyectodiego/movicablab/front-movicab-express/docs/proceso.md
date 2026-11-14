@@ -1119,6 +1119,21 @@ Implementación de la interfaz de usuario organizada por pestañas de control de
 - **Archivos:** `src/app/features/admin/rbac-admin.ts`, `rbac-admin.html`
 - **Estado:** ✅ Completado
 
+#### Q.5 — Refactorización: Matriz Visual Interactiva de Permisos con Toggle Reactivo
+Se rediseñó completamente el componente `rbac-admin` para sustituir las tablas de asignaciones y concesiones por una interfaz visual moderna orientada a la usabilidad operativa del administrador. Cambios implementados:
+- **Nueva pestaña "Matriz de Permisos"** (por defecto al acceder al módulo) con dos modos de operación:
+  - **Por Rol:** Selector de rol + matriz de permisos API segmentada por categoría funcional con toggle switches reactivos por fila.
+  - **Por Usuario:** Selector de usuario + cuadrícula de tarjetas de roles con checkboxes de asignación/revocación instantánea.
+- **12 categorías de permisos** auto-detectadas por patrones de ruta: Carreras, Turnos, Tarifas, Conductores, Pasajeros, Vehículos, Empresas, Pagos, Liquidaciones, Calificaciones, Seguridad y Otros.
+- **Toggle switch animado** por recurso con micro-spinner de carga, badge del método HTTP (GET/POST/PATCH/DELETE) con colores semánticos, descripción en lenguaje natural y badge de estado en tiempo real.
+- **Acordeones de categoría** colapsables con contador de permisos activos vs. total.
+- **Carga concurrente** con `forkJoin` para todos los datos base.
+- **Tab Usuarios** mejorado: muestra los roles activos de cada usuario como badges inline.
+- **Tab Roles** mejorado: cuadrícula de tarjetas con contador de permisos activos por rol.
+
+- **Archivos:** `src/app/features/admin/rbac-admin.ts`, `rbac-admin.html`
+- **Estado:** ✅ Completado
+
 #### Q.4 — Integración en Rutas y Menú RBAC Reactivo
 - **Ruta Protegida:** Se registró `/admin/rbac` en `app.routes.ts` bajo la shell autenticada con `canActivate: [authGuard]`.
 - **Menú Condicional por RBAC:** En `aside.ts` se configuró la sección **Administración** con la opción **Seguridad y RBAC**, exigiendo el permiso `GET /api/usuarios`. Al iniciar sesión con `admin`, la categoría y el enlace aparecen dinámicamente; al iniciar sesión con `seller` (rol `DESPACHO` sin permisos sobre `/api/usuarios`), la categoría completa permanece oculta.

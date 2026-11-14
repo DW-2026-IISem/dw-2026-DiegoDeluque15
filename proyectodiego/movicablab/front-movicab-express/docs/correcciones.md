@@ -158,3 +158,84 @@ A raíz de la revisión técnica del frontend, se identificó que ciertos atribu
 
 ### Validación
 - Verificación exhaustiva con el compilador TypeScript (`node ./node_modules/typescript/bin/tsc --noEmit`), finalizando con código de salida 0 y sin advertencias ni errores de tipos o plantillas.
+
+---
+
+## 5. Matriz Visual Interactiva de Permisos RBAC con Toggle Reactivo
+
+- **Fecha:** 2026-11-14
+- **Módulo afectado:** Administración &rarr; Seguridad y RBAC (`/admin/rbac`)
+- **Archivos modificados:**
+  - `src/app/features/admin/rbac-admin.ts`
+  - `src/app/features/admin/rbac-admin.html`
+  - `docs/proceso.md`
+
+### Descripción del Requerimiento
+La implementación previa del módulo RBAC gestionaba la asignación y revocación de permisos mediante tablas separadas (pestañas independientes de Asignaciones y Concesiones), formularios de selección y botones de acción explícitos. Esta experiencia resultaba lenta, poco intuitiva y no permitía visualizar fácilmente el estado global de autorización de un rol o usuario.
+
+Se requirió sustituir ese flujo por una **Matriz Visual Interactiva** donde cada permiso es representado por un *toggle switch* que se activa o revoca **de forma instantánea y reactiva** al hacer clic, sin formularios adicionales ni confirmaciones innecesarias.
+
+### Solución Implementada
+
+#### A. Nuevo sistema de pestañas
+Se reorganizó la navegación del componente: las anteriores pestañas de *Asignaciones* y *Concesiones* (gestión técnica de tablas) fueron sustituidas por una única pestaña principal denominada **«Matriz de Permisos»**, que se muestra primero y por defecto al acceder al módulo.
+
+#### B. Dos modos de gestión: por Rol y por Usuario
+
+**Modo "Por Rol" (gestión de permisos de API):**
+- Selector desplegable filtrable (`p-select`) para elegir el rol a configurar.
+- Badge numérico con el recuento de permisos activos del rol seleccionado.
+- Carga asíncrona de los `grants` del rol mediante `GET /api/concesiones-rol?role_id=X`.
+- La matriz de permisos se actualiza automáticamente sin necesidad de recargar la página.
+
+**Modo "Por Usuario" (gestión de roles asignados):**
+- Selector de usuario filtrable.
+- Aparece una cuadrícula de tarjetas de roles con toggle interactivo (checkboxes visuales personalizados).
+- Al hacer clic sobre un rol, se invoca `POST /api/asignaciones-rol`, `PATCH .../deactivate` o `PATCH .../reactivate` según el estado actual.
+
+#### C. Categorización segmentada de permisos
+Los recursos API se agrupan automáticamente en las siguientes categorías funcionales definidas en la constante `PERMISSION_CATEGORIES` del componente:
+
+| Categoría | Patrón de ruta |
+|---|---|
+| Carreras (Viajes) | `/carreras` |
+| Turnos y Horarios | `/turnos` |
+| Tarifas y Precios | `/tarifas` |
+| Conductores | `/conductores` |
+| Pasajeros | `/pasajeros` |
+| Vehículos y Tipos | `/vehiculos`, `/tipos-vehiculo` |
+| Empresas | `/empresas` |
+| Cobros y Pagos | `/pagos` |
+| Liquidaciones | `/liquidaciones` |
+| Calificaciones | `/calificaciones` |
+| Seguridad y Administración | `/usuarios`, `/roles`, `/recursos`, `/asignaciones-rol`, `/concesiones-rol`, `/sesion`, `/permisos` |
+| Otros Recursos | (resto no clasificado) |
+
+Cada categoría es un acordeón colapsable con cabecera de color distintivo, icono identificativo, descripción funcional y un contador de permisos activos vs. total de la categoría.
+
+#### D. Toggle Switch reactivo por fila
+Cada recurso de API muestra en su fila:
+- **Toggle switch animado** (deslizante, estilo moderno): posición izquierda = sin acceso, posición derecha = autorizado.
+- **Badge del método HTTP** con color semántico: `GET` verde, `POST` azul, `PATCH/PUT` ámbar, `DELETE` rojo.
+- **Ruta técnica** en fuente monospace.
+- **Descripción en lenguaje natural** del permiso.
+- **Badge de estado** actualizado en tiempo real: *Autorizado* (verde) / *Sin acceso* (gris).
+- **Micro-spinner** superpuesto sobre el toggle mientras la petición HTTP está en vuelo.
+
+La lógica de toggle implementa tres caminos:
+1. No existe `grant` → crea uno nuevo (`POST /api/concesiones-rol`).
+2. `grant.status === 'active'` → revoca el permiso (`PATCH .../deactivate`).
+3. `grant.status !== 'active'` → reactiva el permiso (`PATCH .../reactivate`).
+
+Cada acción emite un toast de notificación descriptivo en español confirmando el cambio.
+
+#### E. Mejoras en las pestañas secundarias
+- **Usuarios:** La tabla ahora muestra los roles activos asignados a cada usuario como badges inline, facilitando el diagnóstico de privilegios.
+- **Roles:** Se sustituyó la tabla por una **cuadrícula de tarjetas** (`grid`) con contador de permisos activos por rol.
+- **Recursos API:** Se mantiene la tabla, mejorando los badges de método HTTP con la misma paleta cromática semántica de la matriz.
+
+#### F. Carga concurrente con `forkJoin`
+El método `loadAll()` utiliza `forkJoin` para cargar en paralelo usuarios, roles, recursos, asignaciones y concesiones, reduciendo el tiempo de inicialización del componente.
+
+### Validación
+- Verificación de tipos TypeScript con `node ./node_modules/typescript/bin/tsc --noEmit`: **código de salida 0, sin errores**.
